@@ -6,9 +6,9 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
+import { useEffect, useState } from "react";
 
 interface Testimonial {
   id: string;
@@ -26,7 +26,7 @@ const testimonials: Testimonial[] = [
     name: "Sarah Johnson",
     role: "CEO",
     company: "TechCorp",
-    content: "Working with this developer was an absolute pleasure. The attention to detail and creative solutions exceeded our expectations. Our web application looks stunning and performs flawlessly.",
+    content: "Working with this team was an absolute pleasure. The attention to detail and creative solutions exceeded our expectations. Our web application looks stunning and performs flawlessly.",
     rating: 5,
   },
   {
@@ -50,14 +50,26 @@ const testimonials: Testimonial[] = [
     name: "David Kim",
     role: "CTO",
     company: "StartupXYZ",
-    content: "Outstanding developer who delivered a complex web application on time and within budget. The code quality is excellent and the user experience is top-notch.",
+    content: "Outstanding team who delivered a complex web application on time and within budget. The code quality is excellent and the user experience is top-notch.",
     rating: 5,
   },
 ];
 
 export function TestimonialsSection() {
+  const [api, setApi] = useState<CarouselApi>();
+
+  useEffect(() => {
+    if (!api) return;
+
+    const autoplay = setInterval(() => {
+      api.scrollNext();
+    }, 5000); // Change testimonial every 5 seconds
+
+    return () => clearInterval(autoplay);
+  }, [api]);
+
   return (
-    <section id="testimonials" className="min-h-screen pt-24 pb-16 relative snap-start snap-always flex items-center">
+    <section id="testimonials" className="min-h-screen pt-16 pb-16 relative flex items-center snap-start">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -70,7 +82,7 @@ export function TestimonialsSection() {
             <span className="gradient-text-cyan-purple">Client Testimonials</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            What clients say about working with me
+            What clients say about working with us
           </p>
           <motion.div
             className="h-1 w-24 mx-auto mt-6 bg-gradient-to-r from-chart-1 to-chart-2 rounded-full"
@@ -82,6 +94,7 @@ export function TestimonialsSection() {
         </motion.div>
 
         <Carousel
+          setApi={setApi}
           opts={{
             align: "start",
             loop: true,
@@ -96,8 +109,9 @@ export function TestimonialsSection() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="h-full"
                 >
-                  <Card className="glass border-border/50 p-6 hover-elevate transition-all h-full flex flex-col">
+                  <Card className="glass border-border/50 p-6 hover-elevate transition-all h-full min-h-[320px] flex flex-col">
                     <div className="flex items-start justify-between mb-4">
                       <Quote className="h-10 w-10 text-chart-1 opacity-50" />
                       <div className="flex gap-1">
@@ -136,8 +150,6 @@ export function TestimonialsSection() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="hidden md:flex -left-12" />
-          <CarouselNext className="hidden md:flex -right-12" />
         </Carousel>
       </div>
     </section>
