@@ -17,12 +17,27 @@ import {
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import Database from "better-sqlite3";
+import { drizzle } from "drizzle-orm/better-sqlite3";
 
-// Initialize database connection
-const sql = neon(process.env.DATABASE_URL!);
-const db = drizzle(sql);
+// Initialize database connection with SQLite
+const sqlite = new Database("portfolio.db");
+const db = drizzle(sqlite);
+
+// Helper functions for JSON serialization (SQLite doesn't support arrays)
+function serializeProject(project: InsertProject): any {
+  return {
+    ...project,
+    technologies: JSON.stringify(project.technologies),
+  };
+}
+
+function deserializeProject(project: any): Project {
+  return {
+    ...project,
+    technologies: JSON.parse(project.technologies),
+  };
+}
 
 export interface IStorage {
   // User methods
@@ -69,32 +84,44 @@ export class DbStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const result = await db.insert(users).values(insertUser).returning();
+    const result = await db.insert(users).values({
+      ...insertUser,
+      id: randomUUID(),
+    }).returning();
     return result[0];
   }
 
   // Project methods
   async getAllProjects(): Promise<Project[]> {
-    return await db.select().from(projects).orderBy(projects.order);
+    const results = await db.select().from(projects).orderBy(projects.order);
+    return results.map(deserializeProject);
   }
 
   async getProject(id: string): Promise<Project | undefined> {
     const result = await db.select().from(projects).where(eq(projects.id, id));
-    return result[0];
+    return result[0] ? deserializeProject(result[0]) : undefined;
   }
 
   async createProject(project: InsertProject): Promise<Project> {
-    const result = await db.insert(projects).values(project).returning();
-    return result[0];
+    const serialized = serializeProject(project);
+    const result = await db.insert(projects).values({
+      ...serialized,
+      id: randomUUID(),
+      createdAt: new Date(),
+    }).returning();
+    return deserializeProject(result[0]);
   }
 
   async updateProject(id: string, project: Partial<InsertProject>): Promise<Project | undefined> {
+    const serialized = project.technologies 
+      ? { ...project, technologies: JSON.stringify(project.technologies) }
+      : project;
     const result = await db
       .update(projects)
-      .set(project)
+      .set(serialized as any)
       .where(eq(projects.id, id))
       .returning();
-    return result[0];
+    return result[0] ? deserializeProject(result[0]) : undefined;
   }
 
   async deleteProject(id: string): Promise<boolean> {
@@ -113,7 +140,10 @@ export class DbStorage implements IStorage {
   }
 
   async createSkill(skill: InsertSkill): Promise<Skill> {
-    const result = await db.insert(skills).values(skill).returning();
+    const result = await db.insert(skills).values({
+      ...skill,
+      id: randomUUID(),
+    }).returning();
     return result[0];
   }
 
@@ -142,7 +172,11 @@ export class DbStorage implements IStorage {
   }
 
   async createContactMessage(message: InsertContactMessage): Promise<ContactMessage> {
-    const result = await db.insert(contactMessages).values(message).returning();
+    const result = await db.insert(contactMessages).values({
+      ...message,
+      id: randomUUID(),
+      createdAt: new Date(),
+    }).returning();
     return result[0];
   }
 

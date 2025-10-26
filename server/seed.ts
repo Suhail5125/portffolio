@@ -1,10 +1,12 @@
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import "dotenv/config";
+import Database from "better-sqlite3";
+import { drizzle } from "drizzle-orm/better-sqlite3";
 import { users, projects, skills, aboutInfo } from "@shared/schema";
 import bcrypt from "bcryptjs";
+import { randomUUID } from "crypto";
 
-const sql = neon(process.env.DATABASE_URL!);
-const db = drizzle(sql);
+const sqlite = new Database("portfolio.db");
+const db = drizzle(sqlite);
 
 async function seed() {
   console.log("🌱 Starting database seed...");
@@ -13,23 +15,27 @@ async function seed() {
     // Create admin user (username: admin, password: admin123)
     const hashedPassword = await bcrypt.hash("admin123", 10);
     await db.insert(users).values({
+      id: randomUUID(),
       username: "admin",
       password: hashedPassword,
       isAdmin: true,
-    }).onConflictDoNothing();
+    });
     console.log("✅ Admin user created (username: admin, password: admin123)");
 
     // Add sample about info
     await db.insert(aboutInfo).values({
       id: "main",
-      name: "Your Name",
-      title: "Full Stack Developer & 3D Enthusiast",
-      bio: "I'm a passionate developer specializing in creating immersive web experiences with cutting-edge technologies. My expertise lies in WebGL, Three.js, and modern web development frameworks.\n\nI love pushing the boundaries of what's possible on the web, combining beautiful design with powerful functionality.",
+      name: "Your Company Name",
+      title: "Full Stack Development & 3D Solutions",
+      bio: "We're a passionate team specializing in creating immersive web experiences with cutting-edge technologies. Our expertise lies in WebGL, Three.js, and modern web development frameworks.\n\nWe love pushing the boundaries of what's possible on the web, combining beautiful design with powerful functionality.",
       email: "contact@example.com",
+      phone: "+1 (555) 123-4567",
+      location: "San Francisco, CA",
       githubUrl: "https://github.com",
       linkedinUrl: "https://linkedin.com",
       twitterUrl: "https://twitter.com",
-    }).onConflictDoNothing();
+      updatedAt: new Date(),
+    });
     console.log("✅ About info created");
 
     // Add sample projects
@@ -55,13 +61,34 @@ async function seed() {
         description: "Custom game engine built with WebGL and modern JavaScript",
         longDescription: "A lightweight game engine with physics simulation, particle systems, and efficient rendering pipeline.",
         technologies: ["WebGL", "JavaScript", "GLSL", "Physics Engine"],
-        featured: false,
+        featured: true,
         order: 3,
+      },
+      {
+        title: "E-Commerce Platform",
+        description: "Full-stack e-commerce solution with real-time inventory",
+        longDescription: "A modern e-commerce platform with payment integration, real-time inventory management, and seamless checkout experience.",
+        technologies: ["Next.js", "PostgreSQL", "Stripe", "Redis", "TypeScript"],
+        featured: true,
+        order: 4,
+      },
+      {
+        title: "AI Chat Application",
+        description: "Real-time chat app with AI-powered smart replies",
+        longDescription: "Intelligent chat application featuring AI-powered message suggestions, sentiment analysis, and natural language processing.",
+        technologies: ["React", "Socket.io", "OpenAI", "Node.js", "MongoDB"],
+        featured: true,
+        order: 5,
       },
     ];
 
     for (const project of sampleProjects) {
-      await db.insert(projects).values(project);
+      await db.insert(projects).values({
+        ...project,
+        id: randomUUID(),
+        technologies: JSON.stringify(project.technologies),
+        createdAt: new Date(),
+      });
     }
     console.log(`✅ ${sampleProjects.length} sample projects created`);
 
@@ -82,7 +109,10 @@ async function seed() {
     ];
 
     for (const skill of sampleSkills) {
-      await db.insert(skills).values(skill);
+      await db.insert(skills).values({
+        ...skill,
+        id: randomUUID(),
+      });
     }
     console.log(`✅ ${sampleSkills.length} sample skills created`);
 
@@ -95,6 +125,8 @@ async function seed() {
   } catch (error) {
     console.error("❌ Error seeding database:", error);
     throw error;
+  } finally {
+    sqlite.close();
   }
 }
 
