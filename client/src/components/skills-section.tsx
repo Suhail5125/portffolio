@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import type { Skill } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Code2, Sparkles, Wrench, Layers } from "lucide-react";
+import { TechSlider } from "@/components/tech-slider";
 
 interface SkillsSectionProps {
   skills: Skill[];
@@ -36,7 +37,7 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
   }, {} as Record<string, Skill[]>);
 
   return (
-    <section id="skills" className="min-h-screen pt-24 pb-16 relative bg-gradient-to-b from-background to-card/50 snap-start snap-always flex items-center">
+    <section id="skills" className="min-h-screen pt-16 pb-16 relative bg-gradient-to-b from-background to-card/50 flex items-center snap-start">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -49,7 +50,7 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
             <span className="gradient-text-spectrum">Skills & Expertise</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Technologies and tools I work with to bring ideas to life
+            Technologies and tools we use to bring ideas to life
           </p>
           <motion.div
             className="h-1 w-24 mx-auto mt-6 bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 rounded-full"
@@ -58,6 +59,17 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.3 }}
           />
+        </motion.div>
+
+        {/* Infinite Tech Slider */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="mb-8 -mx-4 sm:-mx-6 lg:-mx-8"
+        >
+          <TechSlider />
         </motion.div>
 
         {isLoading ? (
