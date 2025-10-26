@@ -2,10 +2,13 @@ import { Navigation } from "@/components/navigation";
 import { HeroSection } from "@/components/hero-section";
 import { ProjectsSection } from "@/components/projects-section";
 import { SkillsSection } from "@/components/skills-section";
+import { ServicesSection } from "@/components/services-section";
+import { WorkProcessSection } from "@/components/work-process-section";
 import { AboutSection } from "@/components/about-section";
 import { TestimonialsSection } from "@/components/testimonials-section";
 import { ContactSection } from "@/components/contact-section";
 import { Footer } from "@/components/footer";
+import { SEO } from "@/components/seo";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Project, Skill, AboutInfo, InsertContactMessage } from "@shared/schema";
@@ -37,7 +40,7 @@ export default function Home() {
     onSuccess: () => {
       toast({
         title: "Message sent successfully!",
-        description: "Thank you for reaching out. I'll get back to you soon.",
+        description: "Thank you for reaching out. We'll get back to you soon.",
       });
     },
     onError: (error: Error) => {
@@ -55,19 +58,24 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      <main className="snap-y snap-mandatory h-screen overflow-y-scroll">
-        <HeroSection />
+      <SEO />
+      <main className="overflow-x-hidden snap-y snap-mandatory h-screen overflow-y-auto">
+        <div className="min-h-screen flex flex-col snap-start snap-always">
+          <Navigation />
+          <HeroSection />
+        </div>
         <ProjectsSection projects={projects} isLoading={projectsLoading} />
         <SkillsSection skills={skills} isLoading={skillsLoading} />
+        <ServicesSection />
+        <WorkProcessSection />
         <AboutSection aboutInfo={aboutInfo || null} isLoading={aboutLoading} />
         <TestimonialsSection />
         <ContactSection
           onSubmit={handleContactSubmit}
           isSubmitting={contactMutation.isPending}
         />
+        <Footer />
       </main>
-      <Footer />
     </div>
   );
 }
