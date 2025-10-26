@@ -1,31 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Code2 } from "lucide-react";
+import { Menu, X, Code2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { name: "Home", href: "/" },
   { name: "Projects", href: "#projects" },
-  { name: "Skills", href: "#skills" },
+  { name: "Services", href: "#services" },
   { name: "About", href: "#about" },
-  { name: "Contact", href: "#contact" },
+  { name: "Contact", href: "#footer" },
 ];
 
 export function Navigation() {
   const [location] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const scrollToSection = (href: string) => {
     if (href.startsWith("#")) {
@@ -39,21 +29,15 @@ export function Navigation() {
 
   return (
     <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled ? "py-3" : "py-6"
+        "relative z-50 transition-all duration-300 pt-6 pb-0"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          className={cn(
-            "glass rounded-lg border border-border/50 transition-all duration-300",
-            scrolled ? "px-6 py-3" : "px-8 py-4"
-          )}
-        >
+        <div className="glass rounded-lg border border-border/50 px-8 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/" data-testid="link-home">
@@ -84,7 +68,7 @@ export function Navigation() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-2">
               {navItems.map((item, index) => (
                 <motion.div
                   key={item.name}
@@ -130,6 +114,23 @@ export function Navigation() {
                 </motion.div>
               ))}
               <ThemeToggle />
+              <Button
+                onClick={() => scrollToSection("#contact")}
+                className="relative overflow-hidden group"
+                size="sm"
+                data-testid="button-lets-work-together"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  <Send className="h-4 w-4" />
+                  Let's Work Together
+                </span>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-chart-1/20 to-chart-2/20"
+                  initial={{ x: "-100%" }}
+                  whileHover={{ x: 0 }}
+                  transition={{ duration: 0.3 }}
+                />
+              </Button>
             </div>
 
             {/* Mobile Menu Button */}
@@ -182,6 +183,19 @@ export function Navigation() {
           >
             <div className="glass rounded-lg border border-border/50 p-4">
               <div className="flex flex-col gap-2">
+                <Button
+                  onClick={() => {
+                    scrollToSection("#contact");
+                    setIsOpen(false);
+                  }}
+                  className="w-full relative overflow-hidden group mb-2"
+                  data-testid="button-mobile-lets-work-together"
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    <Send className="h-4 w-4" />
+                    Let's Work Together
+                  </span>
+                </Button>
                 {navItems.map((item, index) => (
                   <motion.div
                     key={item.name}
