@@ -1,26 +1,26 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, boolean, integer } from "drizzle-orm/pg-core";
+import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Projects table for portfolio showcases
-export const projects = pgTable("projects", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const projects = sqliteTable("projects", {
+  id: text("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description").notNull(),
   longDescription: text("long_description"),
   imageUrl: text("image_url"),
   demoUrl: text("demo_url"),
   githubUrl: text("github_url"),
-  technologies: text("technologies").array().notNull(),
-  featured: boolean("featured").default(false).notNull(),
+  technologies: text("technologies").notNull(), // JSON stringified array
+  featured: integer("featured", { mode: "boolean" }).default(false).notNull(),
   order: integer("order").default(0).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
 });
 
 // Skills table for skill visualization
-export const skills = pgTable("skills", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const skills = sqliteTable("skills", {
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
   category: text("category").notNull(), // e.g., "Frontend", "Backend", "3D/Graphics", "Tools"
   proficiency: integer("proficiency").notNull(), // 1-100
@@ -29,19 +29,19 @@ export const skills = pgTable("skills", {
 });
 
 // Contact messages from the contact form
-export const contactMessages = pgTable("contact_messages", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const contactMessages = sqliteTable("contact_messages", {
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull(),
   subject: text("subject"),
   message: text("message").notNull(),
-  read: boolean("read").default(false).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  read: integer("read", { mode: "boolean" }).default(false).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
 });
 
 // About info (single record)
-export const aboutInfo = pgTable("about_info", {
-  id: varchar("id").primaryKey().default('main'),
+export const aboutInfo = sqliteTable("about_info", {
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
   title: text("title").notNull(),
   bio: text("bio").notNull(),
@@ -51,15 +51,17 @@ export const aboutInfo = pgTable("about_info", {
   linkedinUrl: text("linkedin_url"),
   twitterUrl: text("twitter_url"),
   email: text("email"),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  phone: text("phone"),
+  location: text("location"),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
 });
 
 // Admin users for content management
-export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const users = sqliteTable("users", {
+  id: text("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
-  isAdmin: boolean("is_admin").default(true).notNull(),
+  isAdmin: integer("is_admin", { mode: "boolean" }).default(true).notNull(),
 });
 
 // Zod schemas for validation
@@ -85,9 +87,19 @@ export const insertContactMessageSchema = createInsertSchema(contactMessages).om
   read: true,
   createdAt: true,
 }).extend({
-  email: z.string().email("Invalid email address"),
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
+  email: z.string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address"),
+  name: z.string()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name must be less than 100 characters")
+    .regex(/^[a-zA-Z\s]+$/, "Name can only contain letters and spaces"),
+  message: z.string()
+    .min(10, "Message must be at least 10 characters")
+    .max(1000, "Message must be less than 1000 characters"),
+  subject: z.string()
+    .max(200, "Subject must be less than 200 characters")
+    .optional(),
 });
 
 export const insertAboutInfoSchema = createInsertSchema(aboutInfo).omit({
