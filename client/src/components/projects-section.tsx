@@ -18,19 +18,28 @@ interface ProjectsSectionProps {
 export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
   const displayProjects = projects.slice(0, 5);
   const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (!api) return;
 
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+
     const autoplay = setInterval(() => {
       api.scrollNext();
-    }, 3000);
+    }, 4000); // Auto-slide every 4 seconds
 
     return () => clearInterval(autoplay);
   }, [api]);
 
   return (
-    <section id="projects" className="min-h-screen pt-24 pb-16 relative snap-start snap-always flex items-center">
+    <section id="projects" className="min-h-screen pt-16 pb-16 relative flex items-center snap-start">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -43,7 +52,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
             <span className="gradient-text-cyan-purple">Featured Projects</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            A showcase of my recent work combining creativity with cutting-edge technology
+            A showcase of our recent work combining creativity with cutting-edge technology
           </p>
           <motion.div
             className="h-1 w-24 mx-auto mt-6 bg-gradient-to-r from-chart-1 to-chart-2 rounded-full"
@@ -85,23 +94,40 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
             </div>
           </motion.div>
         ) : (
-          <Carousel
-            setApi={setApi}
-            opts={{
-              align: "start",
-              loop: true,
-              dragFree: true,
-            }}
-            className="w-full"
-          >
-            <CarouselContent className="-ml-4">
-              {displayProjects.map((project, index) => (
-                <CarouselItem key={project.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                  <ProjectCard project={project} index={index} />
-                </CarouselItem>
+          <div className="space-y-8">
+            <Carousel
+              setApi={setApi}
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-4">
+                {displayProjects.map((project, index) => (
+                  <CarouselItem key={project.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                    <ProjectCard project={project} index={index} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+
+            {/* Navigation Dots */}
+            <div className="flex justify-center gap-2 mt-8">
+              {Array.from({ length: count }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => api?.scrollTo(index)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    index === current
+                      ? "w-8 bg-chart-1"
+                      : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
               ))}
-            </CarouselContent>
-          </Carousel>
+            </div>
+          </div>
         )}
       </div>
     </section>

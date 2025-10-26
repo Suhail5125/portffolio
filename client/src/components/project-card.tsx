@@ -11,6 +11,13 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, index }: ProjectCardProps) {
+  // Ensure technologies is always an array
+  const technologies = Array.isArray(project.technologies) 
+    ? project.technologies 
+    : typeof project.technologies === 'string' 
+      ? JSON.parse(project.technologies)
+      : [];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -20,7 +27,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       data-testid={`card-project-${project.id}`}
     >
       <Card
-        className="group overflow-hidden border-border/50 hover-elevate transition-all duration-300 h-full flex flex-col"
+        className="group overflow-hidden border-border/50 hover-elevate transition-all duration-300 h-full min-h-[360px] flex flex-col"
         style={{
           transform: "perspective(1000px)",
         }}
@@ -95,7 +102,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
 
           {/* Technologies */}
           <div className="flex flex-wrap gap-1.5 mb-3">
-            {project.technologies.slice(0, 3).map((tech, i) => (
+            {technologies.slice(0, 3).map((tech: string, i: number) => (
               <Badge
                 key={i}
                 variant="secondary"
@@ -105,9 +112,9 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
                 {tech}
               </Badge>
             ))}
-            {project.technologies.length > 3 && (
+            {technologies.length > 3 && (
               <Badge variant="secondary" className="glass text-xs px-2 py-0.5">
-                +{project.technologies.length - 3}
+                +{technologies.length - 3}
               </Badge>
             )}
           </div>
