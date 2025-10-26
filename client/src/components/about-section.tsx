@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Download, Github, Linkedin, Twitter, Mail, Briefcase, Users, Award, MapPin, Clock } from "lucide-react";
+import { Download, Github, Linkedin, Twitter, Mail, Briefcase, Users, Award, Code2 } from "lucide-react";
 import type { AboutInfo } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,7 +15,7 @@ interface AboutSectionProps {
 export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
   if (isLoading) {
     return (
-      <section id="about" className="min-h-screen pt-24 pb-16 relative snap-start snap-always flex items-center">
+      <section id="about" className="min-h-screen pt-32 pb-16 relative flex items-center snap-start">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div className="space-y-6">
@@ -36,7 +36,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
 
   if (!aboutInfo) {
     return (
-      <section id="about" className="min-h-screen pt-24 pb-16 relative snap-start snap-always flex items-center">
+      <section id="about" className="min-h-screen pt-32 pb-16 relative flex items-center snap-start">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="glass rounded-lg border border-border/50 p-12 max-w-md mx-auto">
             <div className="text-6xl mb-4">👤</div>
@@ -54,12 +54,11 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
     { icon: Briefcase, label: "Projects Completed", value: "50+", color: "text-chart-1" },
     { icon: Users, label: "Happy Clients", value: "30+", color: "text-chart-2" },
     { icon: Award, label: "Years Experience", value: "5+", color: "text-chart-3" },
-    { icon: MapPin, label: "Location", value: "Remote", color: "text-chart-4" },
-    { icon: Clock, label: "Availability", value: "Available", color: "text-chart-1" },
+    { icon: Code2, label: "Technologies", value: "15+", color: "text-chart-4" },
   ];
 
   return (
-    <section id="about" className="min-h-screen py-16 relative snap-start snap-always flex items-center">
+    <section id="about" className="min-h-screen pt-16 pb-16 relative flex items-center snap-start">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -69,10 +68,10 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
           className="text-center mb-4"
         >
           <h2 className="font-display text-4xl md:text-5xl font-bold mb-4">
-            <span className="gradient-text-cyan-magenta">About Me</span>
+            <span className="gradient-text-cyan-magenta">About Us</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Get to know me better
+            Get to know our company better
           </p>
           <motion.div
             className="h-1 w-24 mx-auto mt-6 bg-gradient-to-r from-chart-1 to-chart-2 rounded-full"
@@ -90,9 +89,9 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="lg:col-span-1"
+            className="lg:col-span-1 text-center"
           >
-            <Card className="p-6 glass border-border/50 text-center">
+            <div>
               <div className="relative inline-block mb-6">
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-br from-chart-1 to-chart-2 rounded-full blur-2xl opacity-50"
@@ -106,9 +105,9 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                     ease: "easeInOut",
                   }}
                 />
-                <Avatar className="h-40 w-40 border-4 border-chart-1/30 relative">
+                <Avatar className="h-48 w-48 border-4 border-chart-1/30 relative">
                   <AvatarImage src={aboutInfo.avatarUrl || undefined} alt={aboutInfo.name} />
-                  <AvatarFallback className="text-4xl font-display gradient-text-cyan-purple">
+                  <AvatarFallback className="text-5xl font-display gradient-text-cyan-purple">
                     {aboutInfo.name.split(" ").map(n => n[0]).join("")}
                   </AvatarFallback>
                 </Avatar>
@@ -187,7 +186,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                   </Button>
                 </a>
               )}
-            </Card>
+            </div>
           </motion.div>
 
           {/* Bio & Stats */}
@@ -209,7 +208,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
             </Card>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {stats.map((stat, index) => (
                 <motion.div
                   key={stat.label}
