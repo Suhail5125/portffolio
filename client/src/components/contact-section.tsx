@@ -41,7 +41,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
   };
 
   return (
-    <section id="contact" className="min-h-screen pt-24 pb-16 relative bg-gradient-to-b from-card/50 to-background snap-start snap-always flex items-center">
+    <section id="contact" className="min-h-screen pt-16 pb-16 relative bg-gradient-to-b from-card/50 to-background flex items-center snap-start">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -51,10 +51,10 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
           className="text-center mb-4"
         >
           <h2 className="font-display text-4xl md:text-5xl font-bold mb-4">
-            <span className="gradient-text-spectrum">Get In Touch</span>
+            <span className="gradient-text-spectrum">Let's Work Together</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Have a project in mind or just want to chat? Drop me a message!
+            Ready to bring your business vision to life? Let's discuss how we can create something amazing together.
           </p>
           <motion.div
             className="h-1 w-24 mx-auto mt-6 bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 rounded-full"
@@ -98,7 +98,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
                     Message Sent!
                   </h3>
                   <p className="text-muted-foreground mb-6">
-                    Thank you for reaching out. I'll get back to you as soon as possible.
+                    Thank you for reaching out. We'll get back to you as soon as possible.
                   </p>
                   <Button
                     onClick={() => setIsSuccess(false)}
@@ -181,7 +181,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
                           <FormControl>
                             <Textarea
                               {...field}
-                              placeholder="Tell me about your project or idea..."
+                              placeholder="Tell us about your project or business needs..."
                               rows={4}
                               data-testid="input-message"
                               className="glass border-border/50 focus:border-chart-1 transition-colors resize-none"
