@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Github, Linkedin, Mail } from "lucide-react";
+import { Github, Linkedin, Mail, Send, MessageCircle } from "lucide-react";
 import { HeroScene } from "@/components/3d-fallback/hero-scene";
 import { Suspense } from "react";
 
@@ -13,8 +13,12 @@ export function HeroSection() {
     document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const scrollToFooter = () => {
+    document.querySelector("#footer")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden snap-start snap-always">
+    <section className="relative flex-1 flex items-center justify-center overflow-hidden">
       {/* 3D Background */}
       <Suspense
         fallback={
@@ -28,7 +32,7 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background pointer-events-none" />
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -42,7 +46,7 @@ export function HeroSection() {
           >
             <div className="glass px-6 py-2 rounded-full border border-chart-1/30">
               <span className="text-sm font-medium text-muted-foreground">
-                Welcome to my portfolio
+                Welcome to our portfolio
               </span>
             </div>
           </motion.div>
@@ -72,7 +76,7 @@ export function HeroSection() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1 }}
           >
-            Crafting immersive web experiences with cutting-edge technologies.
+            We craft immersive web experiences with cutting-edge technologies.
             Specializing in WebGL, Three.js, and modern web development.
           </motion.p>
 
@@ -84,11 +88,14 @@ export function HeroSection() {
           >
             <Button
               size="lg"
-              onClick={scrollToProjects}
-              data-testid="button-view-work"
+              onClick={scrollToContact}
+              data-testid="button-lets-work-together"
               className="relative overflow-hidden group"
             >
-              <span className="relative z-10">View My Work</span>
+              <span className="relative z-10 flex items-center gap-2">
+                <Send className="h-5 w-5" />
+                Let's Work Together
+              </span>
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-chart-1 to-chart-2"
                 initial={{ x: "-100%" }}
@@ -99,11 +106,21 @@ export function HeroSection() {
             <Button
               size="lg"
               variant="outline"
-              onClick={scrollToContact}
+              onClick={scrollToFooter}
               data-testid="button-get-in-touch"
               className="glass border-chart-1/30"
             >
+              <MessageCircle className="h-5 w-5 mr-2" />
               Get In Touch
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={scrollToProjects}
+              data-testid="button-view-work"
+              className="glass border-chart-1/30"
+            >
+              View My Work
             </Button>
           </motion.div>
 
