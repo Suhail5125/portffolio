@@ -88,7 +88,7 @@ export function Footer() {
             className="flex flex-col items-center md:items-start"
           >
             <h3 className="font-display text-2xl font-bold gradient-text-cyan-magenta mb-4 text-center md:text-left">
-              Portfolio
+              CodebySRS
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed text-center md:text-left">
               We craft immersive web experiences with cutting-edge 3D technologies and modern web development solutions.
@@ -278,7 +278,7 @@ export function Footer() {
             transition={{ duration: 0.5, delay: 0.9 }}
           >
             <p className="text-sm text-muted-foreground flex items-center justify-center gap-2 mb-2">
-              <span>© {currentYear} Portfolio. Made with</span>
+              <span>© {currentYear} CodebySRS. Made with</span>
               <motion.span
                 animate={{
                   scale: [1, 1.3, 1],

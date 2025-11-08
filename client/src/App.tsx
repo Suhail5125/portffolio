@@ -1,6 +1,7 @@
-import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { ComponentType, useEffect } from "react";
+import { Switch, Route, useLocation } from "wouter";
+import { queryClient, getQueryFn } from "./lib/queryClient";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -14,16 +15,49 @@ import AdminSkills from "@/pages/admin/skills";
 import AdminMessages from "@/pages/admin/messages";
 import AdminAbout from "@/pages/admin/about";
 
+function withAuth<P>(Component: ComponentType<P>) {
+  return function ProtectedComponent(props: P) {
+    const [, setLocation] = useLocation();
+    const { data, isLoading, isFetching } = useQuery<unknown | null>({
+      queryKey: ["/api/auth/user"],
+      queryFn: getQueryFn({ on401: "returnNull" }),
+      staleTime: 5 * 60 * 1000,
+    });
+
+    useEffect(() => {
+      if (!isLoading && !isFetching && data === null) {
+        setLocation("/admin/login", { replace: true });
+      }
+    }, [data, isFetching, isLoading, setLocation]);
+
+    if (isLoading || isFetching) {
+      return null;
+    }
+
+    if (data === null) {
+      return null;
+    }
+
+    return <Component {...props} />;
+  };
+}
+
+const ProtectedAdminDashboard = withAuth(AdminDashboard);
+const ProtectedAdminProjects = withAuth(AdminProjects);
+const ProtectedAdminSkills = withAuth(AdminSkills);
+const ProtectedAdminMessages = withAuth(AdminMessages);
+const ProtectedAdminAbout = withAuth(AdminAbout);
+
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/admin/login" component={AdminLogin} />
-      <Route path="/admin/dashboard" component={AdminDashboard} />
-      <Route path="/admin/projects" component={AdminProjects} />
-      <Route path="/admin/skills" component={AdminSkills} />
-      <Route path="/admin/messages" component={AdminMessages} />
-      <Route path="/admin/about" component={AdminAbout} />
+      <Route path="/admin/dashboard" component={ProtectedAdminDashboard} />
+      <Route path="/admin/projects" component={ProtectedAdminProjects} />
+      <Route path="/admin/skills" component={ProtectedAdminSkills} />
+      <Route path="/admin/messages" component={ProtectedAdminMessages} />
+      <Route path="/admin/about" component={ProtectedAdminAbout} />
       <Route component={NotFound} />
     </Switch>
   );

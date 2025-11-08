@@ -120,7 +120,7 @@ export default function AdminLogin() {
               className="text-sm text-muted-foreground hover:text-chart-1 transition-colors"
               data-testid="link-back-home"
             >
-              ← Back to Portfolio
+              ← Back to CodebySRS
             </button>
           </div>
         </Card>

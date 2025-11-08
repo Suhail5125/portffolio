@@ -32,7 +32,7 @@ export function LoadingScreen() {
           transition={{ delay: 0.5 }}
         >
           <h2 className="font-display text-2xl font-bold gradient-text-spectrum mb-2">
-            Loading Portfolio
+            Loading CodebySRS
           </h2>
           <p className="text-muted-foreground text-sm">
             Preparing your immersive experience...

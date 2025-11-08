@@ -69,6 +69,23 @@ db.run(sql`
   )
 `);
 
+const aboutColumns = sqlite.prepare("PRAGMA table_info('about_info')").all();
+const hasColumn = (column: string) => aboutColumns.some((row: any) => row.name === column);
+const addColumnIfMissing = (column: string, definition: string) => {
+  if (!hasColumn(column)) {
+    console.log(`Adding column ${column} to about_info...`);
+    sqlite.prepare(`ALTER TABLE about_info ADD COLUMN ${column} ${definition}`).run();
+  }
+};
+
+addColumnIfMissing("resume_url", "TEXT");
+addColumnIfMissing("github_url", "TEXT");
+addColumnIfMissing("linkedin_url", "TEXT");
+addColumnIfMissing("twitter_url", "TEXT");
+addColumnIfMissing("email", "TEXT");
+addColumnIfMissing("phone", "TEXT");
+addColumnIfMissing("location", "TEXT");
+
 // Users table
 db.run(sql`
   CREATE TABLE IF NOT EXISTS users (

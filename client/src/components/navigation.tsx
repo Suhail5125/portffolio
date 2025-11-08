@@ -62,7 +62,7 @@ export function Navigation() {
                   />
                 </div>
                 <span className="font-display text-xl font-bold gradient-text-cyan-magenta hidden sm:block">
-                  Portfolio
+                  CodebySRS
                 </span>
               </motion.div>
             </Link>

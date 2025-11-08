@@ -3,9 +3,9 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Download, Github, Linkedin, Twitter, Mail, Briefcase, Users, Award, Code2 } from "lucide-react";
-import type { AboutInfo } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { AboutInfo } from "@shared/schema";
 
 interface AboutSectionProps {
   aboutInfo: AboutInfo | null;

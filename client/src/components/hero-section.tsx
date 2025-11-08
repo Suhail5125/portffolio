@@ -46,7 +46,7 @@ export function HeroSection() {
           >
             <div className="glass px-6 py-2 rounded-full border border-chart-1/30">
               <span className="text-sm font-medium text-muted-foreground">
-                Welcome to our portfolio
+                Welcome to CodebySRS
               </span>
             </div>
           </motion.div>

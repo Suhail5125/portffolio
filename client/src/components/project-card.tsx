@@ -8,9 +8,10 @@ import type { Project } from "@shared/schema";
 interface ProjectCardProps {
   project: Project;
   index: number;
+  onSelect?: () => void;
 }
 
-export function ProjectCard({ project, index }: ProjectCardProps) {
+export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
   // Ensure technologies is always an array
   const technologies = Array.isArray(project.technologies) 
     ? project.technologies 
@@ -27,9 +28,20 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       data-testid={`card-project-${project.id}`}
     >
       <Card
-        className="group overflow-hidden border-border/50 hover-elevate transition-all duration-300 h-full min-h-[360px] flex flex-col"
+        className="group overflow-hidden border-border/50 hover-elevate transition-all duration-300 h-full min-h-[360px] flex flex-col cursor-pointer"
         style={{
           transform: "perspective(1000px)",
+        }}
+        onClick={onSelect}
+        role={onSelect ? "button" : undefined}
+        tabIndex={onSelect ? 0 : undefined}
+        onKeyDown={(event) => {
+          if (!onSelect) return;
+
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onSelect();
+          }
         }}
       >
         {/* Project Image */}
@@ -64,6 +76,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 data-testid={`link-github-${project.id}`}
+                onClick={(event) => event.stopPropagation()}
               >
                 <Button size="icon" variant="secondary" className="glass">
                   <Github className="h-4 w-4" />
@@ -76,6 +89,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 data-testid={`link-demo-${project.id}`}
+                onClick={(event) => event.stopPropagation()}
               >
                 <Button size="icon" variant="secondary" className="glass">
                   <ExternalLink className="h-4 w-4" />
@@ -128,6 +142,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
                 rel="noopener noreferrer"
                 className="flex-1"
                 data-testid={`button-view-demo-${project.id}`}
+                onClick={(event) => event.stopPropagation()}
               >
                 <Button className="w-full" size="sm">
                   <ExternalLink className="h-4 w-4 mr-2" />
@@ -142,6 +157,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
                 rel="noopener noreferrer"
                 className="flex-1"
                 data-testid={`button-view-code-${project.id}`}
+                onClick={(event) => event.stopPropagation()}
               >
                 <Button variant="outline" className="w-full glass" size="sm">
                   <Github className="h-4 w-4 mr-2" />

@@ -9,6 +9,16 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ExternalLink, Github } from "lucide-react";
 
 interface ProjectsSectionProps {
   projects: Project[];
@@ -20,6 +30,41 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleProjectSelect = (project: Project) => {
+    setSelectedProject(project);
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogChange = (open: boolean) => {
+    setIsDialogOpen(open);
+
+    if (!open) {
+      setSelectedProject(null);
+    }
+  };
+
+  const getTechnologies = (project: Project) => {
+    const value = project.technologies as unknown;
+
+    if (Array.isArray(value)) {
+      return value as string[];
+    }
+
+    if (typeof value === "string") {
+      try {
+        return JSON.parse(value) as string[];
+      } catch {
+        return [];
+      }
+    }
+
+    return [];
+  };
+
+  const selectedTechnologies = selectedProject ? getTechnologies(selectedProject) : [];
 
   useEffect(() => {
     if (!api) return;
@@ -106,7 +151,11 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
               <CarouselContent className="-ml-4">
                 {displayProjects.map((project, index) => (
                   <CarouselItem key={project.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                    <ProjectCard project={project} index={index} />
+                    <ProjectCard
+                      project={project}
+                      index={index}
+                      onSelect={() => handleProjectSelect(project)}
+                    />
                   </CarouselItem>
                 ))}
               </CarouselContent>
@@ -130,6 +179,91 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
           </div>
         )}
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
+        <DialogContent className="w-screen h-screen max-w-none p-0 sm:rounded-none overflow-hidden [&>button]:hidden">
+          {selectedProject && (
+            <div className="relative flex h-full flex-col bg-background">
+              <div className="relative h-[40vh] w-full bg-muted">
+                {selectedProject.imageUrl ? (
+                  <img
+                    src={selectedProject.imageUrl}
+                    alt={selectedProject.title}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <span className="text-6xl font-display gradient-text-cyan-purple">
+                      {selectedProject.title[0]}
+                    </span>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+              </div>
+
+              <div className="flex-1 overflow-y-auto px-6 py-8 md:px-12">
+                <div className="mx-auto flex max-w-5xl flex-col gap-10">
+                  <DialogHeader className="space-y-4 text-left">
+                    <DialogTitle className="text-4xl font-display font-bold">
+                      {selectedProject.title}
+                    </DialogTitle>
+                    <DialogDescription className="text-base text-muted-foreground">
+                      {selectedProject.description}
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  {selectedProject.longDescription && (
+                    <p className="text-base leading-relaxed text-muted-foreground whitespace-pre-line">
+                      {selectedProject.longDescription}
+                    </p>
+                  )}
+
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-lg">Technologies Used</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedTechnologies.map((tech, index) => (
+                        <Badge key={index} variant="secondary" className="glass text-xs px-3 py-1">
+                          {tech}
+                        </Badge>
+                      ))}
+                      {selectedTechnologies.length === 0 && (
+                        <span className="text-sm text-muted-foreground">No technologies listed.</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {selectedProject.demoUrl && (
+                      <Button asChild size="lg">
+                        <a
+                          href={selectedProject.demoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          View Live Project
+                        </a>
+                      </Button>
+                    )}
+                    {selectedProject.githubUrl && (
+                      <Button variant="outline" asChild size="lg" className="glass">
+                        <a
+                          href={selectedProject.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Github className="h-4 w-4 mr-2" />
+                          View Source Code
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

@@ -207,13 +207,13 @@ export class DbStorage implements IStorage {
       const result = await db
         .update(aboutInfo)
         .set({ ...info, updatedAt: new Date() })
-        .where(eq(aboutInfo.id, 'main'))
+        .where(eq(aboutInfo.id, "main"))
         .returning();
       return result[0];
     } else {
       const result = await db
         .insert(aboutInfo)
-        .values({ ...info, id: 'main' })
+        .values({ ...info, id: "main", updatedAt: new Date() })
         .returning();
       return result[0];
     }

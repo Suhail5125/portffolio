@@ -77,6 +77,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
       },
     })
   );
@@ -101,6 +102,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } else {
       res.status(401).json({ error: "Not authenticated" });
     }
+  });
+
+  // Debug endpoint to check session
+  app.get("/api/auth/debug", (req, res) => {
+    res.json({
+      isAuthenticated: req.isAuthenticated(),
+      sessionID: req.sessionID,
+      hasSession: !!req.session,
+      user: req.user || null,
+    });
   });
 
   // Public routes - Projects
@@ -215,10 +226,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/about", async (req, res) => {
     try {
       const info = await storage.getAboutInfo();
-      if (!info) {
-        return res.status(404).json({ error: "About info not found" });
-      }
-      res.json(info);
+      res.json(info ?? null);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

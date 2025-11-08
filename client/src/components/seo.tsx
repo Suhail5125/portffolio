@@ -10,9 +10,9 @@ interface SEOProps {
 }
 
 const defaultMeta = {
-  title: "Portfolio - Professional Web Development & 3D Solutions",
+  title: "CodebySRS - Professional Web Development & 3D Solutions",
   description: "We craft immersive web experiences with cutting-edge technologies. Specializing in WebGL, Three.js, and modern web development.",
-  keywords: "web development, 3D web, WebGL, Three.js, React, portfolio, full stack development",
+  keywords: "web development, 3D web, WebGL, Three.js, React, CodebySRS, full stack development",
   ogImage: "/og-image.jpg",
   ogType: "website",
   twitterCard: "summary_large_image",
