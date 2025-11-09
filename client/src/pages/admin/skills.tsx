@@ -26,18 +26,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const categories = ["Frontend", "Backend", "3D/Graphics", "Tools", "Other"];
+type SkillCategory = "Frontend" | "Backend" | "3D/Graphics" | "Tools" | "Other";
+const categories: SkillCategory[] = ["Frontend", "Backend", "3D/Graphics", "Tools", "Other"];
 
 export default function AdminSkills() {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSkill, setEditingSkill] = useState<Skill | null>(null);
-  const [formData, setFormData] = useState<Partial<InsertSkill>>({
+  type FormData = Omit<InsertSkill, 'category'> & { category: SkillCategory };
+  const [formData, setFormData] = useState<Partial<FormData>>({
     name: "",
     category: "Frontend",
     proficiency: 50,
-    icon: "",
   });
+  const [customCategory, setCustomCategory] = useState("");
+  const [categoryIcon, setCategoryIcon] = useState("");
 
   const { data: skills = [], isLoading } = useQuery<Skill[]>({
     queryKey: ["/api/skills"],
@@ -99,20 +102,27 @@ export default function AdminSkills() {
   const handleOpenDialog = (skill?: Skill) => {
     if (skill) {
       setEditingSkill(skill);
+      const isCustomCategory = !categories.includes(skill.category as SkillCategory);
       setFormData({
         name: skill.name,
-        category: skill.category,
+        category: isCustomCategory 
+          ? "Other" 
+          : (categories.includes(skill.category as SkillCategory) 
+              ? skill.category as SkillCategory 
+              : "Other"),
         proficiency: skill.proficiency,
-        icon: skill.icon || "",
       });
+      setCustomCategory(isCustomCategory ? skill.category : "");
+      setCategoryIcon("");
     } else {
       setEditingSkill(null);
       setFormData({
         name: "",
         category: "Frontend",
         proficiency: 50,
-        icon: "",
       });
+      setCustomCategory("");
+      setCategoryIcon("");
     }
     setIsDialogOpen(true);
   };
@@ -120,17 +130,23 @@ export default function AdminSkills() {
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     setEditingSkill(null);
+    setCustomCategory("");
+    setCategoryIcon("");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const finalData = {
+      ...formData,
+      category: formData.category === "Other" ? customCategory : formData.category,
+    } as InsertSkill;
     if (editingSkill) {
       updateMutation.mutate({
         id: editingSkill.id,
-        data: formData as InsertSkill,
+        data: finalData as InsertSkill,
       });
     } else {
-      createMutation.mutate(formData as InsertSkill);
+      createMutation.mutate(finalData as InsertSkill);
     }
   };
 
@@ -153,21 +169,16 @@ export default function AdminSkills() {
       {/* Header */}
       <header className="border-b border-border/50 glass sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/admin/dashboard">
-                <Button variant="ghost" size="icon">
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-              </Link>
-              <h1 className="font-display text-2xl font-bold gradient-text-cyan-magenta">
-                Manage Skills
-              </h1>
+          <div className="relative flex items-center justify-center">
+            <h1 className="font-display text-3xl font-bold gradient-text-cyan-magenta">
+              Manage Skills
+            </h1>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2">
+              <Button onClick={() => handleOpenDialog()}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Skill
+              </Button>
             </div>
-            <Button onClick={() => handleOpenDialog()}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Skill
-            </Button>
           </div>
         </div>
       </header>
@@ -206,7 +217,7 @@ export default function AdminSkills() {
                           exit={{ opacity: 0, scale: 0.9 }}
                           transition={{ delay: index * 0.05 }}
                         >
-                          <Card className="p-4 glass border-border/50 hover-elevate transition-all">
+                          <Card className="p-4 glass border-border/50 hover-elevate transition-all cursor-pointer" onClick={() => handleOpenDialog(skill)}>
                             <div className="flex items-start justify-between mb-3">
                               <div>
                                 <h3 className="font-semibold">{skill.name}</h3>
@@ -275,10 +286,13 @@ export default function AdminSkills() {
             <div>
               <Label htmlFor="category">Category *</Label>
               <Select
-                value={formData.category}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, category: value })
-                }
+                value={formData.category || "Frontend"}
+                onValueChange={(value: SkillCategory) => {
+                  setFormData({ ...formData, category: value });
+                  if (value !== "Other") {
+                    setCustomCategory("");
+                  }
+                }}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -292,6 +306,31 @@ export default function AdminSkills() {
                 </SelectContent>
               </Select>
             </div>
+
+            {formData.category === "Other" && (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="customCategory">Custom Category *</Label>
+                  <Input
+                    id="customCategory"
+                    value={customCategory}
+                    onChange={(e) => setCustomCategory(e.target.value)}
+                    placeholder="Enter custom category name"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="categoryIcon">Category Icon *</Label>
+                  <Input
+                    id="categoryIcon"
+                    value={categoryIcon}
+                    onChange={(e) => setCategoryIcon(e.target.value)}
+                    placeholder="Icon URL or emoji (e.g., https://... or 🎨)"
+                    required
+                  />
+                </div>
+              </div>
+            )}
 
             <div>
               <Label htmlFor="proficiency">
@@ -313,17 +352,7 @@ export default function AdminSkills() {
               />
             </div>
 
-            <div>
-              <Label htmlFor="icon">Icon (optional)</Label>
-              <Input
-                id="icon"
-                value={formData.icon}
-                onChange={(e) =>
-                  setFormData({ ...formData, icon: e.target.value })
-                }
-                placeholder="Icon name or emoji"
-              />
-            </div>
+
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={handleCloseDialog}>

@@ -44,11 +44,20 @@ db.run(sql`
     name TEXT NOT NULL,
     email TEXT NOT NULL,
     subject TEXT,
+    project_type TEXT,
     message TEXT NOT NULL,
     read INTEGER DEFAULT 0 NOT NULL,
     created_at INTEGER NOT NULL
   )
 `);
+
+// Add project_type column if missing
+const messageColumns = sqlite.prepare("PRAGMA table_info('contact_messages')").all();
+const hasProjectType = messageColumns.some((row: any) => row.name === 'project_type');
+if (!hasProjectType) {
+  console.log('Adding project_type column to contact_messages...');
+  sqlite.prepare('ALTER TABLE contact_messages ADD COLUMN project_type TEXT').run();
+}
 
 // About info table
 db.run(sql`
@@ -85,6 +94,13 @@ addColumnIfMissing("twitter_url", "TEXT");
 addColumnIfMissing("email", "TEXT");
 addColumnIfMissing("phone", "TEXT");
 addColumnIfMissing("location", "TEXT");
+addColumnIfMissing("available_for_work", "INTEGER DEFAULT 1");
+addColumnIfMissing("response_time", "TEXT DEFAULT '24 hours'");
+addColumnIfMissing("working_hours", "TEXT DEFAULT '9 AM - 6 PM EST'");
+addColumnIfMissing("completed_projects", "INTEGER DEFAULT 0");
+addColumnIfMissing("total_clients", "INTEGER DEFAULT 0");
+addColumnIfMissing("years_experience", "INTEGER DEFAULT 0");
+addColumnIfMissing("technologies_count", "INTEGER DEFAULT 0");
 
 // Users table
 db.run(sql`

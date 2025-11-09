@@ -8,10 +8,9 @@ export const projects = sqliteTable("projects", {
   id: text("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description").notNull(),
-  longDescription: text("long_description"),
   imageUrl: text("image_url"),
-  demoUrl: text("demo_url"),
   githubUrl: text("github_url"),
+  liveUrl: text("live_url"),
   technologies: text("technologies").notNull(), // JSON stringified array
   featured: integer("featured", { mode: "boolean" }).default(false).notNull(),
   order: integer("order").default(0).notNull(),
@@ -34,6 +33,7 @@ export const contactMessages = sqliteTable("contact_messages", {
   name: text("name").notNull(),
   email: text("email").notNull(),
   subject: text("subject"),
+  projectType: text("project_type"),
   message: text("message").notNull(),
   read: integer("read", { mode: "boolean" }).default(false).notNull(),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
@@ -53,6 +53,14 @@ export const aboutInfo = sqliteTable("about_info", {
   email: text("email"),
   phone: text("phone"),
   location: text("location"),
+  availableForWork: integer("available_for_work", { mode: "boolean" }).default(true),
+  responseTime: text("response_time").default("24 hours"),
+  workingHours: text("working_hours").default("9 AM - 6 PM EST"),
+  // Metrics
+  completedProjects: integer("completed_projects").default(0),
+  totalClients: integer("total_clients").default(0),
+  yearsExperience: integer("years_experience").default(0),
+  technologiesCount: integer("technologies_count").default(0),
   updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
 });
 
@@ -70,9 +78,9 @@ export const insertProjectSchema = createInsertSchema(projects).omit({
   createdAt: true,
 }).extend({
   technologies: z.array(z.string()).min(1, "At least one technology is required"),
-  imageUrl: z.string().url().optional().or(z.literal("")),
-  demoUrl: z.string().url().optional().or(z.literal("")),
+  imageUrl: z.string().optional().or(z.literal("")),
   githubUrl: z.string().url().optional().or(z.literal("")),
+  liveUrl: z.string().url().optional().or(z.literal("")),
 });
 
 export const insertSkillSchema = createInsertSchema(skills).omit({
@@ -98,8 +106,9 @@ export const insertContactMessageSchema = createInsertSchema(contactMessages).om
     .min(10, "Message must be at least 10 characters")
     .max(1000, "Message must be less than 1000 characters"),
   subject: z.string()
-    .max(200, "Subject must be less than 200 characters")
-    .optional(),
+    .min(1, "Subject is required")
+    .max(200, "Subject must be less than 200 characters"),
+  projectType: z.string().min(1, "Project type is required"),
 });
 
 export const insertAboutInfoSchema = createInsertSchema(aboutInfo).omit({
@@ -112,6 +121,8 @@ export const insertAboutInfoSchema = createInsertSchema(aboutInfo).omit({
   githubUrl: z.string().url().optional().or(z.literal("")),
   linkedinUrl: z.string().url().optional().or(z.literal("")),
   twitterUrl: z.string().url().optional().or(z.literal("")),
+  responseTime: z.string().optional(),
+  workingHours: z.string().optional(),
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({

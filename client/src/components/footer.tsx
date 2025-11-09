@@ -1,11 +1,21 @@
 import { motion } from "framer-motion";
 import { Github, Linkedin, Twitter, Mail, Heart, Phone, MapPin, Clock, Zap } from "lucide-react";
+import type { AboutInfo } from "@shared/schema";
+import { useQuery } from "@tanstack/react-query";
+import { Button } from "./ui/button";
+import { Link } from "wouter";
 
-export function Footer() {
+interface FooterProps {
+  aboutInfo?: AboutInfo | null;
+}
+
+export function Footer({ aboutInfo }: FooterProps) {
   const currentYear = new Date().getFullYear();
+  
+  console.log('Footer aboutInfo:', aboutInfo); // Debug log
 
   return (
-    <footer id="footer" className="relative py-16 border-t border-border/50 overflow-hidden snap-start">
+    <footer id="footer" className="relative py-12 border-t border-border overflow-hidden snap-start">
       {/* Animated Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-card/30 to-background pointer-events-none" />
       
@@ -88,10 +98,10 @@ export function Footer() {
             className="flex flex-col items-center md:items-start"
           >
             <h3 className="font-display text-2xl font-bold gradient-text-cyan-magenta mb-4 text-center md:text-left">
-              CodebySRS
+              {aboutInfo?.name || "CodebySRS"}
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed text-center md:text-left">
-              We craft immersive web experiences with cutting-edge 3D technologies and modern web development solutions.
+              {aboutInfo?.title || "We craft immersive web experiences with cutting-edge 3D technologies and modern web development solutions."}
             </p>
           </motion.div>
 
@@ -105,48 +115,54 @@ export function Footer() {
           >
             <h4 className="font-semibold mb-4 text-center md:text-left">Get In Touch</h4>
             <div className="space-y-3 w-full">
-              <motion.a
-                href="mailto:contact@example.com"
-                className="flex items-center gap-3 text-muted-foreground hover:text-chart-1 transition-all text-sm group"
-                data-testid="link-footer-email"
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: 0.2 }}
-                whileHover={{ x: 5 }}
-              >
-                <div className="p-2 rounded-lg glass border border-border/50 group-hover:border-chart-1/50 group-hover:bg-chart-1/10 transition-all">
-                  <Mail className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                </div>
-                <span>contact@example.com</span>
-              </motion.a>
-              <motion.a
-                href="tel:+1234567890"
-                className="flex items-center gap-3 text-muted-foreground hover:text-chart-1 transition-all text-sm group"
-                data-testid="link-footer-phone"
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: 0.25 }}
-                whileHover={{ x: 5 }}
-              >
-                <div className="p-2 rounded-lg glass border border-border/50 group-hover:border-chart-1/50 group-hover:bg-chart-1/10 transition-all">
-                  <Phone className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                </div>
-                <span>+91 1234567890</span>
-              </motion.a>
-              <motion.div 
-                className="flex items-center gap-3 text-muted-foreground text-sm group"
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: 0.3 }}
-              >
-                <div className="p-2 rounded-lg glass border border-border/50 group-hover:border-chart-1/50 group-hover:bg-chart-1/10 transition-all">
-                  <MapPin className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                </div>
-                <span>Pune, MH, India</span>
-              </motion.div>
+              {aboutInfo?.email && (
+                <motion.a
+                  href={`mailto:${aboutInfo.email}`}
+                  className="flex items-center gap-3 text-muted-foreground hover:text-chart-1 transition-all text-sm group"
+                  data-testid="link-footer-email"
+                  initial={{ opacity: 0, x: -10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                  whileHover={{ x: 5 }}
+                >
+                  <div className="p-2 rounded-lg glass border border-border/50 group-hover:border-chart-1/50 group-hover:bg-chart-1/10 transition-all">
+                    <Mail className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                  </div>
+                  <span>{aboutInfo.email}</span>
+                </motion.a>
+              )}
+              {aboutInfo?.phone && (
+                <motion.a
+                  href={`tel:${aboutInfo.phone}`}
+                  className="flex items-center gap-3 text-muted-foreground hover:text-chart-1 transition-all text-sm group"
+                  data-testid="link-footer-phone"
+                  initial={{ opacity: 0, x: -10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: 0.25 }}
+                  whileHover={{ x: 5 }}
+                >
+                  <div className="p-2 rounded-lg glass border border-border/50 group-hover:border-chart-1/50 group-hover:bg-chart-1/10 transition-all">
+                    <Phone className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                  </div>
+                  <span>{aboutInfo.phone}</span>
+                </motion.a>
+              )}
+              {aboutInfo?.location && (
+                <motion.div 
+                  className="flex items-center gap-3 text-muted-foreground text-sm group"
+                  initial={{ opacity: 0, x: -10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                >
+                  <div className="p-2 rounded-lg glass border border-border/50 group-hover:border-chart-1/50 group-hover:bg-chart-1/10 transition-all">
+                    <MapPin className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                  </div>
+                  <span>{aboutInfo.location}</span>
+                </motion.div>
+              )}
             </div>
           </motion.div>
 
@@ -161,9 +177,9 @@ export function Footer() {
             <h4 className="font-semibold mb-4 text-center md:text-left">Follow Me</h4>
             <div className="flex gap-3 justify-center md:justify-start">
               {[
-                { icon: Github, href: "https://github.com", name: "github" },
-                { icon: Linkedin, href: "https://linkedin.com", name: "linkedin" },
-                { icon: Twitter, href: "https://twitter.com", name: "twitter" },
+                ...(aboutInfo?.githubUrl ? [{ icon: Github, href: aboutInfo.githubUrl, name: "github" }] : []),
+                ...(aboutInfo?.linkedinUrl ? [{ icon: Linkedin, href: aboutInfo.linkedinUrl, name: "linkedin" }] : []),
+                ...(aboutInfo?.twitterUrl ? [{ icon: Twitter, href: aboutInfo.twitterUrl, name: "twitter" }] : []),
               ].map((social, index) => (
                 <motion.a
                   key={social.name}
@@ -202,108 +218,121 @@ export function Footer() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col items-center md:items-start"
           >
-            <div className="glass rounded-xl border border-border/50 p-6 w-[120%] -ml-[20%] hover-elevate transition-all relative overflow-hidden">
-              {/* Animated gradient orbs */}
-              <motion.div
-                className="absolute -top-10 -left-10 w-32 h-32 bg-chart-1/20 rounded-full blur-2xl"
-                animate={{
-                  scale: [1, 1.3, 1],
-                  opacity: [0.3, 0.5, 0.3],
-                }}
-                transition={{
-                  duration: 6,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
-              <motion.div
-                className="absolute -bottom-10 -right-10 w-32 h-32 bg-chart-2/20 rounded-full blur-2xl"
-                animate={{
-                  scale: [1.3, 1, 1.3],
-                  opacity: [0.5, 0.3, 0.5],
-                }}
-                transition={{
-                  duration: 6,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 1,
-                }}
-              />
-              
-              <div className="flex items-center gap-2 mb-2 relative z-10">
+                          <div className="glass rounded-xl border border-border/50 p-6 w-[120%] -ml-[20%] hover-elevate transition-all relative overflow-hidden">
+                {/* Animated gradient orbs */}
                 <motion.div
-                  className="w-2 h-2 bg-green-500 rounded-full"
+                  className="absolute -top-10 -left-10 w-32 h-32 bg-chart-1/20 rounded-full blur-2xl"
                   animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [1, 0.8, 1],
+                    scale: [1, 1.3, 1],
+                    opacity: [0.3, 0.5, 0.3],
                   }}
                   transition={{
-                    duration: 2,
+                    duration: 6,
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
                 />
-                <span className="font-semibold text-sm">Available for Work</span>
-              </div>
-              <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                We're currently accepting new client projects and would love to hear about your business needs.
-              </p>
-              <div className="space-y-2 text-xs text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Zap className="h-3 w-3 text-chart-1" />
-                  <span>Response Time: Within 48 hours</span>
+                <motion.div
+                  className="absolute -bottom-10 -right-10 w-32 h-32 bg-chart-2/20 rounded-full blur-2xl"
+                  animate={{
+                    scale: [1.3, 1, 1.3],
+                    opacity: [0.5, 0.3, 0.5],
+                  }}
+                  transition={{
+                    duration: 6,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 1,
+                  }}
+                />
+                
+                <div className="flex items-center gap-2 mb-2 relative z-10">
+                  <motion.div
+                    className={`w-2 h-2 ${aboutInfo?.availableForWork ? 'bg-green-500' : 'bg-red-500'} rounded-full`}
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      opacity: [1, 0.8, 1],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                  <span className="font-semibold text-sm">{aboutInfo?.availableForWork ? 'Available for Work' : 'Currently Unavailable'}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-3 w-3 text-chart-2" />
-                  <span>Timezone: IST (UTC +5:30)</span>
-                </div>
+                <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                  {aboutInfo?.availableForWork ? "We're currently accepting new client projects and would love to hear about your business needs." : "Currently not available for new projects."}
+                </p>
+                {aboutInfo && (
+                  <div className="space-y-2 text-xs text-muted-foreground">
+                    {aboutInfo.responseTime && (
+                      <div className="flex items-center gap-2">
+                        <Zap className="h-3 w-3 text-chart-1" />
+                        <span>Response Time: {aboutInfo.responseTime}</span>
+                      </div>
+                    )}
+                    {aboutInfo.workingHours && (
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-3 w-3 text-chart-2" />
+                        <span>Working Hours: {aboutInfo.workingHours}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-            </div>
           </motion.div>
         </div>
 
         {/* Copyright */}
         <motion.div 
-          className="pt-8 border-t border-border"
+          className="pt-6 border-t border-border/80"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.8 }}
         >
-          <motion.div
-            className="text-center"
-            initial={{ y: 20 }}
-            whileInView={{ y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.9 }}
-          >
-            <p className="text-sm text-muted-foreground flex items-center justify-center gap-2 mb-2">
-              <span>© {currentYear} CodebySRS. Made with</span>
-              <motion.span
-                animate={{
-                  scale: [1, 1.3, 1],
-                }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-                className="inline-block"
-              >
-                <Heart className="h-4 w-4 text-chart-2 fill-current" />
-              </motion.span>
-              <span>using React Three Fiber</span>
-            </p>
-            <motion.p 
-              className="text-xs text-muted-foreground/60"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <motion.div
+              className="flex items-center gap-2"
+              initial={{ y: 20 }}
+              whileInView={{ y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.9 }}
+            >
+              <p className="text-sm text-muted-foreground flex items-center gap-2">
+                <span>© {currentYear} {aboutInfo?.name || "CodebySRS"}. Made with</span>
+                <motion.span
+                  animate={{
+                    scale: [1, 1.3, 1],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="inline-block"
+                >
+                  <Heart className="h-4 w-4 text-chart-2 fill-current" />
+                </motion.span>
+                <span>and modern web technologies</span>
+              </p>
+            </motion.div>
+            
+            <motion.div
+              className="flex items-center gap-4 text-xs text-muted-foreground/70"
+              initial={{ y: 20 }}
+              whileInView={{ y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 1 }}
             >
-              Designed & Developed with passion
-            </motion.p>
-          </motion.div>
+              <span>All rights reserved</span>
+              <span>•</span>
+              <span>Privacy Policy</span>
+              <span>•</span>
+              <span>Terms of Service</span>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
     </footer>

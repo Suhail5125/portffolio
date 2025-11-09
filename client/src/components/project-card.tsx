@@ -83,9 +83,9 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
                 </Button>
               </a>
             )}
-            {project.demoUrl && (
+            {project.liveUrl && (
               <a
-                href={project.demoUrl}
+                href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-testid={`link-demo-${project.id}`}
@@ -96,6 +96,7 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
                 </Button>
               </a>
             )}
+
           </motion.div>
         </div>
 
@@ -135,9 +136,9 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
 
           {/* Action Buttons */}
           <div className="flex gap-2 pt-3 border-t border-border/50">
-            {project.demoUrl && (
+            {project.liveUrl && (
               <a
-                href={project.demoUrl}
+                href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1"

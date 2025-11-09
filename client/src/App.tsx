@@ -21,7 +21,7 @@ function withAuth<P>(Component: ComponentType<P>) {
     const { data, isLoading, isFetching } = useQuery<unknown | null>({
       queryKey: ["/api/auth/user"],
       queryFn: getQueryFn({ on401: "returnNull" }),
-      staleTime: 5 * 60 * 1000,
+      staleTime: 30 * 60 * 1000, // 30 minutes
     });
 
     useEffect(() => {
@@ -42,11 +42,16 @@ function withAuth<P>(Component: ComponentType<P>) {
   };
 }
 
+import AdminPrivacyPolicy from "@/pages/admin/privacy-policy";
+import AdminTermsOfService from "@/pages/admin/terms-of-service";
+
 const ProtectedAdminDashboard = withAuth(AdminDashboard);
 const ProtectedAdminProjects = withAuth(AdminProjects);
 const ProtectedAdminSkills = withAuth(AdminSkills);
 const ProtectedAdminMessages = withAuth(AdminMessages);
 const ProtectedAdminAbout = withAuth(AdminAbout);
+const ProtectedAdminPrivacyPolicy = withAuth(AdminPrivacyPolicy);
+const ProtectedAdminTermsOfService = withAuth(AdminTermsOfService);
 
 function Router() {
   return (
@@ -58,6 +63,8 @@ function Router() {
       <Route path="/admin/skills" component={ProtectedAdminSkills} />
       <Route path="/admin/messages" component={ProtectedAdminMessages} />
       <Route path="/admin/about" component={ProtectedAdminAbout} />
+      <Route path="/admin/privacy-policy" component={ProtectedAdminPrivacyPolicy} />
+      <Route path="/admin/terms-of-service" component={ProtectedAdminTermsOfService} />
       <Route component={NotFound} />
     </Switch>
   );

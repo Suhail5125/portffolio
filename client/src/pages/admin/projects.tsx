@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,33 +15,27 @@ import {
   ExternalLink,
   Github,
   X,
+  Upload,
 } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Project, InsertProject } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
 
 export default function AdminProjects() {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [formData, setFormData] = useState<Partial<InsertProject>>({
+  const [formData, setFormData] = useState<InsertProject>({
     title: "",
     description: "",
-    longDescription: "",
     imageUrl: "",
-    technologies: [],
+    technologies: [] as string[],
     githubUrl: "",
     liveUrl: "",
     featured: false,
   });
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [techInput, setTechInput] = useState("");
 
   const { data: projects = [], isLoading } = useQuery<Project[]>({
@@ -107,9 +101,10 @@ export default function AdminProjects() {
       setFormData({
         title: project.title,
         description: project.description,
-        longDescription: project.longDescription || "",
-        imageUrl: project.imageUrl,
-        technologies: project.technologies,
+        imageUrl: project.imageUrl || "",
+        technologies: typeof project.technologies === 'string' 
+          ? JSON.parse(project.technologies)
+          : [],
         githubUrl: project.githubUrl || "",
         liveUrl: project.liveUrl || "",
         featured: project.featured,
@@ -119,7 +114,6 @@ export default function AdminProjects() {
       setFormData({
         title: "",
         description: "",
-        longDescription: "",
         imageUrl: "",
         technologies: [],
         githubUrl: "",
@@ -136,23 +130,39 @@ export default function AdminProjects() {
     setTechInput("");
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        setFormData({ ...formData, imageUrl: result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const submitData = {
+      ...formData,
+      technologies: JSON.stringify(formData.technologies)
+    };
     if (editingProject) {
       updateMutation.mutate({
         id: editingProject.id,
-        data: formData as InsertProject,
+        data: submitData as unknown as InsertProject,
       });
     } else {
-      createMutation.mutate(formData as InsertProject);
+      createMutation.mutate(submitData as unknown as InsertProject);
     }
   };
 
   const handleAddTech = () => {
-    if (techInput.trim() && !formData.technologies?.includes(techInput.trim())) {
+    if (techInput.trim() && !formData.technologies.includes(techInput.trim())) {
       setFormData({
         ...formData,
-        technologies: [...(formData.technologies || []), techInput.trim()],
+        technologies: [...formData.technologies, techInput.trim()],
       });
       setTechInput("");
     }
@@ -161,7 +171,7 @@ export default function AdminProjects() {
   const handleRemoveTech = (tech: string) => {
     setFormData({
       ...formData,
-      technologies: formData.technologies?.filter((t) => t !== tech) || [],
+      technologies: formData.technologies.filter((t) => t !== tech),
     });
   };
 
@@ -171,26 +181,240 @@ export default function AdminProjects() {
     }
   };
 
+  if (isDialogOpen) {
+    return (
+      <div className="min-h-screen bg-background">
+        <header className="border-b border-border/50 glass sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="text-center">
+              <h1 className="font-display text-3xl font-bold gradient-text-cyan-magenta">
+                {editingProject ? "Edit Project" : "Add New Project"}
+              </h1>
+            </div>
+          </div>
+        </header>
+        <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Media & Links */}
+            <Card className="p-6 glass border-border/50">
+              <h2 className="font-display text-lg font-bold mb-6 flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-chart-1"></div>
+                Media & Links
+              </h2>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="imageUrl">Project Image *</Label>
+                  <div className="flex flex-col items-center space-y-4">
+                    {formData.imageUrl ? (
+                      <img
+                        src={formData.imageUrl}
+                        alt="Project preview"
+                        className="h-48 w-full object-cover rounded border-4 border-border shadow-lg"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="h-48 w-full rounded border-4 border-border shadow-lg bg-gradient-to-br from-chart-1 to-chart-2 flex items-center justify-center">
+                        <span className="text-4xl font-bold text-white">
+                          {formData.title?.charAt(0)?.toUpperCase() || '?'}
+                        </span>
+                      </div>
+                    )}
+                    <div className="w-full space-y-3">
+                      <div className="flex gap-2">
+                        <Input
+                          type="url"
+                          value={formData.imageUrl}
+                          onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                          placeholder="https://example.com/project-image.jpg"
+                          className="h-11 flex-1"
+                        />
+                        <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                          <Upload className="h-4 w-4 mr-2" />
+                          Upload
+                        </Button>
+                      </div>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                      <p className="text-xs text-muted-foreground text-center">
+                        Upload from PC or paste image URL
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="githubUrl">GitHub Repository URL</Label>
+                    <Input
+                      id="githubUrl"
+                      type="url"
+                      value={formData.githubUrl}
+                      onChange={(e) =>
+                        setFormData({ ...formData, githubUrl: e.target.value })
+                      }
+                      placeholder="https://github.com/username/repo"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="liveUrl">Live Demo URL</Label>
+                    <Input
+                      id="liveUrl"
+                      type="url"
+                      value={formData.liveUrl}
+                      onChange={(e) =>
+                        setFormData({ ...formData, liveUrl: e.target.value })
+                      }
+                      placeholder="https://your-project.com"
+                    />
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Basic Information */}
+            <Card className="p-6 glass border-border/50">
+              <h2 className="font-display text-lg font-bold mb-6 flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-chart-2"></div>
+                Basic Information
+              </h2>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="title">Project Title *</Label>
+                  <Input
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
+                    placeholder="Enter project title"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="description">Description *</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
+                    rows={3}
+                    placeholder="Project description"
+                    required
+                  />
+                </div>
+              </div>
+            </Card>
+
+            {/* Technologies */}
+            <Card className="p-6 glass border-border/50">
+              <h2 className="font-display text-lg font-bold mb-6 flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-chart-3"></div>
+                Technologies Used
+              </h2>
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <Input
+                    value={techInput}
+                    onChange={(e) => setTechInput(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTech())}
+                    placeholder="Enter technology name (e.g., React, Node.js)"
+                    className="flex-1"
+                  />
+                  <Button type="button" onClick={handleAddTech} variant="outline">
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add
+                  </Button>
+                </div>
+                {formData.technologies && formData.technologies.length > 0 && (
+                  <div className="flex flex-wrap gap-2 p-3 bg-muted/20 rounded border">
+                    {formData.technologies.map((tech) => (
+                      <Badge key={tech} variant="secondary" className="gap-1 hover:bg-destructive/10">
+                        {tech}
+                        <X
+                          className="h-3 w-3 cursor-pointer hover:text-destructive"
+                          onClick={() => handleRemoveTech(tech)}
+                        />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </Card>
+
+            {/* Settings */}
+            <Card className="p-6 glass border-border/50">
+              <h2 className="font-display text-lg font-bold mb-6 flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-chart-4"></div>
+                Project Settings
+              </h2>
+              <div className="flex items-center gap-3 p-3 bg-muted/20 rounded border">
+                <input
+                  type="checkbox"
+                  id="featured"
+                  checked={formData.featured}
+                  onChange={(e) =>
+                    setFormData({ ...formData, featured: e.target.checked })
+                  }
+                  className="h-4 w-4 rounded border-border"
+                />
+                <Label htmlFor="featured" className="cursor-pointer flex-1">
+                  <span className="font-medium">Featured Project</span>
+                  <p className="text-sm text-muted-foreground">Display this project prominently on the homepage</p>
+                </Label>
+              </div>
+            </Card>
+
+            <div className="flex justify-end gap-3 pt-4 border-t border-border/50">
+              <Button type="button" variant="outline" onClick={handleCloseDialog}>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={createMutation.isPending || updateMutation.isPending}
+                className="bg-chart-1 hover:bg-chart-1/90"
+              >
+                {createMutation.isPending || updateMutation.isPending ? (
+                  <>
+                    <div className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    {editingProject ? "Updating..." : "Creating..."}
+                  </>
+                ) : (
+                  <>
+                    {editingProject ? "Update Project" : "Create Project"}
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border/50 glass sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/admin/dashboard">
-                <Button variant="ghost" size="icon">
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-              </Link>
-              <h1 className="font-display text-2xl font-bold gradient-text-cyan-magenta">
-                Manage Projects
-              </h1>
+          <div className="relative flex items-center justify-center">
+            <h1 className="font-display text-3xl font-bold gradient-text-cyan-magenta">
+              Manage Projects
+            </h1>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2">
+              <Button onClick={() => handleOpenDialog()}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Project
+              </Button>
             </div>
-            <Button onClick={() => handleOpenDialog()}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Project
-            </Button>
           </div>
         </div>
       </header>
@@ -208,8 +432,8 @@ export default function AdminProjects() {
             </Button>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <AnimatePresence>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-fr">
+            <AnimatePresence mode="popLayout">
               {projects.map((project, index) => (
                 <motion.div
                   key={project.id}
@@ -218,57 +442,87 @@ export default function AdminProjects() {
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Card className="overflow-hidden glass border-border/50 hover-elevate transition-all">
-                    {project.imageUrl && (
-                      <div className="aspect-video relative overflow-hidden">
-                        <img
-                          src={project.imageUrl}
-                          alt={project.title}
-                          className="w-full h-full object-cover"
-                        />
+                  <Card className="group overflow-hidden hover:shadow-lg dark:hover:shadow-primary/5 transition-all duration-300 bg-background/50 backdrop-blur border-border/50">
+                    <div className="relative">
+                      {project.imageUrl ? (
+                        <div className="aspect-[16/9] relative overflow-hidden">
+                          <img
+                            src={project.imageUrl}
+                            alt={project.title}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </div>
+                      ) : (
+                        <div className="aspect-[16/9] flex items-center justify-center bg-gradient-to-br from-chart-1/20 to-chart-2/20">
+                          <div className="text-4xl font-bold text-muted-foreground/30">
+                            {project.title.charAt(0).toUpperCase()}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Status Badges */}
+                      <div className="absolute top-2 right-2 flex gap-2">
                         {project.featured && (
-                          <Badge className="absolute top-2 right-2 bg-chart-1">
+                          <Badge variant="default" className="bg-chart-1 text-xs font-medium">
                             Featured
                           </Badge>
                         )}
-                      </div>
-                    )}
-                    <div className="p-4">
-                      <h3 className="font-display text-lg font-bold mb-2">
-                        {project.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                        {project.description}
-                      </p>
-                      <div className="flex flex-wrap gap-1 mb-4">
-                        {project.technologies.slice(0, 3).map((tech) => (
-                          <Badge key={tech} variant="outline" className="text-xs">
-                            {tech}
-                          </Badge>
-                        ))}
-                        {project.technologies.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{project.technologies.length - 3}
+                        {project.liveUrl && (
+                          <Badge variant="secondary" className="text-xs font-medium">
+                            Live
                           </Badge>
                         )}
                       </div>
-                      <div className="flex gap-2">
+                    </div>
+
+                    <div className="p-5 space-y-4">
+                      {/* Header */}
+                      <div>
+                        <h3 className="font-display text-lg font-bold mb-1 group-hover:text-primary transition-colors">
+                          {project.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                          {project.description}
+                        </p>
+                      </div>
+
+                      {/* Technologies */}
+                      <div className="flex flex-wrap gap-1.5">
+                        {(typeof project.technologies === 'string' 
+                          ? JSON.parse(project.technologies) as string[]
+                          : []
+                        ).slice(0, 3).map((tech: string) => (
+                          <Badge key={tech} variant="secondary" className="text-xs px-2 py-0.5 bg-muted">
+                            {tech}
+                          </Badge>
+                        ))}
+                        {typeof project.technologies === 'string' && 
+                         JSON.parse(project.technologies).length > 3 && (
+                          <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-muted">
+                            +{JSON.parse(project.technologies).length - 3}
+                          </Badge>
+                        )}
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex items-center gap-2 pt-2">
                         <Button
                           size="sm"
-                          variant="outline"
+                          variant="default"
                           onClick={() => handleOpenDialog(project)}
-                          className="flex-1"
+                          className="flex-1 bg-primary/10 hover:bg-primary/20"
                         >
-                          <Edit className="h-3 w-3 mr-1" />
-                          Edit
+                          <Edit className="h-3.5 w-3.5 mr-2" />
+                          Edit Project
                         </Button>
                         <Button
                           size="sm"
-                          variant="outline"
+                          variant="destructive"
                           onClick={() => handleDelete(project.id)}
-                          className="text-destructive hover:text-destructive"
+                          className="px-3 bg-destructive/10 hover:bg-destructive/20 text-destructive hover:text-destructive"
                         >
-                          <Trash2 className="h-3 w-3" />
+                          <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                     </div>
@@ -279,148 +533,6 @@ export default function AdminProjects() {
           </div>
         )}
       </main>
-
-      {/* Add/Edit Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {editingProject ? "Edit Project" : "Add New Project"}
-            </DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="title">Project Title *</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
-                required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="description">Short Description *</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                rows={2}
-                required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="longDescription">Long Description</Label>
-              <Textarea
-                id="longDescription"
-                value={formData.longDescription}
-                onChange={(e) =>
-                  setFormData({ ...formData, longDescription: e.target.value })
-                }
-                rows={4}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="imageUrl">Image URL *</Label>
-              <Input
-                id="imageUrl"
-                type="url"
-                value={formData.imageUrl}
-                onChange={(e) =>
-                  setFormData({ ...formData, imageUrl: e.target.value })
-                }
-                placeholder="https://example.com/image.jpg"
-                required
-              />
-            </div>
-
-            <div>
-              <Label>Technologies</Label>
-              <div className="flex gap-2 mb-2">
-                <Input
-                  value={techInput}
-                  onChange={(e) => setTechInput(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTech())}
-                  placeholder="Add technology"
-                />
-                <Button type="button" onClick={handleAddTech}>
-                  Add
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {formData.technologies?.map((tech) => (
-                  <Badge key={tech} variant="secondary" className="gap-1">
-                    {tech}
-                    <X
-                      className="h-3 w-3 cursor-pointer"
-                      onClick={() => handleRemoveTech(tech)}
-                    />
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="githubUrl">GitHub URL</Label>
-              <Input
-                id="githubUrl"
-                type="url"
-                value={formData.githubUrl}
-                onChange={(e) =>
-                  setFormData({ ...formData, githubUrl: e.target.value })
-                }
-                placeholder="https://github.com/..."
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="liveUrl">Live URL</Label>
-              <Input
-                id="liveUrl"
-                type="url"
-                value={formData.liveUrl}
-                onChange={(e) =>
-                  setFormData({ ...formData, liveUrl: e.target.value })
-                }
-                placeholder="https://example.com"
-              />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="featured"
-                checked={formData.featured}
-                onChange={(e) =>
-                  setFormData({ ...formData, featured: e.target.checked })
-                }
-                className="h-4 w-4"
-              />
-              <Label htmlFor="featured" className="cursor-pointer">
-                Featured Project
-              </Label>
-            </div>
-
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleCloseDialog}>
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={createMutation.isPending || updateMutation.isPending}
-              >
-                {editingProject ? "Update" : "Create"} Project
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

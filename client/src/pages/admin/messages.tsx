@@ -13,6 +13,7 @@ import {
   Search,
   Calendar,
   User,
+  Briefcase,
 } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -41,7 +42,7 @@ export default function AdminMessages() {
 
   const markAsReadMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest("PATCH", `/api/contact/messages/${id}/read`, {});
+      return await apiRequest("PUT", `/api/contact/messages/${id}/read`, {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/contact/messages"] });
@@ -90,7 +91,8 @@ export default function AdminMessages() {
       (msg) =>
         msg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         msg.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        msg.message.toLowerCase().includes(searchQuery.toLowerCase())
+        msg.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (msg.subject && msg.subject.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
   const unreadCount = messages.filter((m) => !m.read).length;
@@ -100,22 +102,13 @@ export default function AdminMessages() {
       {/* Header */}
       <header className="border-b border-border/50 glass sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/admin/dashboard">
-                <Button variant="ghost" size="icon">
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-              </Link>
-              <div>
-                <h1 className="font-display text-2xl font-bold gradient-text-cyan-magenta">
-                  Messages
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  {unreadCount} unread message{unreadCount !== 1 ? "s" : ""}
-                </p>
-              </div>
-            </div>
+          <div className="text-center">
+            <h1 className="font-display text-3xl font-bold gradient-text-cyan-magenta">
+              Messages
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {unreadCount} unread message{unreadCount !== 1 ? "s" : ""}
+            </p>
           </div>
         </div>
       </header>
@@ -127,7 +120,7 @@ export default function AdminMessages() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search messages..."
+              placeholder="Search by name, email or message..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -184,43 +177,52 @@ export default function AdminMessages() {
                     }`}
                     onClick={() => handleOpenMessage(message)}
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="p-2 rounded-lg glass">
-                        {message.read ? (
-                          <MailOpen className="h-5 w-5 text-muted-foreground" />
-                        ) : (
-                          <Mail className="h-5 w-5 text-chart-1" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2 mb-1">
+                    <div className="flex items-center justify-between">
+                      {/* Left: Mail Icon + Name & Email */}
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg glass">
+                          {message.read ? (
+                            <MailOpen className="h-5 w-5 text-muted-foreground" />
+                          ) : (
+                            <Mail className="h-5 w-5 text-chart-1" />
+                          )}
+                        </div>
+                        <div>
                           <div className="flex items-center gap-2">
-                            <h3 className="font-semibold">{message.name}</h3>
+                            <h3 className="font-semibold text-lg">{message.name}</h3>
                             {!message.read && (
-                              <Badge className="bg-chart-1">New</Badge>
+                              <Badge className="bg-chart-1 text-xs">New</Badge>
                             )}
                           </div>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Calendar className="h-3 w-3" />
-                            {new Date(message.createdAt).toLocaleDateString()}
-                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {message.email}
+                          </p>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          {message.email}
-                        </p>
-                        <p className="text-sm line-clamp-2">{message.message}</p>
                       </div>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(message.id);
-                        }}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      
+                      {/* Right: Date & Delete */}
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+                            <Calendar className="h-3 w-3" />
+                            <span>{new Date(message.createdAt).toLocaleDateString()}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(message.id);
+                          }}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </Card>
                 </motion.div>
@@ -241,50 +243,89 @@ export default function AdminMessages() {
           </DialogHeader>
           {selectedMessage && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-sm text-muted-foreground">From</Label>
-                  <p className="font-semibold">{selectedMessage.name}</p>
+              {/* Row 1: Name & Email */}
+              <Card className="p-4 glass border-border/50">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-xs text-muted-foreground mb-1 block flex items-center gap-1">
+                      <User className="h-3 w-3" />
+                      Name
+                    </Label>
+                    <p className="font-semibold">{selectedMessage.name}</p>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-muted-foreground mb-1 block flex items-center gap-1">
+                      <Mail className="h-3 w-3" />
+                      Email
+                    </Label>
+                    <p className="font-medium text-chart-1">{selectedMessage.email}</p>
+                  </div>
                 </div>
-                <div>
-                  <Label className="text-sm text-muted-foreground">Email</Label>
-                  <p className="font-semibold">{selectedMessage.email}</p>
+              </Card>
+              
+              {/* Row 2: Project Type & Date */}
+              <Card className="p-4 glass border-border/50">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-xs text-muted-foreground mb-1 block flex items-center gap-1">
+                      <Briefcase className="h-3 w-3" />
+                      Project Type
+                    </Label>
+                    <Badge variant="secondary" className="font-medium">
+                      {(selectedMessage.projectType || selectedMessage['project_type']) ? 
+                        (selectedMessage.projectType || selectedMessage['project_type']).replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) 
+                        : "Not specified"}
+                    </Badge>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-muted-foreground mb-1 block flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      Date & Time
+                    </Label>
+                    <p className="text-sm font-medium">
+                      {new Date(selectedMessage.createdAt).toLocaleString()}
+                    </p>
+                  </div>
                 </div>
+              </Card>
+              
+              {/* Row 3: Subject */}
+              <Card className="p-4 glass border-border/50">
                 <div>
-                  <Label className="text-sm text-muted-foreground">Date</Label>
-                  <p className="font-semibold">
-                    {new Date(selectedMessage.createdAt).toLocaleString()}
-                  </p>
+                  <Label className="text-xs text-muted-foreground mb-1 block flex items-center gap-1">
+                    <Mail className="h-3 w-3" />
+                    Subject
+                  </Label>
+                  <p className="font-medium">{selectedMessage.subject || "No subject"}</p>
                 </div>
+              </Card>
+              
+              {/* Row 4: Message */}
+              <Card className="p-4 glass border-border/50">
                 <div>
-                  <Label className="text-sm text-muted-foreground">Status</Label>
-                  <Badge className={selectedMessage.read ? "" : "bg-chart-1"}>
-                    {selectedMessage.read ? "Read" : "Unread"}
-                  </Badge>
+                  <Label className="text-xs text-muted-foreground mb-2 block flex items-center gap-1">
+                    <MailOpen className="h-3 w-3" />
+                    Message
+                  </Label>
+                  <p className="whitespace-pre-wrap leading-relaxed text-sm">{selectedMessage.message}</p>
                 </div>
-              </div>
-              <div>
-                <Label className="text-sm text-muted-foreground mb-2 block">
-                  Message
-                </Label>
-                <Card className="p-4 glass border-border/50">
-                  <p className="whitespace-pre-wrap">{selectedMessage.message}</p>
-                </Card>
-              </div>
-              <div className="flex gap-2 justify-end">
+              </Card>
+              
+              {/* Action Buttons */}
+              <div className="flex gap-3 justify-end pt-2">
                 <Button
                   variant="outline"
                   onClick={() => handleDelete(selectedMessage.id)}
-                  className="text-destructive"
+                  className="text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete
                 </Button>
                 <Button
-                  variant="outline"
                   onClick={() =>
-                    (window.location.href = `mailto:${selectedMessage.email}`)
+                    (window.location.href = `mailto:${selectedMessage.email}?subject=Re: ${selectedMessage.subject || 'Your inquiry'}`)
                   }
+                  className="bg-chart-1 hover:bg-chart-1/90"
                 >
                   <Mail className="h-4 w-4 mr-2" />
                   Reply via Email

@@ -13,6 +13,9 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { Project, Skill, AboutInfo, InsertContactMessage } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
+import { ScrollIndicator } from "@/components/scroll-indicator";
+import { FloatingNavbar } from "@/components/floating-navbar";
 
 export default function Home() {
   const { toast } = useToast();
@@ -57,24 +60,56 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
       <SEO />
-      <main className="overflow-x-hidden snap-y snap-mandatory h-screen overflow-y-auto">
-        <div className="min-h-screen flex flex-col snap-start snap-always">
-          <Navigation />
-          <HeroSection />
+      <ScrollIndicator />
+      <FloatingNavbar />
+      
+
+      
+      <main>
+        {/* Hero Section */}
+        <div id="hero" className="relative min-h-screen">
+          <div className="absolute top-0 left-0 right-0 z-20">
+            <Navigation />
+          </div>
+          <HeroSection aboutInfo={aboutInfo || null} isLoading={aboutLoading} />
         </div>
-        <ProjectsSection projects={projects} isLoading={projectsLoading} />
-        <SkillsSection skills={skills} isLoading={skillsLoading} />
-        <ServicesSection />
-        <WorkProcessSection />
-        <AboutSection aboutInfo={aboutInfo || null} isLoading={aboutLoading} />
-        <TestimonialsSection />
-        <ContactSection
-          onSubmit={handleContactSubmit}
-          isSubmitting={contactMutation.isPending}
-        />
-        <Footer />
+
+        <div id="projects">
+          <ProjectsSection projects={projects} isLoading={projectsLoading} />
+        </div>
+
+        <div id="skills">
+          <SkillsSection skills={skills} isLoading={skillsLoading} />
+        </div>
+
+        <div>
+          <ServicesSection />
+        </div>
+
+        <div>
+          <WorkProcessSection />
+        </div>
+
+        <div id="about">
+          <AboutSection aboutInfo={aboutInfo || null} isLoading={aboutLoading} />
+        </div>
+
+        <div>
+          <TestimonialsSection />
+        </div>
+
+        <div id="contact">
+          <ContactSection
+            onSubmit={handleContactSubmit}
+            isSubmitting={contactMutation.isPending}
+          />
+        </div>
+
+        <div>
+          <Footer aboutInfo={aboutInfo || null} />
+        </div>
       </main>
     </div>
   );
