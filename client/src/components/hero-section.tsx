@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Github, Linkedin, Mail, Send, ArrowDown, Sparkles, Instagram } from "lucide-react";
+import { Github, Linkedin, Mail, Send, ArrowDown, Sparkles, Instagram, Twitter } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { AboutInfo } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -35,9 +35,19 @@ export function HeroSection({ aboutInfo, isLoading }: HeroSectionProps) {
     document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
   };
 
-    const scrollToFooter = () => {
+  const scrollToFooter = () => {
     document.querySelector("#footer")?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const socialLinks = aboutInfo
+    ? [
+        aboutInfo.githubUrl && { icon: Github, href: aboutInfo.githubUrl, label: "GitHub" },
+        aboutInfo.linkedinUrl && { icon: Linkedin, href: aboutInfo.linkedinUrl, label: "LinkedIn" },
+        aboutInfo.email && { icon: Mail, href: `mailto:${aboutInfo.email}`, label: "Email" },
+        aboutInfo.twitterUrl && { icon: Twitter, href: aboutInfo.twitterUrl, label: "Twitter" },
+        aboutInfo.instagramUrl && { icon: Instagram, href: aboutInfo.instagramUrl, label: "Instagram" },
+      ].filter((link): link is { icon: typeof Github; href: string; label: string } => Boolean(link))
+    : [];
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -220,17 +230,12 @@ export function HeroSection({ aboutInfo, isLoading }: HeroSectionProps) {
           </motion.div>
 
           <motion.div
-            className="flex items-center justify-center gap-6"
+            className="flex w-full max-w-xl flex-wrap items-center justify-center gap-6 mx-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1.4 }}
           >
-            {aboutInfo && [
-              ...(aboutInfo.githubUrl ? [{ icon: Github, href: aboutInfo.githubUrl, label: "GitHub" }] : []),
-              ...(aboutInfo.linkedinUrl ? [{ icon: Linkedin, href: aboutInfo.linkedinUrl, label: "LinkedIn" }] : []),
-              ...(aboutInfo.instagramUrl ? [{ icon: Instagram, href: aboutInfo.instagramUrl, label: "Instagram" }] : []),
-              ...(aboutInfo.email ? [{ icon: Mail, href: `mailto:${aboutInfo.email}`, label: "Email" }] : []),
-            ].map(({ icon: Icon, href, label }, index) => (
+            {socialLinks.map(({ icon: Icon, href, label }, index) => (
               <motion.a
                 key={label}
                 href={href}

@@ -294,13 +294,13 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                         { url: aboutInfo.linkedinUrl, icon: Linkedin, name: "linkedin", testId: "link-about-linkedin" },
                         { url: aboutInfo.twitterUrl, icon: Twitter, name: "twitter", testId: "link-about-twitter" },
                         { url: aboutInfo.instagramUrl, icon: Instagram, name: "instagram", testId: "link-about-instagram" },
-                      ].map(({ url, icon: Icon, name, testId, href }, index) => 
+                      ].map(({ url, icon: Icon, name, testId }, index) =>
                         url && (
                           <motion.a
                             key={name}
-                            href={href || url}
-                            target={href ? undefined : "_blank"}
-                            rel={href ? undefined : "noopener noreferrer"}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             data-testid={testId}
                             initial={{ opacity: 0, scale: 0.8 }}
                             whileInView={{ opacity: 1, scale: 1 }}

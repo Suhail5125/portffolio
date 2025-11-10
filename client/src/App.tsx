@@ -17,13 +17,13 @@ import AdminSkills from "@/pages/admin/skills";
 import AdminMessages from "@/pages/admin/messages";
 import AdminAbout from "@/pages/admin/about";
 
-function withAuth<P>(Component: ComponentType<P>) {
-  return function ProtectedComponent(props: P) {
+function withAuth(Component: ComponentType<any>): ComponentType<any> {
+  const ProtectedComponent: ComponentType<any> = (props: any) => {
     const [, setLocation] = useLocation();
     const { data, isLoading, isFetching } = useQuery<unknown | null>({
       queryKey: ["/api/auth/user"],
       queryFn: getQueryFn({ on401: "returnNull" }),
-      staleTime: 30 * 60 * 1000, // 30 minutes
+      staleTime: 30 * 60 * 1000,
     });
 
     useEffect(() => {
@@ -42,6 +42,8 @@ function withAuth<P>(Component: ComponentType<P>) {
 
     return <Component {...props} />;
   };
+
+  return ProtectedComponent;
 }
 
 import AdminPrivacyPolicy from "@/pages/admin/privacy-policy";

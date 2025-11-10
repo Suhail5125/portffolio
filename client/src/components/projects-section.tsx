@@ -310,9 +310,9 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
                     </DialogDescription>
                   </DialogHeader>
 
-                  {selectedProject.longDescription && (
+                  {selectedProject.description && (
                     <p className="text-base leading-relaxed text-muted-foreground whitespace-pre-line">
-                      {selectedProject.longDescription}
+                      {selectedProject.description}
                     </p>
                   )}
 
@@ -331,10 +331,10 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
                   </div>
 
                   <div className="grid gap-3 md:grid-cols-2">
-                    {selectedProject.demoUrl && (
+                    {selectedProject.liveUrl && (
                       <Button asChild size="lg">
                         <a
-                          href={selectedProject.demoUrl}
+                          href={selectedProject.liveUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                         >

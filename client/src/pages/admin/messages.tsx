@@ -26,6 +26,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+const formatProjectType = (value?: string | null) => {
+  if (!value) return "Not specified";
+  return value
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (char: string) => char.toUpperCase());
+};
+
 export default function AdminMessages() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
@@ -80,6 +87,14 @@ export default function AdminMessages() {
       deleteMutation.mutate(id);
     }
   };
+
+  const legacyProjectType = selectedMessage
+    ? (selectedMessage as { project_type?: string | null }).project_type ?? null
+    : null;
+
+  const projectTypeDisplay = formatProjectType(
+    selectedMessage?.projectType ?? legacyProjectType
+  );
 
   const filteredMessages = messages
     .filter((msg) => {
@@ -272,9 +287,7 @@ export default function AdminMessages() {
                       Project Type
                     </Label>
                     <Badge variant="secondary" className="font-medium">
-                      {(selectedMessage.projectType || selectedMessage['project_type']) ? 
-                        (selectedMessage.projectType || selectedMessage['project_type']).replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) 
-                        : "Not specified"}
+                      {projectTypeDisplay}
                     </Badge>
                   </div>
                   <div>
