@@ -10,12 +10,13 @@ import {
   TrendingUp,
   MessageSquare,
   Shield,
-  FileText
+  FileText,
+  Quote
 } from "lucide-react";
 import { AdminHeader } from "@/components/admin/header";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import type { Project, Skill, ContactMessage } from "@shared/schema";
+import type { Project, Skill, ContactMessage, Testimonial } from "@shared/schema";
 
 export default function AdminDashboard() {
   const [location, setLocation] = useLocation();
@@ -32,8 +33,13 @@ export default function AdminDashboard() {
     queryKey: ["/api/contact/messages"],
   });
 
+  const { data: testimonials = [] } = useQuery<Testimonial[]>({
+    queryKey: ["/api/testimonials"],
+  });
+
   const unreadMessages = messages.filter((m) => !m.read).length;
   const featuredProjects = projects.filter((p) => p.featured).length;
+  const testimonialsCount = testimonials.length;
 
   const handleLogout = async () => {
     try {
@@ -105,7 +111,21 @@ export default function AdminDashboard() {
             <Card className="p-6 glass border-border/50">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-chart-4/20">
-                  <TrendingUp className="h-5 w-5 text-chart-4" />
+                  <Quote className="h-5 w-5 text-chart-4" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{testimonialsCount}</p>
+                  <p className="text-sm text-muted-foreground">Testimonials</p>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+            <Card className="p-6 glass border-border/50">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-chart-1/20">
+                  <TrendingUp className="h-5 w-5 text-chart-1" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{featuredProjects}</p>
@@ -172,6 +192,31 @@ export default function AdminDashboard() {
             <Card className="p-6 glass border-border/50 h-full">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
+                  <Quote className="h-6 w-6 text-chart-1" />
+                  <h2 className="font-display text-xl font-bold">Testimonials</h2>
+                </div>
+                <Link href="/admin/testimonials">
+                  <Button size="sm">
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add
+                  </Button>
+                </Link>
+              </div>
+              <p className="text-muted-foreground mb-4">
+                Collect client feedback to showcase social proof and success stories.
+              </p>
+              <Link href="/admin/testimonials">
+                <Button variant="outline" className="w-full">
+                  Manage Testimonials
+                </Button>
+              </Link>
+            </Card>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 }}>
+            <Card className="p-6 glass border-border/50 h-full">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
                   <MessageSquare className="h-6 w-6 text-chart-3" />
                   <h2 className="font-display text-xl font-bold">Messages</h2>
                   {unreadMessages > 0 && (
@@ -192,7 +237,7 @@ export default function AdminDashboard() {
             </Card>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}>
             <Card className="p-6 glass border-border/50 h-full">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">

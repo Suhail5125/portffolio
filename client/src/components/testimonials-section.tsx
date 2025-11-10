@@ -1,16 +1,26 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
+import type { Testimonial as TestimonialRecord } from "@shared/schema";
 
-const testimonials = [
+interface DisplayTestimonial {
+  id: string | number;
+  name: string;
+  role?: string | null;
+  company?: string | null;
+  content: string;
+  rating: number;
+  avatarUrl?: string | null;
+}
+
+const fallbackTestimonials: DisplayTestimonial[] = [
   {
     id: 1,
     name: "Sarah Johnson",
     role: "CEO, TechStart",
     company: "TechStart Inc.",
     content: "Exceptional work! The team delivered beyond our expectations with innovative solutions and flawless execution.",
-    rating: 5,
-    avatar: "SJ"
+    rating: 5
   },
   {
     id: 2,
@@ -18,8 +28,7 @@ const testimonials = [
     role: "Product Manager",
     company: "Digital Solutions",
     content: "Professional, creative, and reliable. They transformed our vision into a stunning digital experience.",
-    rating: 5,
-    avatar: "MC"
+    rating: 5
   },
   {
     id: 3,
@@ -27,8 +36,7 @@ const testimonials = [
     role: "Marketing Director",
     company: "Growth Labs",
     content: "Outstanding quality and attention to detail. The project was completed on time and exceeded all requirements.",
-    rating: 5,
-    avatar: "ER"
+    rating: 5
   },
   {
     id: 4,
@@ -36,8 +44,7 @@ const testimonials = [
     role: "Founder",
     company: "InnovateCorp",
     content: "Incredible team with amazing skills. They brought our complex ideas to life with elegant simplicity.",
-    rating: 5,
-    avatar: "DT"
+    rating: 5
   },
   {
     id: 5,
@@ -45,8 +52,7 @@ const testimonials = [
     role: "CTO",
     company: "FutureTech",
     content: "Top-notch development and design. The collaboration was smooth and the results were phenomenal.",
-    rating: 5,
-    avatar: "LW"
+    rating: 5
   },
   {
     id: 6,
@@ -54,14 +60,44 @@ const testimonials = [
     role: "Creative Director",
     company: "Design Studio",
     content: "Exceptional creativity and technical expertise. They delivered a product that truly stands out.",
-    rating: 5,
-    avatar: "JM"
+    rating: 5
   }
 ];
 
-export function TestimonialsSection() {
-  // Duplicate testimonials for infinite scroll
-  const duplicatedTestimonials = [...testimonials, ...testimonials, ...testimonials];
+const getInitials = (value: string) => {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((chunk) => chunk[0]?.toUpperCase() ?? "")
+    .join("") || "?";
+};
+
+interface TestimonialsSectionProps {
+  testimonials?: TestimonialRecord[];
+  isLoading?: boolean;
+}
+
+export function TestimonialsSection({ testimonials = [], isLoading = false }: TestimonialsSectionProps) {
+  const dataset: DisplayTestimonial[] =
+    testimonials.length > 0
+      ? testimonials
+          .slice()
+          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+          .map((item) => ({
+            id: item.id,
+            name: item.name,
+            role: item.role,
+            company: item.company,
+            content: item.content,
+            rating: item.rating ?? 5,
+            avatarUrl: item.avatarUrl || null,
+          }))
+      : fallbackTestimonials;
+
+  const displayTestimonials = isLoading && testimonials.length === 0 ? fallbackTestimonials : dataset;
+  const duplicatedTestimonials = [...displayTestimonials, ...displayTestimonials, ...displayTestimonials];
+  const reversedTestimonials = [...duplicatedTestimonials].reverse();
   const [isPaused, setIsPaused] = React.useState(false);
 
   return (
@@ -201,7 +237,7 @@ export function TestimonialsSection() {
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
             >
-              {duplicatedTestimonials.reverse().map((testimonial, index) => (
+              {reversedTestimonials.map((testimonial, index) => (
                 <TestimonialCard key={`bottom-${index}`} testimonial={testimonial} />
               ))}
             </motion.div>
@@ -212,7 +248,8 @@ export function TestimonialsSection() {
   );
 }
 
-function TestimonialCard({ testimonial }: { testimonial: typeof testimonials[0] }) {
+function TestimonialCard({ testimonial }: { testimonial: DisplayTestimonial }) {
+  const rating = Math.min(5, Math.max(1, Math.round(testimonial.rating)));
   return (
     <motion.div
       className="relative flex-shrink-0 w-80 p-6 glass rounded-2xl backdrop-blur-xl overflow-hidden"
@@ -226,8 +263,11 @@ function TestimonialCard({ testimonial }: { testimonial: typeof testimonials[0] 
       <div className="relative z-10">
         {/* Rating */}
         <div className="flex gap-1 mb-4">
-          {Array.from({ length: testimonial.rating }).map((_, i) => (
-            <Star key={i} className="h-4 w-4 fill-chart-1 text-chart-1" />
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Star
+              key={index}
+              className={`h-4 w-4 ${index < rating ? "fill-chart-1 text-chart-1" : "text-muted-foreground"}`}
+            />
           ))}
         </div>
         
@@ -238,13 +278,25 @@ function TestimonialCard({ testimonial }: { testimonial: typeof testimonials[0] 
         
         {/* Author */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-chart-1/20 to-chart-2/20 border border-chart-1/30 flex items-center justify-center">
-            <span className="text-xs font-bold text-chart-1">{testimonial.avatar}</span>
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-chart-1/20 to-chart-2/20 border border-chart-1/30 flex items-center justify-center overflow-hidden relative">
+            <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-chart-1">
+              {getInitials(testimonial.name)}
+            </span>
+            {testimonial.avatarUrl && (
+              <img
+                src={testimonial.avatarUrl}
+                alt={testimonial.name}
+                className="w-full h-full object-cover relative z-10"
+                onError={(event) => {
+                  event.currentTarget.style.display = "none";
+                }}
+              />
+            )}
           </div>
           <div>
             <h4 className="font-semibold text-sm">{testimonial.name}</h4>
-            <p className="text-xs text-muted-foreground">{testimonial.role}</p>
-            <p className="text-xs text-chart-1">{testimonial.company}</p>
+            {testimonial.role && <p className="text-xs text-muted-foreground">{testimonial.role}</p>}
+            {testimonial.company && <p className="text-xs text-chart-1">{testimonial.company}</p>}
           </div>
         </div>
       </div>

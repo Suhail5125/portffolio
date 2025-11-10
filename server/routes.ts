@@ -50,6 +50,7 @@ const upload = multer({
 import {
   insertProjectSchema,
   insertSkillSchema,
+  insertTestimonialSchema,
   insertContactMessageSchema,
   insertAboutInfoSchema,
   insertUserSchema,
@@ -275,6 +276,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Skill not found" });
       }
       res.json({ message: "Skill deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Public routes - Testimonials
+  app.get("/api/testimonials", async (req, res) => {
+    try {
+      const allTestimonials = await storage.getAllTestimonials();
+      res.json(allTestimonials);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Protected routes - Testimonials (admin only)
+  app.post("/api/testimonials", isAuthenticated, async (req, res) => {
+    try {
+      const validated = insertTestimonialSchema.parse(req.body);
+      const testimonial = await storage.createTestimonial(validated);
+      res.status(201).json(testimonial);
+    } catch (error: any) {
+      const validationError = fromError(error);
+      res.status(400).json({ error: validationError.toString() });
+    }
+  });
+
+  app.put("/api/testimonials/:id", isAuthenticated, async (req, res) => {
+    try {
+      const validated = insertTestimonialSchema.partial().parse(req.body);
+      const testimonial = await storage.updateTestimonial(req.params.id, validated);
+      if (!testimonial) {
+        return res.status(404).json({ error: "Testimonial not found" });
+      }
+      res.json(testimonial);
+    } catch (error: any) {
+      const validationError = fromError(error);
+      res.status(400).json({ error: validationError.toString() });
+    }
+  });
+
+  app.delete("/api/testimonials/:id", isAuthenticated, async (req, res) => {
+    try {
+      const success = await storage.deleteTestimonial(req.params.id);
+      if (!success) {
+        return res.status(404).json({ error: "Testimonial not found" });
+      }
+      res.json({ message: "Testimonial deleted successfully" });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

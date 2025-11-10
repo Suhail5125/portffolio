@@ -11,7 +11,7 @@ import { Footer } from "@/components/footer";
 import { SEO } from "@/components/seo";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import type { Project, Skill, AboutInfo, InsertContactMessage } from "@shared/schema";
+import type { Project, Skill, AboutInfo, InsertContactMessage, Testimonial } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { ScrollIndicator } from "@/components/scroll-indicator";
@@ -33,6 +33,10 @@ export default function Home() {
   // Fetch about info
   const { data: aboutInfo, isLoading: aboutLoading } = useQuery<AboutInfo>({
     queryKey: ["/api/about"],
+  });
+
+  const { data: testimonials = [], isLoading: testimonialsLoading } = useQuery<Testimonial[]>({
+    queryKey: ["/api/testimonials"],
   });
 
   // Contact form mutation
@@ -97,7 +101,7 @@ export default function Home() {
         </div>
 
         <div>
-          <TestimonialsSection />
+          <TestimonialsSection testimonials={testimonials} isLoading={testimonialsLoading} />
         </div>
 
         <div id="contact">

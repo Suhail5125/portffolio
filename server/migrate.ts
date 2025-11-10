@@ -37,6 +37,21 @@ db.run(sql`
   )
 `);
 
+// Testimonials table
+db.run(sql`
+  CREATE TABLE IF NOT EXISTS testimonials (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    role TEXT,
+    company TEXT,
+    content TEXT NOT NULL,
+    rating INTEGER DEFAULT 5 NOT NULL,
+    avatar_url TEXT,
+    "order" INTEGER DEFAULT 0 NOT NULL,
+    created_at INTEGER NOT NULL
+  )
+`);
+
 // Contact messages table
 db.run(sql`
   CREATE TABLE IF NOT EXISTS contact_messages (

@@ -14,6 +14,7 @@ import AdminLogin from "@/pages/admin/login";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminProjects from "@/pages/admin/projects";
 import AdminSkills from "@/pages/admin/skills";
+import AdminTestimonials from "@/pages/admin/testimonials";
 import AdminMessages from "@/pages/admin/messages";
 import AdminAbout from "@/pages/admin/about";
 
@@ -52,6 +53,7 @@ import AdminTermsOfService from "@/pages/admin/terms-of-service";
 const ProtectedAdminDashboard = withAuth(AdminDashboard);
 const ProtectedAdminProjects = withAuth(AdminProjects);
 const ProtectedAdminSkills = withAuth(AdminSkills);
+const ProtectedAdminTestimonials = withAuth(AdminTestimonials);
 const ProtectedAdminMessages = withAuth(AdminMessages);
 const ProtectedAdminAbout = withAuth(AdminAbout);
 const ProtectedAdminPrivacyPolicy = withAuth(AdminPrivacyPolicy);
@@ -67,6 +69,7 @@ function Router() {
       <Route path="/admin/dashboard" component={ProtectedAdminDashboard} />
       <Route path="/admin/projects" component={ProtectedAdminProjects} />
       <Route path="/admin/skills" component={ProtectedAdminSkills} />
+      <Route path="/admin/testimonials" component={ProtectedAdminTestimonials} />
       <Route path="/admin/messages" component={ProtectedAdminMessages} />
       <Route path="/admin/about" component={ProtectedAdminAbout} />
       <Route path="/admin/privacy-policy" component={ProtectedAdminPrivacyPolicy} />

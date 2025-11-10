@@ -27,6 +27,19 @@ export const skills = sqliteTable("skills", {
   order: integer("order").default(0).notNull(),
 });
 
+// Testimonials table for client feedback
+export const testimonials = sqliteTable("testimonials", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  role: text("role"),
+  company: text("company"),
+  content: text("content").notNull(),
+  rating: integer("rating").default(5).notNull(),
+  avatarUrl: text("avatar_url"),
+  order: integer("order").default(0).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
+});
+
 // Contact messages from the contact form
 export const contactMessages = sqliteTable("contact_messages", {
   id: text("id").primaryKey(),
@@ -91,6 +104,18 @@ export const insertSkillSchema = createInsertSchema(skills).omit({
   category: z.enum(["Frontend", "Backend", "3D/Graphics", "Tools", "Other"]),
 });
 
+export const insertTestimonialSchema = createInsertSchema(testimonials).omit({
+  id: true,
+  createdAt: true,
+}).extend({
+  name: z.string().min(2).max(100),
+  role: z.string().max(100).optional().or(z.literal("")),
+  company: z.string().max(100).optional().or(z.literal("")),
+  content: z.string().min(10).max(1000),
+  rating: z.number().min(1).max(5),
+  avatarUrl: z.string().optional().or(z.literal("")),
+});
+
 export const insertContactMessageSchema = createInsertSchema(contactMessages).omit({
   id: true,
   read: true,
@@ -151,6 +176,9 @@ export type InsertProject = z.infer<typeof insertProjectSchema>;
 
 export type Skill = typeof skills.$inferSelect;
 export type InsertSkill = z.infer<typeof insertSkillSchema>;
+
+export type Testimonial = typeof testimonials.$inferSelect;
+export type InsertTestimonial = z.infer<typeof insertTestimonialSchema>;
 
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
