@@ -1,8 +1,9 @@
 import { useLocation } from "wouter";
-import { LogOut } from "lucide-react";
+import { LogOut, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { apiRequest } from "@/lib/queryClient";
+import { motion } from "framer-motion";
 
 interface AdminHeaderProps {
   title: string;
@@ -22,22 +23,52 @@ export function AdminHeader({ title, description }: AdminHeaderProps) {
   };
 
   return (
-    <div className="border-b border-border/50 bg-background/95 backdrop-blur mb-8 sticky top-0 z-50">
-      <div className="container px-4 h-16 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-          {description && (
-            <p className="text-sm text-muted-foreground">{description}</p>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <Button variant="outline" onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
-          </Button>
+    <header className="border-b border-border/50 glass sticky top-0 z-50 mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="relative flex items-center">
+          {/* Left: Icon, Title and Description */}
+          <div className="flex items-center gap-4">
+            <motion.div
+              className="relative"
+              animate={{
+                scale: [1, 1.05, 1],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            >
+              <div className="p-2 rounded-lg bg-chart-1/10 border border-chart-1/20">
+                <LayoutDashboard className="h-6 w-6 text-chart-1" />
+              </div>
+            </motion.div>
+            <div>
+              <h1 className="font-display text-3xl font-bold gradient-text-cyan-magenta">
+                {title}
+              </h1>
+              {description && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  {description}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Right: Controls */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2">
+            <ThemeToggle />
+            <Button
+              variant="outline"
+              onClick={handleLogout}
+              className="relative overflow-hidden group"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              <span className="relative z-10">Logout</span>
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </header>
   );
 }

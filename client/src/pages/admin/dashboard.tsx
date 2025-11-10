@@ -8,10 +8,13 @@ import {
   User, 
   Plus, 
   TrendingUp,
-  MessageSquare 
+  MessageSquare,
+  Shield,
+  FileText
 } from "lucide-react";
 import { AdminHeader } from "@/components/admin/header";
 import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import type { Project, Skill, ContactMessage } from "@shared/schema";
 
 export default function AdminDashboard() {
@@ -189,7 +192,7 @@ export default function AdminDashboard() {
             </Card>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 }}>
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
             <Card className="p-6 glass border-border/50 h-full">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
