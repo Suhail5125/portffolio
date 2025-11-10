@@ -236,7 +236,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                       className="flex items-center gap-2"
                     >
                       <span className="text-chart-1">❯</span> 
-                      <span className="text-green-400">whoami</span>
+                      <span className="text-green-400">whoarewe</span>
                       <motion.span 
                         className="w-2 h-4 bg-chart-1 inline-block"
                         animate={{ opacity: [1, 0] }}

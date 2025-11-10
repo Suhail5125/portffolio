@@ -174,7 +174,7 @@ export function Footer({ aboutInfo }: FooterProps) {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="flex flex-col items-center md:items-start"
           >
-            <h4 className="font-semibold mb-4 text-center md:text-left">Follow Me</h4>
+            <h4 className="font-semibold mb-4 text-center md:text-left">Follow Us</h4>
             <div className="flex gap-3 justify-center md:justify-start">
               {[
                 ...(aboutInfo?.githubUrl ? [{ icon: Github, href: aboutInfo.githubUrl, name: "github" }] : []),
@@ -328,9 +328,13 @@ export function Footer({ aboutInfo }: FooterProps) {
             >
               <span>All rights reserved</span>
               <span>•</span>
-              <span>Privacy Policy</span>
+              <Link href="/privacy-policy" className="hover:text-muted-foreground transition-colors cursor-pointer">
+                Privacy Policy
+              </Link>
               <span>•</span>
-              <span>Terms of Service</span>
+              <Link href="/terms-of-service" className="hover:text-muted-foreground transition-colors cursor-pointer">
+                Terms of Service
+              </Link>
             </motion.div>
           </div>
         </motion.div>

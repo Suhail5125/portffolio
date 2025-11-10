@@ -8,6 +8,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ErrorBoundary } from "@/components/error-boundary";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
+import PrivacyPolicy from "@/pages/privacy-policy";
+import TermsOfService from "@/pages/terms-of-service";
 import AdminLogin from "@/pages/admin/login";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminProjects from "@/pages/admin/projects";
@@ -57,6 +59,8 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/terms-of-service" component={TermsOfService} />
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin/dashboard" component={ProtectedAdminDashboard} />
       <Route path="/admin/projects" component={ProtectedAdminProjects} />
