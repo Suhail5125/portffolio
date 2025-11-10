@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Github, Linkedin, Mail, Send, ArrowDown, Sparkles } from "lucide-react";
+import { Github, Linkedin, Mail, Send, ArrowDown, Sparkles, Instagram } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { AboutInfo } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -226,15 +226,16 @@ export function HeroSection({ aboutInfo, isLoading }: HeroSectionProps) {
             transition={{ duration: 0.8, delay: 1.4 }}
           >
             {aboutInfo && [
-              { icon: Github, href: aboutInfo.githubUrl, label: "GitHub" },
-              { icon: Linkedin, href: aboutInfo.linkedinUrl, label: "LinkedIn" },
-              { icon: Mail, href: `mailto:${aboutInfo.email}`, label: "Email" }
-            ].filter(link => link.href).map(({ icon: Icon, href, label }, index) => (
+              ...(aboutInfo.githubUrl ? [{ icon: Github, href: aboutInfo.githubUrl, label: "GitHub" }] : []),
+              ...(aboutInfo.linkedinUrl ? [{ icon: Linkedin, href: aboutInfo.linkedinUrl, label: "LinkedIn" }] : []),
+              ...(aboutInfo.instagramUrl ? [{ icon: Instagram, href: aboutInfo.instagramUrl, label: "Instagram" }] : []),
+              ...(aboutInfo.email ? [{ icon: Mail, href: `mailto:${aboutInfo.email}`, label: "Email" }] : []),
+            ].map(({ icon: Icon, href, label }, index) => (
               <motion.a
                 key={label}
-                href={href || '#'}
-                target={href?.startsWith('http') ? "_blank" : undefined}
-                rel={href?.startsWith('http') ? "noopener noreferrer" : undefined}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 data-testid={`link-${label.toLowerCase()}`}
                 className="p-4 rounded-full glass border border-border/50 hover-elevate active-elevate-2 transition-all group relative overflow-hidden"
                 whileHover={{ scale: 1.1, rotate: 5 }}

@@ -34,6 +34,7 @@ async function seed() {
       githubUrl: "https://github.com",
       linkedinUrl: "https://linkedin.com",
       twitterUrl: "https://twitter.com",
+      instagramUrl: "https://instagram.com",
       updatedAt: new Date(),
     });
     console.log("✅ About info created");

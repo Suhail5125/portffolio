@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Github, Linkedin, Twitter, Mail, Heart, Phone, MapPin, Clock, Zap } from "lucide-react";
+import { Github, Linkedin, Twitter, Mail, Heart, Phone, MapPin, Clock, Zap, Instagram } from "lucide-react";
 import type { AboutInfo } from "@shared/schema";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "./ui/button";
@@ -180,6 +180,7 @@ export function Footer({ aboutInfo }: FooterProps) {
                 ...(aboutInfo?.githubUrl ? [{ icon: Github, href: aboutInfo.githubUrl, name: "github" }] : []),
                 ...(aboutInfo?.linkedinUrl ? [{ icon: Linkedin, href: aboutInfo.linkedinUrl, name: "linkedin" }] : []),
                 ...(aboutInfo?.twitterUrl ? [{ icon: Twitter, href: aboutInfo.twitterUrl, name: "twitter" }] : []),
+                ...(aboutInfo?.instagramUrl ? [{ icon: Instagram, href: aboutInfo.instagramUrl, name: "instagram" }] : []),
               ].map((social, index) => (
                 <motion.a
                   key={social.name}

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
-import { Save, Github, Linkedin, Twitter, Mail, FileText, Upload, Clock, CheckCircle, XCircle } from "lucide-react";
+import { Save, Github, Linkedin, Twitter, Mail, FileText, Upload, Clock, CheckCircle, XCircle, Instagram } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { AboutInfo, InsertAboutInfo } from "@shared/schema";
@@ -28,6 +28,7 @@ export default function AdminAbout() {
     githubUrl: "",
     linkedinUrl: "",
     twitterUrl: "",
+    instagramUrl: "",
     resumeUrl: "",
     availableForWork: true,
     responseTime: "24 hours",
@@ -55,6 +56,7 @@ export default function AdminAbout() {
         githubUrl: aboutInfo.githubUrl ?? "",
         linkedinUrl: aboutInfo.linkedinUrl ?? "",
         twitterUrl: aboutInfo.twitterUrl ?? "",
+        instagramUrl: aboutInfo.instagramUrl ?? "",
         resumeUrl: aboutInfo.resumeUrl ?? "",
         availableForWork: aboutInfo.availableForWork ?? true,
         responseTime: aboutInfo.responseTime ?? "24 hours",
@@ -107,6 +109,7 @@ export default function AdminAbout() {
       githubUrl: formData.githubUrl || "",
       linkedinUrl: formData.linkedinUrl || "",
       twitterUrl: formData.twitterUrl || "",
+      instagramUrl: formData.instagramUrl || "",
       email: formData.email || "",
       phone: formData.phone || "",
       location: formData.location || "",
@@ -146,7 +149,7 @@ export default function AdminAbout() {
     const validateUrl = (url: string) => {
       if (!url) return true;
       try {
-        new URL(url);
+        new URL(url.startsWith('http') ? url : `https://${url}`);
         return true;
       } catch {
         return false;
@@ -158,7 +161,8 @@ export default function AdminAbout() {
       "Resume URL": cleanFormData.resumeUrl,
       "GitHub URL": cleanFormData.githubUrl,
       "LinkedIn URL": cleanFormData.linkedinUrl,
-      "Twitter URL": cleanFormData.twitterUrl
+      "Twitter URL": cleanFormData.twitterUrl,
+      "Instagram URL": cleanFormData.instagramUrl
     };
 
     for (const [fieldName, url] of Object.entries(urlFields)) {
@@ -557,6 +561,22 @@ export default function AdminAbout() {
                         />
                       </div>
                     </div>
+                    <div>
+                      <Label htmlFor="instagramUrl" className="text-sm font-medium mb-2 block">Instagram Profile</Label>
+                      <div className="relative">
+                        <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="instagramUrl"
+                          type="url"
+                          value={formData.instagramUrl ?? ""}
+                          onChange={(e) => setFormData({ ...formData, instagramUrl: e.target.value })}
+                          className="pl-10 h-11"
+                          placeholder="https://instagram.com/username"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="resumeUrl" className="text-sm font-medium mb-2 block">Resume/Portfolio PDF</Label>
                       <div className="relative">

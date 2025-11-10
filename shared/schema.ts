@@ -50,6 +50,7 @@ export const aboutInfo = sqliteTable("about_info", {
   githubUrl: text("github_url"),
   linkedinUrl: text("linkedin_url"),
   twitterUrl: text("twitter_url"),
+  instagramUrl: text("instagram_url"),
   email: text("email"),
   phone: text("phone"),
   location: text("location"),
@@ -111,16 +112,27 @@ export const insertContactMessageSchema = createInsertSchema(contactMessages).om
   projectType: z.string().min(1, "Project type is required"),
 });
 
+const validateUrl = (url: string): boolean => {
+  if (!url) return true;
+  try {
+    new URL(url.startsWith('http') ? url : `https://${url}`);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export const insertAboutInfoSchema = createInsertSchema(aboutInfo).omit({
   id: true,
   updatedAt: true,
 }).extend({
   email: z.string().email().optional().or(z.literal("")),
-  avatarUrl: z.string().url().optional().or(z.literal("")),
-  resumeUrl: z.string().url().optional().or(z.literal("")),
-  githubUrl: z.string().url().optional().or(z.literal("")),
-  linkedinUrl: z.string().url().optional().or(z.literal("")),
-  twitterUrl: z.string().url().optional().or(z.literal("")),
+  avatarUrl: z.string().refine(validateUrl, "Invalid URL format").optional().or(z.literal("")),
+  resumeUrl: z.string().refine(validateUrl, "Invalid URL format").optional().or(z.literal("")),
+  githubUrl: z.string().refine(validateUrl, "Invalid URL format").optional().or(z.literal("")),
+  linkedinUrl: z.string().refine(validateUrl, "Invalid URL format").optional().or(z.literal("")),
+  twitterUrl: z.string().refine(validateUrl, "Invalid URL format").optional().or(z.literal("")),
+  instagramUrl: z.string().refine(validateUrl, "Invalid URL format").optional().or(z.literal("")),
   responseTime: z.string().optional(),
   workingHours: z.string().optional(),
 });

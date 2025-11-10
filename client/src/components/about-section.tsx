@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, Github, Linkedin, Twitter, Mail, Briefcase, Users, Award, Code2, Zap, Brain, Cpu, Database } from "lucide-react";
+import { Download, Github, Linkedin, Twitter, Mail, Briefcase, Users, Award, Code2, Zap, Brain, Cpu, Database, Instagram } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { AboutInfo } from "@shared/schema";
@@ -293,7 +293,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                         { url: aboutInfo.githubUrl, icon: Github, name: "github", testId: "link-about-github" },
                         { url: aboutInfo.linkedinUrl, icon: Linkedin, name: "linkedin", testId: "link-about-linkedin" },
                         { url: aboutInfo.twitterUrl, icon: Twitter, name: "twitter", testId: "link-about-twitter" },
-                        { url: aboutInfo.email, icon: Mail, name: "email", testId: "link-about-email", href: `mailto:${aboutInfo.email}` },
+                        { url: aboutInfo.instagramUrl, icon: Instagram, name: "instagram", testId: "link-about-instagram" },
                       ].map(({ url, icon: Icon, name, testId, href }, index) => 
                         url && (
                           <motion.a

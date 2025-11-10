@@ -71,6 +71,7 @@ db.run(sql`
     github_url TEXT,
     linkedin_url TEXT,
     twitter_url TEXT,
+    instagram_url TEXT,
     email TEXT,
     phone TEXT,
     location TEXT,
@@ -91,6 +92,7 @@ addColumnIfMissing("resume_url", "TEXT");
 addColumnIfMissing("github_url", "TEXT");
 addColumnIfMissing("linkedin_url", "TEXT");
 addColumnIfMissing("twitter_url", "TEXT");
+addColumnIfMissing("instagram_url", "TEXT");
 addColumnIfMissing("email", "TEXT");
 addColumnIfMissing("phone", "TEXT");
 addColumnIfMissing("location", "TEXT");
