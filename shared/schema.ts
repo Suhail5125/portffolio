@@ -36,6 +36,7 @@ export const testimonials = sqliteTable("testimonials", {
   content: text("content").notNull(),
   rating: integer("rating").default(5).notNull(),
   avatarUrl: text("avatar_url"),
+  isVisible: integer("is_visible", { mode: "boolean" }).default(false).notNull(),
   order: integer("order").default(0).notNull(),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
 });
@@ -114,6 +115,7 @@ export const insertTestimonialSchema = createInsertSchema(testimonials).omit({
   content: z.string().min(10).max(1000),
   rating: z.number().min(1).max(5),
   avatarUrl: z.string().optional().or(z.literal("")),
+  isVisible: z.boolean().optional(),
 });
 
 export const insertContactMessageSchema = createInsertSchema(contactMessages).omit({

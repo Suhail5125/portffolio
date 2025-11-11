@@ -22,9 +22,97 @@ import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
 import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
-// Initialize database connection with SQLite
-const sqlite = new Database("portfolio.db");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const sqlite = new Database(join(__dirname, "..", "portfolio.db"));
+
+function ensureTables() {
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS projects (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL,
+      image_url TEXT,
+      github_url TEXT,
+      live_url TEXT,
+      technologies TEXT NOT NULL,
+      featured INTEGER DEFAULT 0 NOT NULL,
+      "order" INTEGER DEFAULT 0 NOT NULL,
+      created_at INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS skills (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      category TEXT NOT NULL,
+      proficiency INTEGER NOT NULL,
+      icon TEXT,
+      "order" INTEGER DEFAULT 0 NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS testimonials (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      role TEXT,
+      company TEXT,
+      content TEXT NOT NULL,
+      rating INTEGER DEFAULT 5 NOT NULL,
+      avatar_url TEXT,
+      is_visible INTEGER DEFAULT 0 NOT NULL,
+      "order" INTEGER DEFAULT 0 NOT NULL,
+      created_at INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS contact_messages (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      subject TEXT,
+      project_type TEXT,
+      message TEXT NOT NULL,
+      read INTEGER DEFAULT 0 NOT NULL,
+      created_at INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS about_info (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      title TEXT NOT NULL,
+      bio TEXT NOT NULL,
+      avatar_url TEXT,
+      resume_url TEXT,
+      github_url TEXT,
+      linkedin_url TEXT,
+      twitter_url TEXT,
+      instagram_url TEXT,
+      email TEXT,
+      phone TEXT,
+      location TEXT,
+      available_for_work INTEGER DEFAULT 1,
+      response_time TEXT DEFAULT '24 hours',
+      working_hours TEXT DEFAULT '9 AM - 6 PM EST',
+      completed_projects INTEGER DEFAULT 0,
+      total_clients INTEGER DEFAULT 0,
+      years_experience INTEGER DEFAULT 0,
+      technologies_count INTEGER DEFAULT 0,
+      updated_at INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      username TEXT NOT NULL UNIQUE,
+      password TEXT NOT NULL,
+      is_admin INTEGER DEFAULT 1 NOT NULL
+    );
+  `);
+
+  const testimonialsColumns = sqlite.prepare("PRAGMA table_info('testimonials')").all();
+  const hasIsVisible = testimonialsColumns.some((row: any) => row.name === "is_visible");
+  if (!hasIsVisible) {
+    sqlite.prepare("ALTER TABLE testimonials ADD COLUMN is_visible INTEGER DEFAULT 0 NOT NULL").run();
+  }
+}
+
+ensureTables();
+
 const db = drizzle(sqlite);
 
 // Helper functions for JSON serialization (SQLite doesn't support arrays)
@@ -40,6 +128,11 @@ function deserializeProject(project: any): Project {
     ...project,
     technologies: JSON.parse(project.technologies),
   };
+}
+
+function sanitizeValues<T extends Record<string, any>>(values: T): T {
+  const entries = Object.entries(values).filter(([, value]) => value !== undefined);
+  return Object.fromEntries(entries) as T;
 }
 
 export interface IStorage {
@@ -184,6 +277,7 @@ export class DbStorage implements IStorage {
   async createTestimonial(testimonial: InsertTestimonial): Promise<Testimonial> {
     const result = await db.insert(testimonials).values({
       ...testimonial,
+      isVisible: testimonial.isVisible ?? false,
       id: randomUUID(),
       createdAt: new Date(),
     }).returning();
@@ -191,9 +285,10 @@ export class DbStorage implements IStorage {
   }
 
   async updateTestimonial(id: string, testimonial: Partial<InsertTestimonial>): Promise<Testimonial | undefined> {
+    const payload = sanitizeValues(testimonial);
     const result = await db
       .update(testimonials)
-      .set(testimonial as any)
+      .set(payload as any)
       .where(eq(testimonials.id, id))
       .returning();
     return result[0];

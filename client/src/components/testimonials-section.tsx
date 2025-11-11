@@ -79,20 +79,24 @@ interface TestimonialsSectionProps {
 }
 
 export function TestimonialsSection({ testimonials = [], isLoading = false }: TestimonialsSectionProps) {
+  const MAX_DISPLAY = 20;
+  const visibleTestimonials = testimonials.filter((item) => item.isVisible);
+  const sourceTestimonials = (visibleTestimonials.length > 0 ? visibleTestimonials : testimonials)
+    .slice()
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    .slice(0, MAX_DISPLAY);
+
   const dataset: DisplayTestimonial[] =
-    testimonials.length > 0
-      ? testimonials
-          .slice()
-          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-          .map((item) => ({
-            id: item.id,
-            name: item.name,
-            role: item.role,
-            company: item.company,
-            content: item.content,
-            rating: item.rating ?? 5,
-            avatarUrl: item.avatarUrl || null,
-          }))
+    sourceTestimonials.length > 0
+      ? sourceTestimonials.map((item) => ({
+          id: item.id,
+          name: item.name,
+          role: item.role,
+          company: item.company,
+          content: item.content,
+          rating: item.rating ?? 5,
+          avatarUrl: item.avatarUrl || null,
+        }))
       : fallbackTestimonials;
 
   const displayTestimonials = isLoading && testimonials.length === 0 ? fallbackTestimonials : dataset;
