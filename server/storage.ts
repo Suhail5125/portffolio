@@ -154,6 +154,7 @@ export interface IStorage {
   createSkill(skill: InsertSkill): Promise<Skill>;
   updateSkill(id: string, skill: Partial<InsertSkill>): Promise<Skill | undefined>;
   deleteSkill(id: string): Promise<boolean>;
+  reorderSkills(skills: { id: string; category: string; order: number }[]): Promise<void>;
 
   // Testimonial methods
   getAllTestimonials(): Promise<Testimonial[]>;
@@ -262,6 +263,17 @@ export class DbStorage implements IStorage {
   async deleteSkill(id: string): Promise<boolean> {
     const result = await db.delete(skills).where(eq(skills.id, id)).returning();
     return result.length > 0;
+  }
+
+  async reorderSkills(updates: { id: string; category: string; order: number }[]): Promise<void> {
+    await Promise.all(
+      updates.map(({ id, category, order }) =>
+        db
+          .update(skills)
+          .set({ category, order })
+          .where(eq(skills.id, id))
+      )
+    );
   }
 
   // Testimonial methods

@@ -56,8 +56,17 @@ import {
   insertUserSchema,
 } from "@shared/schema";
 import { fromError } from "zod-validation-error";
+import { z } from "zod";
 
 const SessionStore = MemoryStore(session);
+
+const reorderSkillsSchema = z.object({
+  skills: z.array(z.object({
+    id: z.string(),
+    category: z.string(),
+    order: z.number().int(),
+  })).min(1),
+});
 
 // Configure passport
 passport.use(
@@ -277,6 +286,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json({ message: "Skill deleted successfully" });
     } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/skills/reorder", isAuthenticated, async (req, res) => {
+    try {
+      const validated = reorderSkillsSchema.parse(req.body);
+      await storage.reorderSkills(validated.skills);
+      res.json({ message: "Skill order updated" });
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        const validationError = fromError(error);
+        return res.status(400).json({ error: validationError.toString() });
+      }
       res.status(500).json({ error: error.message });
     }
   });
