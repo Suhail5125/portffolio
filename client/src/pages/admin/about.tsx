@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { Save, Github, Linkedin, Twitter, Mail, FileText, Upload, Clock, CheckCircle, XCircle, Instagram } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { AboutInfo, InsertAboutInfo } from "@shared/schema";
+import type { AboutInfo, InsertAboutInfo } from "@shared";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

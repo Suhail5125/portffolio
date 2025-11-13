@@ -33,7 +33,7 @@ A modern, full-stack portfolio website with 3D animations, admin panel, and comp
 - 🎭 Framer Motion
 - 🔄 React Query
 - 🛣️ Wouter routing
-- 🗄️ SQLite + Drizzle ORM
+- 🗄️ PostgreSQL + Drizzle ORM
 - 🚀 Express.js backend
 - ✅ Zod validation
 - 🎯 Error boundaries
@@ -46,6 +46,7 @@ A modern, full-stack portfolio website with 3D animations, admin panel, and comp
 ### **Prerequisites**
 - Node.js 18+ installed
 - npm or yarn package manager
+- PostgreSQL 14+ installed and running
 
 ### **Installation**
 
@@ -57,8 +58,17 @@ cd portffolio
 # Install dependencies
 npm install
 
-# Setup database
-npm run db:migrate
+# Create PostgreSQL database
+createdb portfolio
+
+# Setup environment variables
+# Edit .env and set DATABASE_URL to your PostgreSQL connection string
+# Example: DATABASE_URL=postgresql://username:password@localhost:5432/portfolio
+
+# Push database schema
+npm run db:push
+
+# Seed database with sample data
 npm run db:seed
 
 # Start development server
@@ -73,22 +83,195 @@ Visit `http://localhost:5000` to see your portfolio!
 
 ```
 portffolio/
-├── client/                 # Frontend React app
+├── client/                      # Frontend React application
 │   ├── src/
-│   │   ├── components/    # Reusable components
-│   │   ├── pages/         # Page components
-│   │   ├── lib/           # Utilities
-│   │   └── hooks/         # Custom hooks
-│   └── public/            # Static assets
-├── server/                # Backend Express app
-│   ├── routes.ts          # API routes
-│   ├── storage.ts         # Database operations
-│   ├── migrate.ts         # Database migrations
-│   └── seed.ts            # Seed data
-├── shared/                # Shared types & schemas
-│   └── schema.ts          # Database schema
-└── portfolio.db           # SQLite database
+│   │   ├── components/
+│   │   │   ├── layout/         # Layout components (navigation, footer, theme)
+│   │   │   ├── sections/       # Page sections (hero, projects, skills, etc.)
+│   │   │   ├── admin/          # Admin dashboard components
+│   │   │   ├── ui/             # Reusable UI components (shadcn/ui)
+│   │   │   └── 3d/
+│   │   │       ├── core/       # Main 3D components (scenes, geometries)
+│   │   │       └── fallbacks/  # Fallback components for 3D scenes
+│   │   ├── pages/              # Page components (home, admin, etc.)
+│   │   ├── hooks/              # Custom React hooks
+│   │   ├── lib/                # Utility functions and helpers
+│   │   ├── types/              # Frontend-specific TypeScript types
+│   │   └── index.css           # Global styles
+│   └── public/                 # Static assets
+├── server/                      # Backend Express application
+│   ├── middleware/
+│   │   ├── auth.ts             # Authentication middleware (passport, session)
+│   │   └── upload.ts           # File upload configuration (multer)
+│   ├── routes/
+│   │   ├── index.ts            # Route aggregator (registers all routes)
+│   │   ├── auth.ts             # Authentication endpoints
+│   │   ├── projects.ts         # Project CRUD operations
+│   │   ├── skills.ts           # Skills CRUD and reordering
+│   │   ├── testimonials.ts     # Testimonials CRUD
+│   │   ├── contact.ts          # Contact message handling
+│   │   └── about.ts            # About info management
+│   ├── scripts/                # Database scripts and utilities
+│   │   ├── migrate.ts          # Database migrations
+│   │   ├── seed.ts             # Seed data
+│   │   └── migrate-*.ts        # Migration utilities
+│   ├── index.ts                # Server entry point
+│   ├── storage.ts              # Database operations (Drizzle ORM)
+│   └── vite.ts                 # Vite middleware configuration
+├── shared/                      # Shared code between client and server
+│   └── schema.ts               # Database schema and shared types
+├── uploads/                     # Uploaded files directory
+├── .env                        # Environment variables
+├── drizzle.config.ts           # Drizzle ORM configuration
+├── migrations/                 # Database migrations
+└── package.json                # Project dependencies and scripts
 ```
+
+### Directory Purpose
+
+#### **Client Directories**
+
+- **`components/layout/`** - Components that define the page structure and layout
+  - Navigation bars, footers, theme providers, theme toggles
+  - Used across multiple pages
+
+- **`components/sections/`** - Self-contained page sections
+  - Hero, projects, skills, services, about, testimonials, contact, work process
+  - Each section is a complete feature with its own logic
+
+- **`components/admin/`** - Admin dashboard specific components
+  - Admin forms, tables, modals, and dashboard widgets
+  - Only used in admin pages
+
+- **`components/ui/`** - Reusable UI primitives (shadcn/ui)
+  - Buttons, inputs, cards, dialogs, etc.
+  - Generic components used throughout the app
+
+- **`components/3d/core/`** - Main 3D rendering components
+  - Three.js/React Three Fiber scenes and geometries
+  - Particle systems, animated objects
+
+- **`components/3d/fallbacks/`** - Fallback components for 3D scenes
+  - Static alternatives when WebGL is unavailable
+  - Lightweight versions for better performance
+
+- **`pages/`** - Top-level page components
+  - Each file represents a route in the application
+  - Composes sections and layout components
+
+- **`hooks/`** - Custom React hooks
+  - Reusable stateful logic
+  - API calls, form handling, etc.
+
+- **`lib/`** - Utility functions and helpers
+  - Pure functions, constants, configurations
+  - No React-specific code
+
+- **`types/`** - Frontend-specific TypeScript types
+  - API response types, component prop types
+  - Types not shared with the backend
+
+#### **Server Directories**
+
+- **`middleware/`** - Express middleware functions
+  - Authentication, authorization, file uploads
+  - Request processing before reaching routes
+
+- **`routes/`** - API endpoint definitions
+  - Each file handles a specific resource (projects, skills, etc.)
+  - Organized by feature/domain
+
+- **`scripts/`** - Database and utility scripts
+  - Migrations, seeding, data transformations
+  - Run independently from the main server
+
+#### **Shared Directory**
+
+- **`shared/`** - Code used by both client and server
+  - Database schema definitions
+  - Validation schemas (Zod)
+  - Type definitions used across the stack
+
+### Naming Conventions
+
+#### **Files**
+- **Components**: `kebab-case.tsx` (e.g., `hero-section.tsx`, `project-card.tsx`)
+- **Pages**: `kebab-case.tsx` (e.g., `home.tsx`, `admin-login.tsx`)
+- **Hooks**: `use-kebab-case.ts` (e.g., `use-projects.ts`, `use-auth.ts`)
+- **Utilities**: `kebab-case.ts` (e.g., `format-date.ts`, `api-client.ts`)
+- **Types**: `kebab-case.ts` or `PascalCase.ts` (e.g., `api.ts`, `Project.ts`)
+- **Routes**: `kebab-case.ts` (e.g., `projects.ts`, `auth.ts`)
+- **Middleware**: `kebab-case.ts` (e.g., `auth.ts`, `upload.ts`)
+
+#### **Directories**
+- **All lowercase with hyphens**: `kebab-case` (e.g., `components/`, `3d/`, `admin/`)
+
+#### **Components**
+- **React Components**: `PascalCase` (e.g., `HeroSection`, `ProjectCard`)
+- **Component files**: `kebab-case.tsx` matching the component name
+
+#### **Functions**
+- **camelCase** for all functions (e.g., `getUserProjects`, `formatDate`)
+
+#### **Constants**
+- **UPPER_SNAKE_CASE** for true constants (e.g., `API_BASE_URL`, `MAX_FILE_SIZE`)
+- **camelCase** for configuration objects (e.g., `dbConfig`, `authOptions`)
+
+### Where to Place New Code
+
+#### **Adding a New Page Section**
+1. Create component in `client/src/components/sections/`
+2. Import and use in `client/src/pages/home.tsx` or relevant page
+3. Add any section-specific types to `client/src/types/`
+
+#### **Adding a New Admin Feature**
+1. Create component in `client/src/components/admin/`
+2. Create page in `client/src/pages/admin/`
+3. Add API route in `server/routes/` (create new file if needed)
+4. Update `server/routes/index.ts` to register new routes
+5. Add database schema to `shared/schema.ts` if needed
+
+#### **Adding a New API Endpoint**
+1. Add route handler to appropriate file in `server/routes/`
+2. If it's a new resource, create a new route file (e.g., `server/routes/blog.ts`)
+3. Register new route file in `server/routes/index.ts`
+4. Add types to `shared/schema.ts` for shared types
+5. Add frontend types to `client/src/types/api.ts`
+
+#### **Adding a New Reusable Component**
+1. **UI primitive**: Add to `client/src/components/ui/`
+2. **Layout component**: Add to `client/src/components/layout/`
+3. **Feature component**: Add to `client/src/components/` root or create new category
+
+#### **Adding a New Hook**
+1. Create in `client/src/hooks/use-feature-name.ts`
+2. Export from the file
+3. Import where needed
+
+#### **Adding a New Utility Function**
+1. Create in `client/src/lib/feature-name.ts`
+2. Keep functions pure (no side effects)
+3. Export individual functions
+
+#### **Adding Middleware**
+1. Create in `server/middleware/feature-name.ts`
+2. Export middleware function
+3. Import and use in route files or `server/index.ts`
+
+#### **Adding a Database Migration**
+1. Create script in `server/scripts/migrate-feature-name.ts`
+2. Update `shared/schema.ts` with new schema
+3. Run migration script
+4. Update seed data in `server/scripts/seed.ts` if needed
+
+### Architecture Principles
+
+1. **Separation of Concerns**: Keep routes, middleware, and business logic separate
+2. **Feature-Based Organization**: Group related code by feature/domain
+3. **Shared Code**: Only put truly shared code in `shared/` directory
+4. **Type Safety**: Use TypeScript types throughout, define in appropriate locations
+5. **Reusability**: Extract common patterns into hooks, utilities, or components
+6. **Scalability**: Structure allows easy addition of new features without refactoring
 
 ---
 
@@ -212,10 +395,12 @@ See [FEATURES.md](./FEATURES.md) for complete schema details.
 ### **Backend**
 - Express.js
 - TypeScript
-- Better-SQLite3
+- PostgreSQL
 - Drizzle ORM
 - Bcrypt.js
 - Express Session
+- Passport.js
+- Multer
 - Zod
 
 ---
@@ -299,10 +484,9 @@ See [FEATURES.md](./FEATURES.md) for complete schema details.
 npx kill-port 5000
 ```
 
-### **Database locked**
+### **Database issues**
 ```bash
-# Delete and recreate database
-rm portfolio.db
+# Reset and recreate database
 npm run db:migrate
 npm run db:seed
 ```

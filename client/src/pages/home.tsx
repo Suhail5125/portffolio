@@ -1,21 +1,21 @@
-import { Navigation } from "@/components/navigation";
-import { HeroSection } from "@/components/hero-section";
-import { ProjectsSection } from "@/components/projects-section";
-import { SkillsSection } from "@/components/skills-section";
-import { ServicesSection } from "@/components/services-section";
-import { WorkProcessSection } from "@/components/work-process-section";
-import { AboutSection } from "@/components/about-section";
-import { TestimonialsSection } from "@/components/testimonials-section";
-import { ContactSection } from "@/components/contact-section";
-import { Footer } from "@/components/footer";
+import { Navigation } from "@/components/layout/navigation";
+import { HeroSection } from "@/components/sections/hero-section";
+import { ProjectsSection } from "@/components/sections/projects-section";
+import { SkillsSection } from "@/components/sections/skills-section";
+import { ServicesSection } from "@/components/sections/services-section";
+import { WorkProcessSection } from "@/components/sections/work-process-section";
+import { AboutSection } from "@/components/sections/about-section";
+import { TestimonialsSection } from "@/components/sections/testimonials-section";
+import { ContactSection } from "@/components/sections/contact-section";
+import { Footer } from "@/components/layout/footer";
 import { SEO } from "@/components/seo";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import type { Project, Skill, AboutInfo, InsertContactMessage, Testimonial } from "@shared/schema";
+import type { Project, Skill, AboutInfo, InsertContactMessage, Testimonial } from "@shared";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { ScrollIndicator } from "@/components/scroll-indicator";
-import { FloatingNavbar } from "@/components/floating-navbar";
+import { FloatingNavbar } from "@/components/layout/floating-navbar";
 
 export default function Home() {
   const { toast } = useToast();
@@ -82,7 +82,7 @@ export default function Home() {
           <SkillsSection skills={skills} isLoading={skillsLoading} />
         </div>
 
-        <div>
+        <div id="services">
           <ServicesSection />
         </div>
 

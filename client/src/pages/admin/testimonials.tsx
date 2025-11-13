@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { insertTestimonialSchema, type Testimonial, type InsertTestimonial } from "@shared/schema";
+import { insertTestimonialSchema, type Testimonial, type InsertTestimonial } from "@shared";
 
 type FormState = InsertTestimonial;
 

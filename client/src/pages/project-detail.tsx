@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Eye, ExternalLink, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Project } from "@shared/schema";
+import type { Project } from "@shared";
 
 export default function ProjectDetail() {
   const params = useParams();

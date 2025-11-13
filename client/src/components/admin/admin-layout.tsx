@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { apiRequest } from "@/lib/queryClient";
 
 interface AdminLayoutProps {

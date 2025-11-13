@@ -17,105 +17,22 @@ import {
   contactMessages,
   aboutInfo,
   testimonials,
-} from "@shared/schema";
-import { randomUUID } from "crypto";
+} from "@shared";
 import { eq } from "drizzle-orm";
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import { drizzle } from "drizzle-orm/node-postgres";
+import pg from "pg";
+import { config } from "./config";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const sqlite = new Database(join(__dirname, "..", "portfolio.db"));
+const { Pool } = pg;
 
-function ensureTables() {
-  sqlite.exec(`
-    CREATE TABLE IF NOT EXISTS projects (
-      id TEXT PRIMARY KEY,
-      title TEXT NOT NULL,
-      description TEXT NOT NULL,
-      image_url TEXT,
-      github_url TEXT,
-      live_url TEXT,
-      technologies TEXT NOT NULL,
-      featured INTEGER DEFAULT 0 NOT NULL,
-      "order" INTEGER DEFAULT 0 NOT NULL,
-      created_at INTEGER NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS skills (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      category TEXT NOT NULL,
-      proficiency INTEGER NOT NULL,
-      icon TEXT,
-      "order" INTEGER DEFAULT 0 NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS testimonials (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      role TEXT,
-      company TEXT,
-      content TEXT NOT NULL,
-      rating INTEGER DEFAULT 5 NOT NULL,
-      avatar_url TEXT,
-      is_visible INTEGER DEFAULT 0 NOT NULL,
-      "order" INTEGER DEFAULT 0 NOT NULL,
-      created_at INTEGER NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS contact_messages (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      email TEXT NOT NULL,
-      subject TEXT,
-      project_type TEXT,
-      message TEXT NOT NULL,
-      read INTEGER DEFAULT 0 NOT NULL,
-      created_at INTEGER NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS about_info (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      title TEXT NOT NULL,
-      bio TEXT NOT NULL,
-      avatar_url TEXT,
-      resume_url TEXT,
-      github_url TEXT,
-      linkedin_url TEXT,
-      twitter_url TEXT,
-      instagram_url TEXT,
-      email TEXT,
-      phone TEXT,
-      location TEXT,
-      available_for_work INTEGER DEFAULT 1,
-      response_time TEXT DEFAULT '24 hours',
-      working_hours TEXT DEFAULT '9 AM - 6 PM EST',
-      completed_projects INTEGER DEFAULT 0,
-      total_clients INTEGER DEFAULT 0,
-      years_experience INTEGER DEFAULT 0,
-      technologies_count INTEGER DEFAULT 0,
-      updated_at INTEGER NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS users (
-      id TEXT PRIMARY KEY,
-      username TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL,
-      is_admin INTEGER DEFAULT 1 NOT NULL
-    );
-  `);
+// Create PostgreSQL connection pool using centralized configuration
+const pool = new Pool({
+  connectionString: config.database.url,
+});
 
-  const testimonialsColumns = sqlite.prepare("PRAGMA table_info('testimonials')").all();
-  const hasIsVisible = testimonialsColumns.some((row: any) => row.name === "is_visible");
-  if (!hasIsVisible) {
-    sqlite.prepare("ALTER TABLE testimonials ADD COLUMN is_visible INTEGER DEFAULT 0 NOT NULL").run();
-  }
-}
+const db = drizzle(pool);
 
-ensureTables();
-
-const db = drizzle(sqlite);
-
-// Helper functions for JSON serialization (SQLite doesn't support arrays)
+// Helper functions for JSON serialization
 function serializeProject(project: InsertProject): any {
   return {
     ...project,
@@ -189,10 +106,7 @@ export class DbStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const result = await db.insert(users).values({
-      ...insertUser,
-      id: randomUUID(),
-    }).returning();
+    const result = await db.insert(users).values(insertUser).returning();
     return result[0];
   }
 
@@ -209,11 +123,7 @@ export class DbStorage implements IStorage {
 
   async createProject(project: InsertProject): Promise<Project> {
     const serialized = serializeProject(project);
-    const result = await db.insert(projects).values({
-      ...serialized,
-      id: randomUUID(),
-      createdAt: new Date(),
-    }).returning();
+    const result = await db.insert(projects).values(serialized).returning();
     return deserializeProject(result[0]);
   }
 
@@ -245,10 +155,7 @@ export class DbStorage implements IStorage {
   }
 
   async createSkill(skill: InsertSkill): Promise<Skill> {
-    const result = await db.insert(skills).values({
-      ...skill,
-      id: randomUUID(),
-    }).returning();
+    const result = await db.insert(skills).values(skill).returning();
     return result[0];
   }
 
@@ -291,8 +198,6 @@ export class DbStorage implements IStorage {
     const result = await db.insert(testimonials).values({
       ...testimonial,
       isVisible: testimonial.isVisible ?? false,
-      id: randomUUID(),
-      createdAt: new Date(),
     }).returning();
     return result[0];
   }
@@ -323,11 +228,7 @@ export class DbStorage implements IStorage {
   }
 
   async createContactMessage(message: InsertContactMessage): Promise<ContactMessage> {
-    const result = await db.insert(contactMessages).values({
-      ...message,
-      id: randomUUID(),
-      createdAt: new Date(),
-    }).returning();
+    const result = await db.insert(contactMessages).values(message).returning();
     return result[0];
   }
 
@@ -367,13 +268,13 @@ export class DbStorage implements IStorage {
       const result = await db
         .update(aboutInfo)
         .set({ ...info, updatedAt: new Date() })
-        .where(eq(aboutInfo.id, "main"))
+        .where(eq(aboutInfo.id, existing.id))
         .returning();
       return result[0];
     } else {
       const result = await db
         .insert(aboutInfo)
-        .values({ ...info, id: "main", updatedAt: new Date() })
+        .values({ ...info, updatedAt: new Date() })
         .returning();
       return result[0];
     }

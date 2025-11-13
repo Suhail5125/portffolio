@@ -17,7 +17,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Plus, Edit, Trash2, AlertTriangle } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { Skill, InsertSkill } from "@shared/schema";
+import type { Skill, InsertSkill } from "@shared";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,

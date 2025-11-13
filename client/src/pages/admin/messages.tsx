@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { ContactMessage } from "@shared/schema";
+import type { ContactMessage } from "@shared";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,

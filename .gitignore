@@ -44,9 +44,22 @@ Thumbs.db
 *~
 .local/
 
+# Replit-specific
+.config/
+attached_assets/
+
 # Build
 *.tar.gz
 vite.config.ts.*
+
+# User Uploads
+uploads/
+
+# Automation Scripts
+*.bat
+
+# Verification Reports
+docs/verification/
 
 # Misc
 .cache/

@@ -16,7 +16,7 @@ import {
 import { AdminHeader } from "@/components/admin/header";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import type { Project, Skill, ContactMessage, Testimonial } from "@shared/schema";
+import type { Project, Skill, ContactMessage, Testimonial } from "@shared";
 
 export default function AdminDashboard() {
   const [location, setLocation] = useLocation();
