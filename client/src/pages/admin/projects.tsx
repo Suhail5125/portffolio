@@ -1,26 +1,51 @@
-import { useState, useRef } from "react";
-import { Link } from "wouter";
+import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Plus,
   Edit,
   Trash2,
-  ExternalLink,
-  Github,
   X,
   Upload,
+  AlertTriangle,
+  Eye,
+  ExternalLink,
+  Github,
 } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Project, InsertProject } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
+
+const parseProjectTechnologies = (value: Project["technologies"]): string[] => {
+  if (Array.isArray(value)) {
+    return value as string[];
+  }
+  if (typeof value === "string" && value.trim()) {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+};
 
 export default function AdminProjects() {
   const { toast } = useToast();
@@ -37,6 +62,30 @@ export default function AdminProjects() {
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [techInput, setTechInput] = useState("");
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [viewProject, setViewProject] = useState<Project | null>(null);
+  const dialogHistoryRef = useRef(false);
+
+  const handleCloseDeleteDialog = () => {
+    setIsDeleteDialogOpen(false);
+    setProjectToDelete(null);
+  };
+
+  const handleOpenDeleteDialog = (project: Project) => {
+    setProjectToDelete(project);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleOpenViewDialog = (project: Project) => {
+    setViewProject(project);
+    // Push state to history so back button works
+    window.history.pushState({ viewingProject: true }, "");
+  };
+
+  const handleCloseViewDialog = () => {
+    setViewProject(null);
+  };
 
   const { data: projects = [], isLoading } = useQuery<Project[]>({
     queryKey: ["/api/projects"],
@@ -85,6 +134,7 @@ export default function AdminProjects() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
       toast({ title: "Project deleted successfully!" });
+      handleCloseDeleteDialog();
     },
     onError: (error: Error) => {
       toast({
@@ -102,9 +152,7 @@ export default function AdminProjects() {
         title: project.title,
         description: project.description,
         imageUrl: project.imageUrl || "",
-        technologies: typeof project.technologies === 'string' 
-          ? JSON.parse(project.technologies)
-          : [],
+        technologies: parseProjectTechnologies(project.technologies),
         githubUrl: project.githubUrl || "",
         liveUrl: project.liveUrl || "",
         featured: project.featured,
@@ -144,17 +192,21 @@ export default function AdminProjects() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const submitData = {
-      ...formData,
-      technologies: JSON.stringify(formData.technologies)
-    };
+    if ((formData.technologies?.length ?? 0) === 0) {
+      toast({
+        title: "Please add at least one technology",
+        variant: "destructive",
+      });
+      return;
+    }
+    const submitData = { ...formData };
     if (editingProject) {
       updateMutation.mutate({
         id: editingProject.id,
-        data: submitData as unknown as InsertProject,
+        data: submitData,
       });
     } else {
-      createMutation.mutate(submitData as unknown as InsertProject);
+      createMutation.mutate(submitData);
     }
   };
 
@@ -175,11 +227,71 @@ export default function AdminProjects() {
     });
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this project?")) {
-      deleteMutation.mutate(id);
+  const handleConfirmDelete = () => {
+    if (!projectToDelete) {
+      return;
     }
+    deleteMutation.mutate(projectToDelete.id);
   };
+
+  useEffect(() => {
+    if (!isDialogOpen) {
+      return;
+    }
+    if (typeof window === "undefined") {
+      return;
+    }
+    dialogHistoryRef.current = true;
+    const handlePopState = () => {
+      dialogHistoryRef.current = false;
+      handleCloseDialog();
+    };
+    window.history.pushState({ adminProjectDialog: true }, "");
+    window.addEventListener("popstate", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      if (dialogHistoryRef.current) {
+        window.history.back();
+      }
+      dialogHistoryRef.current = false;
+    };
+  }, [isDialogOpen]);
+
+  // Handle browser back button for view details
+  useEffect(() => {
+    if (!viewProject) {
+      return;
+    }
+    
+    const handlePopState = () => {
+      handleCloseViewDialog();
+    };
+    
+    window.addEventListener("popstate", handlePopState);
+    
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [viewProject]);
+
+  // View Project Details Page
+  if (viewProject) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-chart-1/10 mb-6">
+            <Eye className="h-10 w-10 text-chart-1" />
+          </div>
+          <h2 className="font-display text-4xl font-bold mb-4 gradient-text-cyan-magenta">
+            Coming Soon
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-md mx-auto">
+            Project detail view is under construction. We're designing an amazing experience to showcase your projects!
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (isDialogOpen) {
     return (
@@ -434,105 +546,164 @@ export default function AdminProjects() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-fr">
             <AnimatePresence mode="popLayout">
-              {projects.map((project, index) => (
-                <motion.div
-                  key={project.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Card className="group overflow-hidden hover:shadow-lg dark:hover:shadow-primary/5 transition-all duration-300 bg-background/50 backdrop-blur border-border/50">
-                    <div className="relative">
-                      {project.imageUrl ? (
-                        <div className="aspect-[16/9] relative overflow-hidden">
-                          <img
-                            src={project.imageUrl}
-                            alt={project.title}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        </div>
-                      ) : (
-                        <div className="aspect-[16/9] flex items-center justify-center bg-gradient-to-br from-chart-1/20 to-chart-2/20">
-                          <div className="text-4xl font-bold text-muted-foreground/30">
-                            {project.title.charAt(0).toUpperCase()}
+              {projects.map((project, index) => {
+                const technologies = parseProjectTechnologies(project.technologies);
+
+                return (
+                  <motion.div
+                    key={project.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <Card className="group overflow-hidden hover:shadow-lg dark:hover:shadow-primary/5 transition-all duration-300 bg-background/50 backdrop-blur border-border/50">
+                      <div className="relative">
+                        {project.imageUrl ? (
+                          <div className="aspect-[16/9] relative overflow-hidden">
+                            <img
+                              src={project.imageUrl}
+                              alt={project.title}
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                           </div>
+                        ) : (
+                          <div className="aspect-[16/9] flex items-center justify-center bg-gradient-to-br from-chart-1/20 to-chart-2/20">
+                            <div className="text-4xl font-bold text-muted-foreground/30">
+                              {project.title.charAt(0).toUpperCase()}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Status Badges */}
+                        <div className="absolute top-2 right-2 flex gap-2">
+                          {project.featured && (
+                            <Badge variant="default" className="bg-chart-1 text-xs font-medium">
+                              Featured
+                            </Badge>
+                          )}
+                          {project.liveUrl && (
+                            <Badge variant="secondary" className="text-xs font-medium">
+                              Live
+                            </Badge>
+                          )}
                         </div>
-                      )}
-                      
-                      {/* Status Badges */}
-                      <div className="absolute top-2 right-2 flex gap-2">
-                        {project.featured && (
-                          <Badge variant="default" className="bg-chart-1 text-xs font-medium">
-                            Featured
-                          </Badge>
-                        )}
-                        {project.liveUrl && (
-                          <Badge variant="secondary" className="text-xs font-medium">
-                            Live
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="p-5 space-y-4">
-                      {/* Header */}
-                      <div>
-                        <h3 className="font-display text-lg font-bold mb-1 group-hover:text-primary transition-colors">
-                          {project.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
-                          {project.description}
-                        </p>
                       </div>
 
-                      {/* Technologies */}
-                      <div className="flex flex-wrap gap-1.5">
-                        {(typeof project.technologies === 'string' 
-                          ? JSON.parse(project.technologies) as string[]
-                          : []
-                        ).slice(0, 3).map((tech: string) => (
-                          <Badge key={tech} variant="secondary" className="text-xs px-2 py-0.5 bg-muted">
-                            {tech}
-                          </Badge>
-                        ))}
-                        {typeof project.technologies === 'string' && 
-                         JSON.parse(project.technologies).length > 3 && (
-                          <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-muted">
-                            +{JSON.parse(project.technologies).length - 3}
-                          </Badge>
-                        )}
-                      </div>
+                      <div className="p-5 space-y-4">
+                        {/* Header */}
+                        <div>
+                          <h3 className="font-display text-lg font-bold mb-1 group-hover:text-primary transition-colors">
+                            {project.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                            {project.description}
+                          </p>
+                        </div>
 
-                      {/* Action Buttons */}
-                      <div className="flex items-center gap-2 pt-2">
-                        <Button
-                          size="sm"
-                          variant="default"
-                          onClick={() => handleOpenDialog(project)}
-                          className="flex-1 bg-primary/10 hover:bg-primary/20"
-                        >
-                          <Edit className="h-3.5 w-3.5 mr-2" />
-                          Edit Project
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleDelete(project.id)}
-                          className="px-3 bg-destructive/10 hover:bg-destructive/20 text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
+                        {/* Technologies */}
+                        <div className="flex flex-wrap gap-1.5">
+                          {technologies.slice(0, 3).map((tech) => (
+                            <Badge key={tech} variant="secondary" className="text-xs px-2 py-0.5 bg-muted">
+                              {tech}
+                            </Badge>
+                          ))}
+                          {technologies.length > 3 && (
+                            <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-muted">
+                              +{technologies.length - 3}
+                            </Badge>
+                          )}
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2 pt-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleOpenViewDialog(project)}
+                            className="flex-1"
+                          >
+                            <Eye className="h-3.5 w-3.5 mr-2" />
+                            View Details
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="default"
+                            onClick={() => handleOpenDialog(project)}
+                            className="px-3 bg-primary/10 hover:bg-primary/20"
+                          >
+                            <Edit className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleOpenDeleteDialog(project)}
+                            className="px-3 bg-destructive/10 hover:bg-destructive/20 text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </Card>
-                </motion.div>
-              ))}
+                    </Card>
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
           </div>
         )}
       </main>
+
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleCloseDeleteDialog();
+          }
+        }}
+      >
+        <AlertDialogContent className="glass border border-destructive/20 max-w-xl shadow-xl">
+          <AlertDialogHeader className="space-y-5 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+              <AlertTriangle className="h-8 w-8" />
+            </div>
+            <AlertDialogTitle className="font-display text-2xl">
+              Delete this project?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-muted-foreground">
+              This will permanently remove
+              {" "}
+              <span className="font-semibold text-foreground">
+                {projectToDelete?.title ?? "this project"}
+              </span>
+              . This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col-reverse sm:flex-row sm:justify-end gap-3">
+            <AlertDialogCancel
+              disabled={deleteMutation.isPending}
+              className="w-full sm:w-auto border-border/60"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <Button
+              type="button"
+              onClick={handleConfirmDelete}
+              className="w-full sm:w-auto gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? (
+                <span className="flex items-center justify-center">
+                  <span className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Deleting...
+                </span>
+              ) : (
+                "Delete Project"
+              )}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

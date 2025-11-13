@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ErrorBoundary } from "@/components/error-boundary";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
+import ProjectDetail from "@/pages/project-detail";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import TermsOfService from "@/pages/terms-of-service";
 import AdminLogin from "@/pages/admin/login";
@@ -60,22 +61,31 @@ const ProtectedAdminPrivacyPolicy = withAuth(AdminPrivacyPolicy);
 const ProtectedAdminTermsOfService = withAuth(AdminTermsOfService);
 
 function Router() {
+  const [location] = useLocation();
+  const isAdminRoute = location.startsWith("/admin");
+
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/privacy-policy" component={PrivacyPolicy} />
-      <Route path="/terms-of-service" component={TermsOfService} />
-      <Route path="/admin/login" component={AdminLogin} />
-      <Route path="/admin/dashboard" component={ProtectedAdminDashboard} />
-      <Route path="/admin/projects" component={ProtectedAdminProjects} />
-      <Route path="/admin/skills" component={ProtectedAdminSkills} />
-      <Route path="/admin/testimonials" component={ProtectedAdminTestimonials} />
-      <Route path="/admin/messages" component={ProtectedAdminMessages} />
-      <Route path="/admin/about" component={ProtectedAdminAbout} />
-      <Route path="/admin/privacy-policy" component={ProtectedAdminPrivacyPolicy} />
-      <Route path="/admin/terms-of-service" component={ProtectedAdminTermsOfService} />
-      <Route component={NotFound} />
-    </Switch>
+    <ThemeProvider 
+      defaultTheme="dark" 
+      storageKey={isAdminRoute ? "admin-theme" : "client-theme"}
+    >
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/projects/:id" component={ProjectDetail} />
+        <Route path="/privacy-policy" component={PrivacyPolicy} />
+        <Route path="/terms-of-service" component={TermsOfService} />
+        <Route path="/admin/login" component={AdminLogin} />
+        <Route path="/admin/dashboard" component={ProtectedAdminDashboard} />
+        <Route path="/admin/projects" component={ProtectedAdminProjects} />
+        <Route path="/admin/skills" component={ProtectedAdminSkills} />
+        <Route path="/admin/testimonials" component={ProtectedAdminTestimonials} />
+        <Route path="/admin/messages" component={ProtectedAdminMessages} />
+        <Route path="/admin/about" component={ProtectedAdminAbout} />
+        <Route path="/admin/privacy-policy" component={ProtectedAdminPrivacyPolicy} />
+        <Route path="/admin/terms-of-service" component={ProtectedAdminTermsOfService} />
+        <Route component={NotFound} />
+      </Switch>
+    </ThemeProvider>
   );
 }
 
@@ -83,12 +93,10 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider defaultTheme="dark">
-          <TooltipProvider>
-            <Toaster />
-            <Router />
-          </TooltipProvider>
-        </ThemeProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );

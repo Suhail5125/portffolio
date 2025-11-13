@@ -168,6 +168,7 @@ export interface IStorage {
   getContactMessage(id: string): Promise<ContactMessage | undefined>;
   createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
   markMessageAsRead(id: string): Promise<boolean>;
+  toggleMessageStarred(id: string, starred: boolean): Promise<boolean>;
   deleteContactMessage(id: string): Promise<boolean>;
 
   // About info methods
@@ -334,6 +335,15 @@ export class DbStorage implements IStorage {
     const result = await db
       .update(contactMessages)
       .set({ read: true })
+      .where(eq(contactMessages.id, id))
+      .returning();
+    return result.length > 0;
+  }
+
+  async toggleMessageStarred(id: string, starred: boolean): Promise<boolean> {
+    const result = await db
+      .update(contactMessages)
+      .set({ starred })
       .where(eq(contactMessages.id, id))
       .returning();
     return result.length > 0;

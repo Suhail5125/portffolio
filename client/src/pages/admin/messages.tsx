@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { Link } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft,
   Mail,
   MailOpen,
   Trash2,
@@ -14,6 +12,8 @@ import {
   Calendar,
   User,
   Briefcase,
+  Star,
+  AlertTriangle,
 } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -25,6 +25,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 
 const formatProjectType = (value?: string | null) => {
   if (!value) return "Not specified";
@@ -39,9 +48,11 @@ export default function AdminMessages() {
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(
     null
   );
-  const [filterStatus, setFilterStatus] = useState<"all" | "read" | "unread">(
+  const [filterStatus, setFilterStatus] = useState<"all" | "read" | "unread" | "starred">(
     "all"
   );
+  const [messageToDelete, setMessageToDelete] = useState<ContactMessage | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const { data: messages = [], isLoading } = useQuery<ContactMessage[]>({
     queryKey: ["/api/contact/messages"],
@@ -57,6 +68,29 @@ export default function AdminMessages() {
     },
   });
 
+  const toggleStarredMutation = useMutation({
+    mutationFn: async ({ id, starred }: { id: string; starred: boolean }) => {
+      return await apiRequest("PUT", `/api/contact/messages/${id}/starred`, { starred });
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/contact/messages"] });
+      // Update the selected message state if it's the one being starred
+      if (selectedMessage && selectedMessage.id === variables.id) {
+        setSelectedMessage({ ...selectedMessage, starred: variables.starred });
+      }
+      toast({ 
+        title: variables.starred ? "Message starred" : "Message unstarred" 
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to update message",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       return await apiRequest("DELETE", `/api/contact/messages/${id}`, {});
@@ -65,6 +99,7 @@ export default function AdminMessages() {
       queryClient.invalidateQueries({ queryKey: ["/api/contact/messages"] });
       toast({ title: "Message deleted successfully!" });
       setSelectedMessage(null);
+      handleCloseDeleteDialog();
     },
     onError: (error: Error) => {
       toast({
@@ -75,6 +110,23 @@ export default function AdminMessages() {
     },
   });
 
+  const handleCloseDeleteDialog = () => {
+    setIsDeleteDialogOpen(false);
+    setMessageToDelete(null);
+  };
+
+  const handleOpenDeleteDialog = (message: ContactMessage) => {
+    setMessageToDelete(message);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!messageToDelete) {
+      return;
+    }
+    deleteMutation.mutate(messageToDelete.id);
+  };
+
   const handleOpenMessage = (message: ContactMessage) => {
     setSelectedMessage(message);
     if (!message.read) {
@@ -82,11 +134,7 @@ export default function AdminMessages() {
     }
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this message?")) {
-      deleteMutation.mutate(id);
-    }
-  };
+
 
   const legacyProjectType = selectedMessage
     ? (selectedMessage as { project_type?: string | null }).project_type ?? null
@@ -96,10 +144,16 @@ export default function AdminMessages() {
     selectedMessage?.projectType ?? legacyProjectType
   );
 
+  const handleToggleStar = (e: React.MouseEvent, message: ContactMessage) => {
+    e.stopPropagation();
+    toggleStarredMutation.mutate({ id: message.id, starred: !message.starred });
+  };
+
   const filteredMessages = messages
     .filter((msg) => {
       if (filterStatus === "read") return msg.read;
       if (filterStatus === "unread") return !msg.read;
+      if (filterStatus === "starred") return msg.starred;
       return true;
     })
     .filter(
@@ -108,9 +162,16 @@ export default function AdminMessages() {
         msg.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         msg.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (msg.subject && msg.subject.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+    )
+    .sort((a, b) => {
+      // Sort by date: newest first
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA;
+    });
 
   const unreadCount = messages.filter((m) => !m.read).length;
+  const starredCount = messages.filter((m) => m.starred).length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -121,9 +182,6 @@ export default function AdminMessages() {
             <h1 className="font-display text-3xl font-bold gradient-text-cyan-magenta">
               Messages
             </h1>
-            <p className="text-sm text-muted-foreground">
-              {unreadCount} unread message{unreadCount !== 1 ? "s" : ""}
-            </p>
           </div>
         </div>
       </header>
@@ -141,7 +199,7 @@ export default function AdminMessages() {
               className="pl-10"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button
               variant={filterStatus === "all" ? "default" : "outline"}
               onClick={() => setFilterStatus("all")}
@@ -153,6 +211,14 @@ export default function AdminMessages() {
               onClick={() => setFilterStatus("unread")}
             >
               Unread ({unreadCount})
+            </Button>
+            <Button
+              variant={filterStatus === "starred" ? "default" : "outline"}
+              onClick={() => setFilterStatus("starred")}
+              className="gap-1"
+            >
+              <Star className="h-4 w-4" />
+              Starred ({starredCount})
             </Button>
             <Button
               variant={filterStatus === "read" ? "default" : "outline"}
@@ -205,9 +271,6 @@ export default function AdminMessages() {
                         <div>
                           <div className="flex items-center gap-2">
                             <h3 className="font-semibold text-lg">{message.name}</h3>
-                            {!message.read && (
-                              <Badge className="bg-chart-1 text-xs">New</Badge>
-                            )}
                           </div>
                           <p className="text-sm text-muted-foreground">
                             {message.email}
@@ -215,8 +278,8 @@ export default function AdminMessages() {
                         </div>
                       </div>
                       
-                      {/* Right: Date & Delete */}
-                      <div className="flex items-center gap-4">
+                      {/* Right: Date, Star & Delete */}
+                      <div className="flex items-center gap-2">
                         <div className="text-right">
                           <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
                             <Calendar className="h-3 w-3" />
@@ -229,9 +292,17 @@ export default function AdminMessages() {
                         <Button
                           size="icon"
                           variant="ghost"
+                          onClick={(e) => handleToggleStar(e, message)}
+                          className={message.starred ? "text-chart-1 hover:text-chart-1" : "text-muted-foreground hover:text-chart-1"}
+                        >
+                          <Star className={`h-4 w-4 ${message.starred ? "fill-current" : ""}`} />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDelete(message.id);
+                            handleOpenDeleteDialog(message);
                           }}
                           className="text-destructive hover:text-destructive hover:bg-destructive/10"
                         >
@@ -325,29 +396,97 @@ export default function AdminMessages() {
               </Card>
               
               {/* Action Buttons */}
-              <div className="flex gap-3 justify-end pt-2">
+              <div className="flex gap-3 justify-between pt-2">
                 <Button
+                  size="icon"
                   variant="outline"
-                  onClick={() => handleDelete(selectedMessage.id)}
-                  className="text-destructive hover:bg-destructive/10"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleStarredMutation.mutate({ 
+                      id: selectedMessage.id, 
+                      starred: !selectedMessage.starred 
+                    });
+                  }}
+                  className={selectedMessage.starred ? "text-chart-1 border-chart-1 hover:bg-chart-1/10" : "hover:text-chart-1"}
                 >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
+                  <Star className={`h-4 w-4 ${selectedMessage.starred ? "fill-current" : ""}`} />
                 </Button>
-                <Button
-                  onClick={() =>
-                    (window.location.href = `mailto:${selectedMessage.email}?subject=Re: ${selectedMessage.subject || 'Your inquiry'}`)
-                  }
-                  className="bg-chart-1 hover:bg-chart-1/90"
-                >
-                  <Mail className="h-4 w-4 mr-2" />
-                  Reply via Email
-                </Button>
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => handleOpenDeleteDialog(selectedMessage)}
+                    className="text-destructive hover:bg-destructive/10"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      (window.location.href = `mailto:${selectedMessage.email}?subject=Re: ${selectedMessage.subject || 'Your inquiry'}`)
+                    }
+                    className="bg-chart-1 hover:bg-chart-1/90"
+                  >
+                    <Mail className="h-4 w-4 mr-2" />
+                    Reply via Email
+                  </Button>
+                </div>
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleCloseDeleteDialog();
+          }
+        }}
+      >
+        <AlertDialogContent className="glass border border-destructive/20 max-w-xl shadow-xl">
+          <AlertDialogHeader className="space-y-5 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+              <AlertTriangle className="h-8 w-8" />
+            </div>
+            <AlertDialogTitle className="font-display text-2xl">
+              Delete this message?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-muted-foreground">
+              This will permanently remove the message from
+              {" "}
+              <span className="font-semibold text-foreground">
+                {messageToDelete?.name ?? "this person"}
+              </span>
+              . This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col-reverse sm:flex-row sm:justify-end gap-3">
+            <AlertDialogCancel
+              disabled={deleteMutation.isPending}
+              className="w-full sm:w-auto border-border/60"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <Button
+              type="button"
+              onClick={handleConfirmDelete}
+              className="w-full sm:w-auto gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? (
+                <span className="flex items-center justify-center">
+                  <span className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Deleting...
+                </span>
+              ) : (
+                "Delete Message"
+              )}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

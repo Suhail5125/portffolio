@@ -1,8 +1,6 @@
 import { motion, useScroll } from "framer-motion";
 import { useState, useEffect } from "react";
-import { Code2, Home, User, Briefcase, MessageSquare, Menu, X, Send, Palette, Sun, Moon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useTheme } from "next-themes";
+import { Code2, Home, User, Briefcase, MessageSquare, Menu, X, Palette } from "lucide-react";
 
 const navItems = [
   { name: "Home", href: "#hero", icon: Home },
@@ -16,7 +14,6 @@ export function FloatingNavbar() {
   const [isVisible, setIsVisible] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { scrollY } = useScroll();
-  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const unsubscribe = scrollY.on("change", (latest) => {
@@ -73,7 +70,7 @@ export function FloatingNavbar() {
             </div>
 
             {/* Vertical Nav Items */}
-            <div className="flex flex-col gap-2 mb-4">
+            <div className="flex flex-col gap-2">
               {navItems.map((item) => (
                 <motion.button
                   key={item.name}
@@ -88,29 +85,7 @@ export function FloatingNavbar() {
               ))}
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col gap-2 pt-3 border-t border-border/30">
-              <Button
-                onClick={() => scrollToSection("#contact")}
-                size="sm"
-                className="w-full justify-start gap-2 text-xs"
-              >
-                <Send className="h-3 w-3" />
-                Let's Work
-              </Button>
-              
-              <button
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="flex items-center gap-2 p-2 rounded-md hover:bg-chart-1/10 transition-colors text-sm"
-              >
-                {theme === "dark" ? (
-                  <Sun className="h-4 w-4 text-muted-foreground" />
-                ) : (
-                  <Moon className="h-4 w-4 text-muted-foreground" />
-                )}
-                <span className="text-xs">Theme</span>
-              </button>
-            </div>
+
           </div>
         </motion.div>
       )}

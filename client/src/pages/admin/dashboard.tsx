@@ -89,12 +89,7 @@ export default function AdminDashboard() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card className="p-6 glass border-border/50 relative">
-              {unreadMessages > 0 && (
-                <div className="absolute -top-2 -right-2 h-5 w-5 bg-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-xs text-white font-bold">{unreadMessages}</span>
-                </div>
-              )}
+            <Card className="p-6 glass border-border/50">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-chart-3/20">
                   <MessageSquare className="h-5 w-5 text-chart-3" />
@@ -121,19 +116,6 @@ export default function AdminDashboard() {
             </Card>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-            <Card className="p-6 glass border-border/50">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-chart-1/20">
-                  <TrendingUp className="h-5 w-5 text-chart-1" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{featuredProjects}</p>
-                  <p className="text-sm text-muted-foreground">Featured</p>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
         </div>
 
         {/* Management Sections */}
@@ -192,6 +174,30 @@ export default function AdminDashboard() {
             <Card className="p-6 glass border-border/50 h-full">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
+                  <MessageSquare className="h-6 w-6 text-chart-3" />
+                  <h2 className="font-display text-xl font-bold">Messages</h2>
+                  {unreadMessages > 0 && (
+                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                      {unreadMessages} new
+                    </span>
+                  )}
+                </div>
+              </div>
+              <p className="text-muted-foreground mb-4">
+                View and respond to contact form submissions from potential clients and collaborators.
+              </p>
+              <Link href="/admin/messages">
+                <Button variant="outline" className="w-full">
+                  View Messages
+                </Button>
+              </Link>
+            </Card>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 }}>
+            <Card className="p-6 glass border-border/50 h-full">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
                   <Quote className="h-6 w-6 text-chart-1" />
                   <h2 className="font-display text-xl font-bold">Testimonials</h2>
                 </div>
@@ -213,31 +219,7 @@ export default function AdminDashboard() {
             </Card>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 }}>
-            <Card className="p-6 glass border-border/50 h-full">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <MessageSquare className="h-6 w-6 text-chart-3" />
-                  <h2 className="font-display text-xl font-bold">Messages</h2>
-                  {unreadMessages > 0 && (
-                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                      {unreadMessages} new
-                    </span>
-                  )}
-                </div>
-              </div>
-              <p className="text-muted-foreground mb-4">
-                View and respond to contact form submissions from potential clients and collaborators.
-              </p>
-              <Link href="/admin/messages">
-                <Button variant="outline" className="w-full">
-                  View Messages
-                </Button>
-              </Link>
-            </Card>
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}>
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }}>
             <Card className="p-6 glass border-border/50 h-full">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">

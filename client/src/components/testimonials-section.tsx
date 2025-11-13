@@ -13,56 +13,7 @@ interface DisplayTestimonial {
   avatarUrl?: string | null;
 }
 
-const fallbackTestimonials: DisplayTestimonial[] = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    role: "CEO, TechStart",
-    company: "TechStart Inc.",
-    content: "Exceptional work! The team delivered beyond our expectations with innovative solutions and flawless execution.",
-    rating: 5
-  },
-  {
-    id: 2,
-    name: "Michael Chen",
-    role: "Product Manager",
-    company: "Digital Solutions",
-    content: "Professional, creative, and reliable. They transformed our vision into a stunning digital experience.",
-    rating: 5
-  },
-  {
-    id: 3,
-    name: "Emily Rodriguez",
-    role: "Marketing Director",
-    company: "Growth Labs",
-    content: "Outstanding quality and attention to detail. The project was completed on time and exceeded all requirements.",
-    rating: 5
-  },
-  {
-    id: 4,
-    name: "David Thompson",
-    role: "Founder",
-    company: "InnovateCorp",
-    content: "Incredible team with amazing skills. They brought our complex ideas to life with elegant simplicity.",
-    rating: 5
-  },
-  {
-    id: 5,
-    name: "Lisa Wang",
-    role: "CTO",
-    company: "FutureTech",
-    content: "Top-notch development and design. The collaboration was smooth and the results were phenomenal.",
-    rating: 5
-  },
-  {
-    id: 6,
-    name: "James Miller",
-    role: "Creative Director",
-    company: "Design Studio",
-    content: "Exceptional creativity and technical expertise. They delivered a product that truly stands out.",
-    rating: 5
-  }
-];
+
 
 const getInitials = (value: string) => {
   return value
@@ -86,20 +37,17 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
     .slice(0, MAX_DISPLAY);
 
-  const dataset: DisplayTestimonial[] =
-    sourceTestimonials.length > 0
-      ? sourceTestimonials.map((item) => ({
-          id: item.id,
-          name: item.name,
-          role: item.role,
-          company: item.company,
-          content: item.content,
-          rating: item.rating ?? 5,
-          avatarUrl: item.avatarUrl || null,
-        }))
-      : fallbackTestimonials;
+  const dataset: DisplayTestimonial[] = sourceTestimonials.map((item) => ({
+    id: item.id,
+    name: item.name,
+    role: item.role,
+    company: item.company,
+    content: item.content,
+    rating: item.rating ?? 5,
+    avatarUrl: item.avatarUrl || null,
+  }));
 
-  const displayTestimonials = isLoading && testimonials.length === 0 ? fallbackTestimonials : dataset;
+  const displayTestimonials = dataset;
   const duplicatedTestimonials = [...displayTestimonials, ...displayTestimonials, ...displayTestimonials];
   const reversedTestimonials = [...duplicatedTestimonials].reverse();
   const [isPaused, setIsPaused] = React.useState(false);
@@ -203,50 +151,95 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
           </motion.div>
         </motion.div>
 
-        {/* Infinite Scrolling Testimonials */}
-        <div className="relative">
-          {/* Top Row - Left to Right */}
-          <div className="mb-8 overflow-hidden">
+        {/* Infinite Scrolling Testimonials or Empty State */}
+        {displayTestimonials.length === 0 ? (
+          <motion.div
+            className="flex flex-col items-center justify-center py-20"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
             <motion.div
-              className="flex gap-6"
-              animate={{
-                x: isPaused ? undefined : [0, -1920]
-              }}
-              transition={{
-                duration: 30,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
+              className="relative mb-8"
+              initial={{ scale: 0, rotate: -180 }}
+              whileInView={{ scale: 1, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{ type: "spring", duration: 1, delay: 0.2 }}
             >
-              {duplicatedTestimonials.map((testimonial, index) => (
-                <TestimonialCard key={`top-${index}`} testimonial={testimonial} />
-              ))}
+              <motion.div
+                className="absolute inset-0 bg-chart-1/20 rounded-full blur-xl"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              <Quote className="h-20 w-20 text-chart-1 relative z-10" />
             </motion.div>
-          </div>
+            
+            <motion.h3
+              className="font-display text-2xl font-bold mb-3 gradient-text-cyan-magenta"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+            >
+              No Testimonials Yet
+            </motion.h3>
+            
+            <motion.p
+              className="text-muted-foreground text-center max-w-md"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6 }}
+            >
+              We're building amazing relationships with our clients. Check back soon to see what they have to say!
+            </motion.p>
+          </motion.div>
+        ) : (
+          <div className="relative">
+            {/* Top Row - Left to Right */}
+            <div className="mb-8 overflow-hidden">
+              <motion.div
+                className="flex gap-6"
+                animate={{
+                  x: isPaused ? undefined : [0, -1920]
+                }}
+                transition={{
+                  duration: 30,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+              >
+                {duplicatedTestimonials.map((testimonial, index) => (
+                  <TestimonialCard key={`top-${index}`} testimonial={testimonial} />
+                ))}
+              </motion.div>
+            </div>
 
-          {/* Bottom Row - Right to Left */}
-          <div className="overflow-hidden">
-            <motion.div
-              className="flex gap-6"
-              animate={{
-                x: isPaused ? undefined : [-1920, 0]
-              }}
-              transition={{
-                duration: 25,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
-            >
-              {reversedTestimonials.map((testimonial, index) => (
-                <TestimonialCard key={`bottom-${index}`} testimonial={testimonial} />
-              ))}
-            </motion.div>
+            {/* Bottom Row - Right to Left */}
+            <div className="overflow-hidden">
+              <motion.div
+                className="flex gap-6"
+                animate={{
+                  x: isPaused ? undefined : [-1920, 0]
+                }}
+                transition={{
+                  duration: 25,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+              >
+                {reversedTestimonials.map((testimonial, index) => (
+                  <TestimonialCard key={`bottom-${index}`} testimonial={testimonial} />
+                ))}
+              </motion.div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

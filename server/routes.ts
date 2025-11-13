@@ -410,6 +410,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/contact/messages/:id/starred", isAuthenticated, async (req, res) => {
+    try {
+      const { starred } = req.body;
+      const success = await storage.toggleMessageStarred(req.params.id, starred);
+      if (!success) {
+        return res.status(404).json({ error: "Message not found" });
+      }
+      res.json({ message: starred ? "Message starred" : "Message unstarred" });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.delete("/api/contact/messages/:id", isAuthenticated, async (req, res) => {
     try {
       const success = await storage.deleteContactMessage(req.params.id);

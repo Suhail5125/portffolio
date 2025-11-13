@@ -13,7 +13,7 @@ interface HeroSectionProps {
 export function HeroSection({ aboutInfo, isLoading }: HeroSectionProps) {
   const [currentRole, setCurrentRole] = useState(0);
   
-  const roles = aboutInfo?.title ? [aboutInfo.title] : [
+  const roles = [
     "Creative Developer",
     "3D Enthusiast", 
     "UI/UX Designer",
@@ -191,7 +191,7 @@ export function HeroSection({ aboutInfo, isLoading }: HeroSectionProps) {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1 }}
           >
-            {aboutInfo?.bio || 'Transforming ideas into stunning digital realities with modern web technologies, 3D graphics, and innovative user experiences that captivate and engage.'}
+            Transforming ideas into stunning digital realities with modern web technologies, 3D graphics, and innovative user experiences that captivate and engage.
           </motion.p>
 
           <motion.div

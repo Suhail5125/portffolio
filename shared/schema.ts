@@ -50,6 +50,7 @@ export const contactMessages = sqliteTable("contact_messages", {
   projectType: text("project_type"),
   message: text("message").notNull(),
   read: integer("read", { mode: "boolean" }).default(false).notNull(),
+  starred: integer("starred", { mode: "boolean" }).default(false).notNull(),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
 });
 
@@ -121,6 +122,7 @@ export const insertTestimonialSchema = createInsertSchema(testimonials).omit({
 export const insertContactMessageSchema = createInsertSchema(contactMessages).omit({
   id: true,
   read: true,
+  starred: true,
   createdAt: true,
 }).extend({
   email: z.string()

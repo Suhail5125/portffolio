@@ -48,7 +48,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
         message: "",
       });
       setMessageLength(0);
-      setTimeout(() => setIsSuccess(false), 5000);
+      // Animation stays visible until user clicks "Send Another Message"
     } catch (error) {
       console.error("Failed to submit contact form:", error);
     }
@@ -225,7 +225,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
               }} />
             </div>
 
-            <div className="relative z-10">
+            <div className="relative z-10" style={{ minHeight: '400px' }}>
               {isSuccess ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -285,19 +285,8 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
                       </motion.span>
                     </h3>
                     <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                      Thank you for reaching out! We've received your message and will get back to you within 24 hours.
+                      Thank you for reaching out! We've received your message and will get back to you within 48 hours.
                     </p>
-                    
-                    <div className="flex items-center justify-center gap-4 mb-6">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Zap className="h-4 w-4 text-chart-1" />
-                        <span>Fast Response</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Sparkles className="h-4 w-4 text-chart-2" />
-                        <span>Premium Support</span>
-                      </div>
-                    </div>
                     
                     <Button
                       onClick={() => {

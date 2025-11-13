@@ -1,14 +1,9 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ProjectCard } from "@/components/project-card";
 import type { Project } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  type CarouselApi,
-} from "@/components/ui/carousel";
-import { useEffect, useState } from "react";
+
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink } from "lucide-react";
+import { FaGithub } from "react-icons/fa";
 
 interface ProjectsSectionProps {
   projects: Project[];
@@ -26,16 +22,37 @@ interface ProjectsSectionProps {
 }
 
 export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
-  const displayProjects = projects.slice(0, 5);
-  const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(0);
+  const featuredProjects = projects.filter((project) => project.featured);
+  const displayProjects = (featuredProjects.length > 0 ? featuredProjects : projects);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  
+  // Auto-scroll effect
+  useEffect(() => {
+    if (displayProjects.length === 0 || isPaused) return;
+    
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % displayProjects.length);
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, [displayProjects.length, isPaused]);
+  
+  // Get 3 visible cards
+  const getVisibleProjects = () => {
+    const visible = [];
+    for (let i = 0; i < 3; i++) {
+      const index = (currentIndex + i) % displayProjects.length;
+      visible.push(displayProjects[index]);
+    }
+    return visible;
+  };
 
   const handleProjectSelect = (project: Project) => {
-    setSelectedProject(project);
-    setIsDialogOpen(true);
+    // Navigate to project detail page (coming soon page for now)
+    window.location.href = `/projects/${project.id}`;
   };
 
   const handleDialogChange = (open: boolean) => {
@@ -66,27 +83,10 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
 
   const selectedTechnologies = selectedProject ? getTechnologies(selectedProject) : [];
 
-  useEffect(() => {
-    if (!api) return;
-
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap());
-
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap());
-    });
-
-    const autoplay = setInterval(() => {
-      api.scrollNext();
-    }, 4000); // Auto-slide every 4 seconds
-
-    return () => clearInterval(autoplay);
-  }, [api]);
-
   return (
-    <section id="projects" className="h-screen py-12 relative overflow-hidden flex items-center">
+    <section id="projects" className="min-h-screen py-20 relative flex items-center" style={{ overflow: 'visible' }}>
       {/* Enhanced Animated Background */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 overflow-hidden z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-card/20 to-background" />
         
         {/* Matrix-style Grid */}
@@ -130,7 +130,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
         })}
       </div>
       
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
           className="text-center mb-8"
           initial={{ opacity: 0, y: 50 }}
@@ -208,72 +208,98 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
             </div>
           </div>
         ) : (
-          <div className="relative">
-            {/* Enhanced Glass Container */}
-            <div className="glass rounded-3xl border border-chart-1/20 p-6 backdrop-blur-xl bg-background/30">
-            
+          <div className="relative w-full overflow-visible pb-20" style={{ paddingTop: '0px' }}>
             <motion.div 
-              className="relative"
+              className="relative max-w-[1280px] mx-auto px-2"
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              <Carousel
-                setApi={setApi}
-                opts={{
-                  align: "center",
-                  loop: true,
-                }}
-                className="w-full"
-              >
-                <CarouselContent className="-ml-6 py-4">
-                  {displayProjects.map((project, index) => (
-                    <CarouselItem key={project.id} className="pl-6 md:basis-1/2 lg:basis-1/3">
-                      <motion.div 
-                        className="group"
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: index * 0.1 }}
-                        whileHover={{ y: -10 }}
-                      >
-                        <ProjectCard
-                          project={project}
-                          index={index}
-                          onSelect={() => handleProjectSelect(project)}
-                        />
-                      </motion.div>
-                    </CarouselItem>
+              <div className="relative flex gap-4 overflow-x-hidden" style={{ overflowY: 'visible' }}>
+                <AnimatePresence mode="popLayout" initial={false}>
+                  {getVisibleProjects().map((project, index) => (
+                    <motion.div
+                      key={`${project.id}-${(currentIndex + index) % displayProjects.length}`}
+                      layout
+                      initial={{ x: 404, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      exit={{ x: -404, opacity: 0 }}
+                      transition={{ 
+                        duration: 0.6,
+                        ease: "easeInOut",
+                        layout: { duration: 0.6 }
+                      }}
+                      className="flex-shrink-0"
+                      style={{ width: "380px", marginTop: '0', paddingTop: '0' }}
+                      onMouseEnter={() => setIsPaused(true)}
+                      onMouseLeave={() => setIsPaused(false)}
+                    >
+                      <ProjectCard
+                        project={project}
+                        index={index}
+                        onSelect={() => handleProjectSelect(project)}
+                      />
+                    </motion.div>
                   ))}
-                </CarouselContent>
-              </Carousel>
+                </AnimatePresence>
+              </div>
 
-              {/* Enhanced Navigation Dots */}
+              {/* Control Dots */}
               <motion.div 
-                className="flex justify-center items-center gap-3 mt-6"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
+                className="flex items-center justify-center gap-3 mt-8"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.8 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
               >
-                {Array.from({ length: count }).map((_, index) => (
+                {displayProjects.map((_, index) => (
                   <motion.button
                     key={index}
-                    onClick={() => api?.scrollTo(index)}
-                    className={`rounded-full transition-all duration-500 ${
-                      index === current
-                        ? "w-10 h-3 bg-gradient-to-r from-chart-1 to-chart-2"
-                        : "w-3 h-3 bg-muted-foreground/30 hover:bg-chart-1/50"
-                    }`}
-                    whileHover={{ scale: 1.2 }}
+                    onClick={() => {
+                      setCurrentIndex(index);
+                      setIsPaused(true);
+                      setTimeout(() => setIsPaused(false), 5000);
+                    }}
+                    className="relative group"
+                    whileHover={{ scale: 1.3 }}
                     whileTap={{ scale: 0.9 }}
-                    aria-label={`Go to slide ${index + 1}`}
-                  />
+                  >
+                    <motion.div
+                      className="w-2.5 h-2.5 rounded-full cursor-pointer transition-all"
+                      style={{
+                        background: currentIndex === index 
+                          ? "linear-gradient(135deg, hsl(var(--chart-1)), hsl(var(--chart-2)))"
+                          : "rgba(255,255,255,0.2)",
+                        boxShadow: currentIndex === index 
+                          ? "0 0 15px rgba(0,255,255,0.6), 0 0 30px rgba(255,0,255,0.4)"
+                          : "none",
+                      }}
+                      animate={currentIndex === index ? {
+                        scale: [1, 1.2, 1],
+                      } : {}}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                      }}
+                    />
+                    {/* Hover ring effect */}
+                    <motion.div
+                      className="absolute inset-0 rounded-full border-2"
+                      style={{
+                        borderColor: "hsl(var(--chart-1))",
+                        opacity: 0,
+                      }}
+                      whileHover={{
+                        opacity: 0.6,
+                        scale: 1.8,
+                      }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </motion.button>
                 ))}
               </motion.div>
             </motion.div>
-            </div>
           </div>
         )}
       </div>
@@ -350,7 +376,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <Github className="h-4 w-4 mr-2" />
+                          <FaGithub className="h-4 w-4 mr-2" />
                           View Source Code
                         </a>
                       </Button>

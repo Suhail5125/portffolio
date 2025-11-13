@@ -45,17 +45,11 @@ export default function Home() {
       return await apiRequest("POST", "/api/contact", data);
     },
     onSuccess: () => {
-      toast({
-        title: "Message sent successfully!",
-        description: "Thank you for reaching out. We'll get back to you soon.",
-      });
+      // No toast notification - success is shown in the form itself
     },
     onError: (error: Error) => {
-      toast({
-        title: "Failed to send message",
-        description: error.message || "Please try again later.",
-        variant: "destructive",
-      });
+      // Silent error - form will handle display
+      console.error("Failed to send message:", error);
     },
   });
 

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export default function AdminAbout() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState<InsertAboutInfo>({
     name: "",
@@ -76,6 +77,8 @@ export default function AdminAbout() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/about"] });
       toast({ title: "About info updated successfully!" });
+      // Navigate to dashboard immediately after successful save
+      setLocation("/admin/dashboard");
     },
     onError: (error: Error) => {
       toast({

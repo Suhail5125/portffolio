@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit, Trash2, Star, Upload } from "lucide-react";
+import { Plus, Edit, Trash2, Star, Upload, AlertTriangle, Search } from "lucide-react";
 // Header replicated from Admin Projects page (centered title + add button)
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,6 +10,15 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { insertTestimonialSchema, type Testimonial, type InsertTestimonial } from "@shared/schema";
@@ -32,6 +41,8 @@ export default function AdminTestimonials() {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [testimonialToDelete, setTestimonialToDelete] = useState<Testimonial | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -99,6 +110,7 @@ export default function AdminTestimonials() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/testimonials"] });
       toast({ title: "Testimonial deleted successfully!" });
+      handleCloseDeleteDialog();
     },
     onError: (error: Error) => {
       toast({
@@ -108,6 +120,16 @@ export default function AdminTestimonials() {
       });
     },
   });
+
+  const handleCloseDeleteDialog = () => {
+    setIsDeleteDialogOpen(false);
+    setTestimonialToDelete(null);
+  };
+
+  const handleOpenDeleteDialog = (testimonial: Testimonial) => {
+    setTestimonialToDelete(testimonial);
+    setIsDeleteDialogOpen(true);
+  };
 
   const handleOpenDialog = (testimonial?: Testimonial) => {
     if (testimonial) {
@@ -171,10 +193,11 @@ export default function AdminTestimonials() {
     }
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this testimonial?")) {
-      deleteMutation.mutate(id);
+  const handleConfirmDelete = () => {
+    if (!testimonialToDelete) {
+      return;
     }
+    deleteMutation.mutate(testimonialToDelete.id);
   };
 
   const getInitials = (value: string) => {
@@ -259,12 +282,13 @@ export default function AdminTestimonials() {
                   {visibleCount}/{MAX_VISIBLE} visible
                 </span>
               </div>
-              <div className="w-full sm:w-72">
+              <div className="w-full sm:w-72 relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
                   placeholder="Search testimonials..."
-                  className="h-9"
+                  className="h-9 pl-9"
                 />
               </div>
             </div>
@@ -335,7 +359,7 @@ export default function AdminTestimonials() {
                               <Edit className="h-3.5 w-3.5 mr-2" />
                               Edit
                             </Button>
-                            <Button size="sm" variant="destructive" onClick={() => handleDelete(testimonial.id)} className="px-3 bg-destructive/10 hover:bg-destructive/20 text-destructive hover:text-destructive">
+                            <Button size="sm" variant="destructive" onClick={() => handleOpenDeleteDialog(testimonial)} className="px-3 bg-destructive/10 hover:bg-destructive/20 text-destructive hover:text-destructive">
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           </div>
@@ -493,6 +517,57 @@ export default function AdminTestimonials() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleCloseDeleteDialog();
+          }
+        }}
+      >
+        <AlertDialogContent className="glass border border-destructive/20 max-w-xl shadow-xl">
+          <AlertDialogHeader className="space-y-5 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+              <AlertTriangle className="h-8 w-8" />
+            </div>
+            <AlertDialogTitle className="font-display text-2xl">
+              Delete this testimonial?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-muted-foreground">
+              This will permanently remove the testimonial from
+              {" "}
+              <span className="font-semibold text-foreground">
+                {testimonialToDelete?.name ?? "this person"}
+              </span>
+              . This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col-reverse sm:flex-row sm:justify-end gap-3">
+            <AlertDialogCancel
+              disabled={deleteMutation.isPending}
+              className="w-full sm:w-auto border-border/60"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <Button
+              type="button"
+              onClick={handleConfirmDelete}
+              className="w-full sm:w-auto gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? (
+                <span className="flex items-center justify-center">
+                  <span className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Deleting...
+                </span>
+              ) : (
+                "Delete Testimonial"
+              )}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
