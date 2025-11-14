@@ -72,8 +72,9 @@ export function setupAuth(app: Express) {
         maxAge: config.session.maxAge,
         httpOnly: true,
         secure: config.server.isProduction,
-        sameSite: config.server.isProduction ? "strict" : "lax",
+        sameSite: "lax", // Changed from "strict" to "lax" for better compatibility
       },
+      proxy: config.server.isProduction, // Trust proxy in production (Railway uses proxies)
     })
   );
 
