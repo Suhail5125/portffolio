@@ -85,7 +85,7 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
       data-testid={`card-project-${project.id}`}
     >
       <Card
-        className="group relative overflow-hidden border-0 h-[460px] flex flex-col cursor-pointer"
+        className="group relative overflow-hidden border-0 h-[460px] sm:h-[460px] flex flex-col cursor-pointer w-full"
         onClick={onSelect}
         role={onSelect ? "button" : undefined}
         tabIndex={onSelect ? 0 : undefined}

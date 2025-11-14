@@ -53,11 +53,6 @@
 - [x] 3. Fix Projects Section title and card centering
 
 
-
-
-- [ ] 3. Fix Projects Section title and card centering
-
-
   - [x] 3.1 Fix section header centering
 
     - Add `w-full` to section header container
@@ -72,6 +67,9 @@
     - Ensure carousel inner container has `mx-auto` class
     - Add `justify-center sm:justify-start` to flex container with cards
     - Verify padding doesn't cause overflow (use `px-2 sm:px-4`)
+    - Added responsive card widths using `w-[85vw] max-w-[340px]` for mobile
+    - Added `snap-center` and `snap-x snap-mandatory` for smooth scrolling
+    - Added `scrollbar-hide` utility to hide scrollbars
     - _Requirements: 3.3, 3.4_
 -
 

@@ -210,7 +210,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
         ) : (
           <>
             {/* Carousel View */}
-            <div className="relative w-full max-w-full overflow-visible pb-20" style={{ paddingTop: '0px' }}>
+            <div className="relative w-full max-w-full overflow-hidden pb-20" style={{ paddingTop: '0px' }}>
               <motion.div 
                 className="relative max-w-[1280px] mx-auto px-2 sm:px-4"
                 initial={{ opacity: 0, y: 40 }}
@@ -218,7 +218,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
-                <div className="relative flex gap-4 justify-center sm:justify-start overflow-x-auto sm:overflow-x-hidden" style={{ overflowY: 'visible' }}>
+                <div className="relative flex gap-4 justify-center sm:justify-start overflow-x-auto sm:overflow-x-hidden snap-x snap-mandatory scrollbar-hide" style={{ overflowY: 'visible', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   <AnimatePresence mode="popLayout" initial={false}>
                     {getVisibleProjects().map((project, index) => (
                       <motion.div
@@ -232,7 +232,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
                           ease: "easeInOut",
                           layout: { duration: 0.6 }
                         }}
-                        className="flex-shrink-0 w-[280px] sm:w-[340px] md:w-[380px]"
+                        className="flex-shrink-0 w-[85vw] max-w-[340px] sm:w-[340px] md:w-[380px] snap-center"
                         style={{ marginTop: '0', paddingTop: '0' }}
                         onMouseEnter={() => setIsPaused(true)}
                         onMouseLeave={() => setIsPaused(false)}
