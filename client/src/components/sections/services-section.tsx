@@ -105,7 +105,7 @@ export function ServicesSection() {
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="font-display text-4xl md:text-5xl font-bold mb-3"
+            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -114,7 +114,7 @@ export function ServicesSection() {
             <span className="gradient-text-cyan-purple">Our Services</span>
           </motion.h2>
           <motion.p 
-            className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
+            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -148,7 +148,7 @@ export function ServicesSection() {
         </motion.div>
 
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-16"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -164,7 +164,7 @@ export function ServicesSection() {
               whileHover={{ y: -15, rotateY: 5 }}
               className="group"
             >
-              <Card className="p-4 glass border-chart-1/20 hover:border-chart-1/50 transition-all h-full relative overflow-hidden backdrop-blur-xl">
+              <Card className="p-4 sm:p-5 md:p-6 glass border-chart-1/20 hover:border-chart-1/50 transition-all h-full relative overflow-hidden backdrop-blur-xl rounded-xl">
                 {/* Glow Effect */}
                 <motion.div 
                   className="absolute inset-0 bg-gradient-to-br from-chart-1/5 via-transparent to-chart-2/5"
@@ -191,7 +191,7 @@ export function ServicesSection() {
                   <div className="flex items-center gap-4 mb-4">
                     <div className="relative">
                       <motion.div 
-                        className={`flex p-3 rounded-xl glass border border-chart-1/30 ${service.color}`}
+                        className={`flex p-2.5 sm:p-3 rounded-xl glass border border-chart-1/30 ${service.color}`}
                         whileHover={{ scale: 1.1, rotate: 10 }}
                         animate={{ 
                           boxShadow: ['0 0 12px hsl(var(--chart-1) / 0.2)', '0 0 24px hsl(var(--chart-1) / 0.4)', '0 0 12px hsl(var(--chart-1) / 0.2)'],
@@ -202,7 +202,7 @@ export function ServicesSection() {
                           rotate: { duration: 0.2 }
                         }}
                       >
-                        <service.icon className="h-6 w-6" />
+                        <service.icon className="h-5 w-5 sm:h-6 sm:w-6" />
                       </motion.div>
                       
                       {/* Floating Orb */}
@@ -221,7 +221,7 @@ export function ServicesSection() {
                     </div>
                     
                     <div className="flex-1">
-                      <h3 className="font-display text-xl font-bold group-hover:text-chart-1 transition-colors leading-tight">
+                      <h3 className="font-display text-base sm:text-lg md:text-xl font-bold group-hover:text-chart-1 transition-colors leading-tight">
                         {service.title}
                       </h3>
                       <motion.div

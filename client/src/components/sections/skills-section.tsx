@@ -110,7 +110,7 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="font-display text-4xl md:text-5xl font-bold mb-3"
+            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -119,7 +119,7 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
             <span className="gradient-text-cyan-purple">Skills & Expertise</span>
           </motion.h2>
           <motion.p 
-            className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
+            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -152,10 +152,10 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
           </motion.div>
         </motion.div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 items-center">
           
-          {/* Left Side - Perfect Curved Flow */}
-          <div className="relative h-96 flex items-center justify-center -ml-8">
+          {/* Left Side - Perfect Curved Flow - Hidden on mobile */}
+          <div className="relative h-96 hidden sm:flex items-center justify-center -ml-8">
             {/* Perfect S-Curve Path */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 350 400" preserveAspectRatio="xMidYMid meet">
               <defs>
@@ -251,7 +251,7 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
                     >
                       {/* Main Button */}
                       <motion.div
-                        className={`w-28 h-28 rounded-3xl border-4 transition-all duration-500 glass backdrop-blur-xl relative overflow-hidden ${
+                        className={`w-24 h-24 sm:w-28 sm:h-28 rounded-3xl border-4 transition-all duration-500 glass backdrop-blur-xl relative overflow-hidden ${
                           isSelected 
                             ? 'border-chart-1 bg-chart-1/20 shadow-2xl' 
                             : 'border-chart-1/50 hover:border-chart-1/80 bg-background/15'
@@ -312,8 +312,77 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
 
           </div>
           
+          {/* Mobile Category Selector - Horizontal Scroll */}
+          <div className="flex sm:hidden overflow-x-auto gap-3 pb-4 snap-x snap-mandatory scrollbar-hide px-4 -mx-4">
+            {categories.map((category) => {
+              const Icon = categoryIcons[category] || Code2;
+              const isSelected = selectedCategory === category;
+              
+              return (
+                <motion.button
+                  key={category}
+                  className="flex-shrink-0 snap-center"
+                  onClick={() => setSelectedCategory(category)}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <motion.div
+                    className={`w-24 h-24 rounded-3xl border-4 transition-all duration-500 glass backdrop-blur-xl relative overflow-hidden ${
+                      isSelected 
+                        ? 'border-chart-1 bg-chart-1/20 shadow-2xl' 
+                        : 'border-chart-1/50 bg-background/15'
+                    }`}
+                    animate={{
+                      boxShadow: isSelected 
+                        ? '0 0 40px hsl(var(--chart-1) / 0.5), 0 0 80px hsl(var(--chart-1) / 0.3)' 
+                        : '0 0 0px hsl(var(--chart-1) / 0)'
+                    }}
+                  >
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-2 p-3">
+                      <Icon className={`h-7 w-7 transition-all duration-300 ${
+                        isSelected ? 'text-chart-1' : 'text-muted-foreground'
+                      }`} />
+                      <span className={`text-xs font-bold transition-all duration-300 text-center leading-tight ${
+                        isSelected ? 'text-chart-1' : 'text-muted-foreground'
+                      }`}>
+                        {category.includes('/') ? category.split('/')[0] : category}
+                      </span>
+                    </div>
+                    
+                    {isSelected && (
+                      <>
+                        <motion.div
+                          className="absolute -inset-3 rounded-3xl border-3 border-chart-1/40"
+                          animate={{
+                            scale: [1, 1.15, 1],
+                            opacity: [0.4, 0.1, 0.4]
+                          }}
+                          transition={{
+                            duration: 2.5,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        />
+                        <motion.div
+                          className="absolute inset-0 rounded-3xl bg-gradient-to-br from-chart-1/10 to-chart-2/10"
+                          animate={{
+                            opacity: [0.3, 0.6, 0.3]
+                          }}
+                          transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        />
+                      </>
+                    )}
+                  </motion.div>
+                </motion.button>
+              );
+            })}
+          </div>
+          
           {/* Right Side - Content */}
-          <div className="flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center justify-center w-full">
 
             
             {/* Compact Category Card */}
@@ -325,10 +394,10 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
               className="relative w-full max-w-md"
             >
               {/* Card Background with Glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-chart-1/10 via-transparent to-chart-2/10 rounded-2xl blur-lg" />
+              <div className="absolute inset-0 bg-gradient-to-br from-chart-1/10 via-transparent to-chart-2/10 rounded-xl blur-lg" />
               
               {/* Main Card */}
-              <div className="relative glass rounded-2xl border-2 border-chart-1/30 p-6 backdrop-blur-xl overflow-hidden">
+              <div className="relative glass rounded-xl border-2 border-chart-1/30 p-6 backdrop-blur-xl overflow-hidden">
                 {/* Card Header */}
                 <div className="relative z-10 flex items-center justify-center gap-3 mb-4">
                   {(() => {
@@ -347,7 +416,7 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
                 
                 {/* Skills List - Single Column */}
                 {currentSkills.length > 0 ? (
-                  <div className="relative z-10 space-y-3">
+                  <div className="relative z-10 space-y-2">
                     {currentSkills.slice(0, 4).map((skill, index) => {
                       const colorClass = categoryColors[selectedCategory] || categoryColors.Other;
                       return (
@@ -356,7 +425,7 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.4, delay: index * 0.1 }}
-                          className="p-3 rounded-xl bg-background/30 border border-chart-1/20"
+                          className="p-3 sm:p-4 rounded-xl bg-background/30 border border-chart-1/20"
                         >
                           <div className="flex justify-between items-center mb-2">
                             <span className="font-medium text-sm">{skill.name}</span>

@@ -159,7 +159,7 @@ export function WorkProcessSection() {
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="font-display text-4xl md:text-5xl font-bold mb-3"
+            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -168,7 +168,7 @@ export function WorkProcessSection() {
             <span className="gradient-text-cyan-purple">Our Work Process</span>
           </motion.h2>
           <motion.p 
-            className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
+            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -201,7 +201,7 @@ export function WorkProcessSection() {
           </motion.div>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 items-center">
           
           {/* Left Side - Process Timeline */}
           <div className="relative h-96 flex items-center justify-center -ml-8">
@@ -310,7 +310,7 @@ export function WorkProcessSection() {
                     >
                       {/* Main Button */}
                       <motion.div
-                        className={`w-20 h-20 rounded-2xl border-3 transition-all duration-500 glass backdrop-blur-xl relative overflow-hidden ${
+                        className={`w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl border-3 transition-all duration-500 glass backdrop-blur-xl relative overflow-hidden ${
                           isSelected 
                             ? 'border-chart-1 bg-chart-1/20 shadow-2xl' 
                             : 'border-chart-1/50 hover:border-chart-1/80 bg-background/15'
@@ -331,7 +331,7 @@ export function WorkProcessSection() {
                       >
                         {/* Inner Content */}
                         <div className="w-full h-full flex flex-col items-center justify-center gap-1 p-2">
-                          <Icon className={`h-5 w-5 transition-colors ${
+                          <Icon className={`h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 transition-colors ${
                             isSelected ? 'text-chart-1' : 'text-muted-foreground group-hover:text-chart-1'
                           }`} />
                           <span className={`text-xs font-bold transition-colors text-center leading-tight ${
@@ -382,10 +382,10 @@ export function WorkProcessSection() {
             {/* Static Card Container */}
             <div className="relative w-full max-w-md">
               {/* Static Card Background with Glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-chart-1/10 via-transparent to-chart-2/10 rounded-2xl blur-lg" />
+              <div className="absolute inset-0 bg-gradient-to-br from-chart-1/10 via-transparent to-chart-2/10 rounded-xl blur-lg" />
               
               {/* Static Main Card */}
-              <div className="relative glass rounded-2xl border-2 border-chart-1/30 p-6 backdrop-blur-xl overflow-hidden h-[30rem]">
+              <div className="relative glass rounded-xl border-2 border-chart-1/30 p-4 sm:p-5 md:p-6 backdrop-blur-xl overflow-hidden h-[30rem]">
                 {/* Scrolling Content Container */}
                 <div className="relative overflow-hidden">
                   {/* Page Content */}
@@ -403,7 +403,7 @@ export function WorkProcessSection() {
                     {/* Book Chapter Header */}
                     <div className="text-center mb-6">
                       {/* Chapter and Title on Single Line */}
-                      <h3 className="font-display text-xl font-bold mb-4 leading-tight">
+                      <h3 className="font-display text-lg sm:text-xl font-bold mb-4 leading-tight">
                         <span className="text-chart-1">CHAPTER {currentStep.number}:</span>{' '}
                         <span className="text-foreground">{currentStep.title}</span>
                       </h3>

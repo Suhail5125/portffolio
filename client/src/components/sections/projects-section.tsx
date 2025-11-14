@@ -84,7 +84,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
   const selectedTechnologies = selectedProject ? getTechnologies(selectedProject) : [];
 
   return (
-    <section id="projects" className="min-h-screen py-20 relative flex items-center" style={{ overflow: 'visible' }}>
+    <section id="projects" className="min-h-screen py-12 sm:py-16 md:py-20 relative flex items-center" style={{ overflow: 'visible' }}>
       {/* Enhanced Animated Background */}
       <div className="absolute inset-0 overflow-hidden z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-card/20 to-background" />
@@ -139,7 +139,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="font-display text-4xl md:text-5xl font-bold mb-3"
+            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -148,7 +148,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
             <span className="gradient-text-cyan-purple">Featured Projects</span>
           </motion.h2>
           <motion.p 
-            className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
+            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -208,99 +208,129 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
             </div>
           </div>
         ) : (
-          <div className="relative w-full overflow-visible pb-20" style={{ paddingTop: '0px' }}>
-            <motion.div 
-              className="relative max-w-[1280px] mx-auto px-2"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            >
-              <div className="relative flex gap-4 overflow-x-hidden" style={{ overflowY: 'visible' }}>
-                <AnimatePresence mode="popLayout" initial={false}>
-                  {getVisibleProjects().map((project, index) => (
-                    <motion.div
-                      key={`${project.id}-${(currentIndex + index) % displayProjects.length}`}
-                      layout
-                      initial={{ x: 404, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      exit={{ x: -404, opacity: 0 }}
-                      transition={{ 
-                        duration: 0.6,
-                        ease: "easeInOut",
-                        layout: { duration: 0.6 }
-                      }}
-                      className="flex-shrink-0"
-                      style={{ width: "380px", marginTop: '0', paddingTop: '0' }}
-                      onMouseEnter={() => setIsPaused(true)}
-                      onMouseLeave={() => setIsPaused(false)}
-                    >
-                      <ProjectCard
-                        project={project}
-                        index={index}
-                        onSelect={() => handleProjectSelect(project)}
-                      />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-
-              {/* Control Dots */}
+          <>
+            {/* Carousel View */}
+            <div className="relative w-full overflow-visible pb-20" style={{ paddingTop: '0px' }}>
               <motion.div 
-                className="flex items-center justify-center gap-3 mt-8"
-                initial={{ opacity: 0, y: 20 }}
+                className="relative max-w-[1280px] mx-auto px-2"
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.5 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
               >
-                {displayProjects.map((_, index) => (
-                  <motion.button
-                    key={index}
-                    onClick={() => {
-                      setCurrentIndex(index);
-                      setIsPaused(true);
-                      setTimeout(() => setIsPaused(false), 5000);
-                    }}
-                    className="relative group"
-                    whileHover={{ scale: 1.3 }}
-                    whileTap={{ scale: 0.9 }}
+                <div className="relative flex gap-4 overflow-x-auto sm:overflow-x-hidden" style={{ overflowY: 'visible' }}>
+                  <AnimatePresence mode="popLayout" initial={false}>
+                    {getVisibleProjects().map((project, index) => (
+                      <motion.div
+                        key={`${project.id}-${(currentIndex + index) % displayProjects.length}`}
+                        layout
+                        initial={{ x: 404, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: -404, opacity: 0 }}
+                        transition={{ 
+                          duration: 0.6,
+                          ease: "easeInOut",
+                          layout: { duration: 0.6 }
+                        }}
+                        className="flex-shrink-0 w-[280px] sm:w-[340px] md:w-[380px]"
+                        style={{ marginTop: '0', paddingTop: '0' }}
+                        onMouseEnter={() => setIsPaused(true)}
+                        onMouseLeave={() => setIsPaused(false)}
+                      >
+                        <ProjectCard
+                          project={project}
+                          index={index}
+                          onSelect={() => handleProjectSelect(project)}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+
+                {/* Control Dots */}
+                <motion.div 
+                  className="flex items-center justify-center gap-3 mt-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                >
+                  {displayProjects.map((_, index) => (
+                    <motion.button
+                      key={index}
+                      onClick={() => {
+                        setCurrentIndex(index);
+                        setIsPaused(true);
+                        setTimeout(() => setIsPaused(false), 5000);
+                      }}
+                      className="relative group"
+                      whileHover={{ scale: 1.3 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <motion.div
+                        className="w-3 h-3 sm:w-2.5 sm:h-2.5 rounded-full cursor-pointer transition-all"
+                        style={{
+                          background: currentIndex === index 
+                            ? "linear-gradient(135deg, hsl(var(--chart-1)), hsl(var(--chart-2)))"
+                            : "rgba(255,255,255,0.2)",
+                          boxShadow: currentIndex === index 
+                            ? "0 0 15px rgba(0,255,255,0.6), 0 0 30px rgba(255,0,255,0.4)"
+                            : "none",
+                        }}
+                        animate={currentIndex === index ? {
+                          scale: [1, 1.2, 1],
+                        } : {}}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                        }}
+                      />
+                      {/* Hover ring effect */}
+                      <motion.div
+                        className="absolute inset-0 rounded-full border-2"
+                        style={{
+                          borderColor: "hsl(var(--chart-1))",
+                          opacity: 0,
+                        }}
+                        whileHover={{
+                          opacity: 0.6,
+                          scale: 1.8,
+                        }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    </motion.button>
+                  ))}
+                </motion.div>
+              </motion.div>
+            </div>
+
+            {/* Grid Layout Fallback (hidden by default, can be toggled) */}
+            <div className="hidden">
+              <motion.div 
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
+                {displayProjects.map((project, index) => (
+                  <motion.div
+                    key={project.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
-                    <motion.div
-                      className="w-2.5 h-2.5 rounded-full cursor-pointer transition-all"
-                      style={{
-                        background: currentIndex === index 
-                          ? "linear-gradient(135deg, hsl(var(--chart-1)), hsl(var(--chart-2)))"
-                          : "rgba(255,255,255,0.2)",
-                        boxShadow: currentIndex === index 
-                          ? "0 0 15px rgba(0,255,255,0.6), 0 0 30px rgba(255,0,255,0.4)"
-                          : "none",
-                      }}
-                      animate={currentIndex === index ? {
-                        scale: [1, 1.2, 1],
-                      } : {}}
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                      }}
+                    <ProjectCard
+                      project={project}
+                      index={index}
+                      onSelect={() => handleProjectSelect(project)}
                     />
-                    {/* Hover ring effect */}
-                    <motion.div
-                      className="absolute inset-0 rounded-full border-2"
-                      style={{
-                        borderColor: "hsl(var(--chart-1))",
-                        opacity: 0,
-                      }}
-                      whileHover={{
-                        opacity: 0.6,
-                        scale: 1.8,
-                      }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  </motion.button>
+                  </motion.div>
                 ))}
               </motion.div>
-            </motion.div>
-          </div>
+            </div>
+          </>
         )}
       </div>
 

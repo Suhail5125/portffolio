@@ -101,7 +101,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
         })}
       </div>
       
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto w-full">
         <motion.div 
           className="text-center mb-8"
@@ -111,7 +111,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="font-display text-4xl md:text-5xl font-bold mb-3"
+            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -120,7 +120,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
             <span className="gradient-text-cyan-purple">Let's Work Together</span>
           </motion.h2>
           <motion.p 
-            className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
+            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -154,7 +154,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
         </motion.div>
 
         {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-8 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-8 gap-4 sm:gap-6 lg:gap-8 items-start">
           {/* Left Side - Why Contact Us */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -195,11 +195,11 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                     whileHover={{ x: 5 }}
                   >
-                    <Card className="p-4 glass border-border/50 relative overflow-hidden group hover:border-chart-1/50 transition-all duration-300">
+                    <Card className="p-4 sm:p-5 glass border-border/50 relative overflow-hidden group hover:border-chart-1/50 transition-all duration-300 rounded-xl">
                       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-chart-1/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       <div className="relative z-10">
-                        <h4 className="font-semibold text-lg mb-2">{feature.title}</h4>
-                        <p className="text-base text-muted-foreground leading-relaxed">{feature.description}</p>
+                        <h4 className="font-semibold text-base sm:text-lg mb-2">{feature.title}</h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
                       </div>
                     </Card>
                   </motion.div>
@@ -216,7 +216,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
             transition={{ duration: 0.8 }}
             className="lg:col-span-5"
           >
-          <Card className="p-6 glass border-border/50 relative overflow-hidden">
+          <Card className="p-6 glass border-border/50 relative overflow-hidden rounded-xl">
             {/* Background grid pattern */}
             <div className="absolute inset-0 opacity-5 pointer-events-none">
               <div className="absolute inset-0" style={{
@@ -275,7 +275,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.5 }}
                   >
-                    <h3 className="font-display text-3xl font-bold mb-4 gradient-text-cyan-magenta">
+                    <h3 className="font-display text-2xl sm:text-3xl font-bold mb-4 gradient-text-cyan-magenta">
                       <motion.span
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -284,7 +284,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
                         Message Sent Successfully!
                       </motion.span>
                     </h3>
-                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                    <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
                       Thank you for reaching out! We've received your message and will get back to you within 48 hours.
                     </p>
                     
@@ -304,13 +304,13 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
               ) : (
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
                         name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-base font-semibold flex items-center gap-2">
+                            <FormLabel className="text-sm font-semibold flex items-center gap-2">
                               <User className="h-4 w-4 text-chart-1" />
                               Name
                             </FormLabel>
@@ -319,7 +319,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
                                 {...field}
                                 placeholder="Your name"
                                 data-testid="input-name"
-                                className="glass border-border/50 focus:border-chart-1 transition-colors"
+                                className="glass border-border/50 focus:border-chart-1 transition-colors h-11 sm:h-10"
                               />
                             </FormControl>
                             <FormMessage />
@@ -332,7 +332,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-base font-semibold flex items-center gap-2">
+                            <FormLabel className="text-sm font-semibold flex items-center gap-2">
                               <Mail className="h-4 w-4 text-chart-2" />
                               Email
                             </FormLabel>
@@ -342,7 +342,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
                                 type="email"
                                 placeholder="your.email@example.com"
                                 data-testid="input-email"
-                                className="glass border-border/50 focus:border-chart-1 transition-colors"
+                                className="glass border-border/50 focus:border-chart-1 transition-colors h-11 sm:h-10"
                               />
                             </FormControl>
                             <FormMessage />
@@ -356,13 +356,13 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
                       name="projectType"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base font-semibold flex items-center gap-2">
+                          <FormLabel className="text-sm font-semibold flex items-center gap-2">
                             <MessageSquare className="h-4 w-4 text-chart-3" />
                             Project Type
                           </FormLabel>
                           <Select onValueChange={(value) => field.onChange(value)} value={field.value}>
                             <FormControl>
-                              <SelectTrigger className="glass border-border/50 focus:border-chart-1">
+                              <SelectTrigger className="glass border-border/50 focus:border-chart-1 h-11 sm:h-10">
                                 <SelectValue placeholder="Select project type" />
                               </SelectTrigger>
                             </FormControl>
@@ -385,7 +385,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
                       name="subject"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base font-semibold flex items-center gap-2">
+                          <FormLabel className="text-sm font-semibold flex items-center gap-2">
                             <Star className="h-4 w-4 text-chart-4" />
                             Subject
                           </FormLabel>
@@ -395,7 +395,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
                               value={field.value || ""}
                               placeholder="What's this about?"
                               data-testid="input-subject"
-                              className="glass border-border/50 focus:border-chart-1 transition-colors"
+                              className="glass border-border/50 focus:border-chart-1 transition-colors h-11 sm:h-10"
                             />
                           </FormControl>
                           <FormMessage />
@@ -408,7 +408,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
                       name="message"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base font-semibold flex items-center justify-between">
+                          <FormLabel className="text-sm font-semibold flex items-center justify-between">
                             <span className="flex items-center gap-2">
                               <MessageSquare className="h-4 w-4 text-chart-4" />
                               Message
@@ -445,7 +445,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
                       size="lg"
                       disabled={isSubmitting}
                       data-testid="button-submit-contact"
-                      className="w-full relative overflow-hidden group"
+                      className="w-full h-12 sm:h-11 relative overflow-hidden group"
                     >
                       {isSubmitting ? (
                         <>

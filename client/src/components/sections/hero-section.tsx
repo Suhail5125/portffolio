@@ -97,7 +97,7 @@ export function HeroSection({ aboutInfo, isLoading }: HeroSectionProps) {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-32 text-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 md:pt-32 pb-32 text-center">
         {isLoading ? (
           // Loading state skeleton
           <div className="space-y-8">
@@ -158,7 +158,7 @@ export function HeroSection({ aboutInfo, isLoading }: HeroSectionProps) {
             </div>
           </motion.div>
 
-          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight mb-8">
+          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tight mb-8">
             <motion.span
               className="block gradient-text-cyan-magenta"
               initial={{ opacity: 0, y: 20 }}
@@ -186,7 +186,7 @@ export function HeroSection({ aboutInfo, isLoading }: HeroSectionProps) {
           </h1>
 
           <motion.p
-            className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed"
+            className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1 }}
@@ -195,7 +195,7 @@ export function HeroSection({ aboutInfo, isLoading }: HeroSectionProps) {
           </motion.p>
 
           <motion.div
-            className="flex flex-wrap items-center justify-center gap-6 mb-12"
+            className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4 sm:gap-6 mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.2 }}
@@ -230,7 +230,7 @@ export function HeroSection({ aboutInfo, isLoading }: HeroSectionProps) {
           </motion.div>
 
           <motion.div
-            className="flex w-full max-w-xl flex-wrap items-center justify-center gap-6 mx-auto"
+            className="flex w-full max-w-full sm:max-w-xl flex-wrap items-center justify-center gap-4 sm:gap-6 mx-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1.4 }}
@@ -242,7 +242,7 @@ export function HeroSection({ aboutInfo, isLoading }: HeroSectionProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 data-testid={`link-${label.toLowerCase()}`}
-                className="p-4 rounded-full glass border border-border/50 hover-elevate active-elevate-2 transition-all group relative overflow-hidden"
+                className="p-3 sm:p-4 rounded-full glass border border-border/50 hover-elevate active-elevate-2 transition-all group relative overflow-hidden"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 whileTap={{ scale: 0.9 }}
                 initial={{ opacity: 0, y: 20 }}

@@ -141,6 +141,7 @@ export function Navigation() {
                 size="icon"
                 onClick={() => setIsOpen(!isOpen)}
                 data-testid="button-menu-toggle"
+                className="min-h-[44px] min-w-[44px]"
               >
                 <AnimatePresence mode="wait">
                   {isOpen ? (
@@ -188,7 +189,7 @@ export function Navigation() {
                     scrollToSection("#contact");
                     setIsOpen(false);
                   }}
-                  className="w-full relative overflow-hidden group mb-2"
+                  className="w-full relative overflow-hidden group mb-2 min-h-[44px]"
                   data-testid="button-mobile-lets-work-together"
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">

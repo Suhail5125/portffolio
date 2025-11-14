@@ -1,6 +1,6 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { Star, Quote } from "lucide-react";
+import { motion, PanInfo } from "framer-motion";
+import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Testimonial as TestimonialRecord } from "@shared";
 
 interface DisplayTestimonial {
@@ -29,7 +29,7 @@ interface TestimonialsSectionProps {
   isLoading?: boolean;
 }
 
-export function TestimonialsSection({ testimonials = [], isLoading = false }: TestimonialsSectionProps) {
+export function TestimonialsSection({ testimonials = [] }: TestimonialsSectionProps) {
   const MAX_DISPLAY = 20;
   const visibleTestimonials = testimonials.filter((item) => item.isVisible);
   const sourceTestimonials = (visibleTestimonials.length > 0 ? visibleTestimonials : testimonials)
@@ -48,9 +48,39 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
   }));
 
   const displayTestimonials = dataset;
-  const duplicatedTestimonials = [...displayTestimonials, ...displayTestimonials, ...displayTestimonials];
-  const reversedTestimonials = [...duplicatedTestimonials].reverse();
-  const [isPaused, setIsPaused] = React.useState(false);
+  
+  // Mobile carousel state
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [isMobile, setIsMobile] = React.useState(false);
+  
+  // Detect mobile viewport
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // Navigation handlers
+  const handlePrevious = () => {
+    setCurrentIndex((prev) => (prev === 0 ? displayTestimonials.length - 1 : prev - 1));
+  };
+  
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev === displayTestimonials.length - 1 ? 0 : prev + 1));
+  };
+  
+  // Swipe gesture handling
+  const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const swipeThreshold = 50;
+    if (info.offset.x > swipeThreshold) {
+      handlePrevious();
+    } else if (info.offset.x < -swipeThreshold) {
+      handleNext();
+    }
+  };
 
   return (
     <section id="testimonials" className="h-screen relative overflow-hidden flex items-center">
@@ -109,7 +139,7 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="font-display text-4xl md:text-5xl font-bold mb-3"
+            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -118,7 +148,7 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
             <span className="gradient-text-cyan-purple">Client Testimonials</span>
           </motion.h2>
           <motion.p 
-            className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
+            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -151,7 +181,7 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
           </motion.div>
         </motion.div>
 
-        {/* Infinite Scrolling Testimonials or Empty State */}
+        {/* Testimonials Display or Empty State */}
         {displayTestimonials.length === 0 ? (
           <motion.div
             className="flex flex-col items-center justify-center py-20"
@@ -195,48 +225,71 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
               We're building amazing relationships with our clients. Check back soon to see what they have to say!
             </motion.p>
           </motion.div>
-        ) : (
-          <div className="relative">
-            {/* Top Row - Left to Right */}
-            <div className="mb-8 overflow-hidden">
-              <motion.div
-                className="flex gap-6"
-                animate={{
-                  x: isPaused ? undefined : [0, -1920]
-                }}
-                transition={{
-                  duration: 30,
-                  repeat: Infinity,
-                  ease: "linear"
-                }}
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-              >
-                {duplicatedTestimonials.map((testimonial, index) => (
-                  <TestimonialCard key={`top-${index}`} testimonial={testimonial} />
-                ))}
-              </motion.div>
-            </div>
-
-            {/* Bottom Row - Right to Left */}
+        ) : isMobile ? (
+          // Mobile: Single testimonial with swipe navigation
+          <div className="relative max-w-full mx-auto px-4">
             <div className="overflow-hidden">
               <motion.div
-                className="flex gap-6"
-                animate={{
-                  x: isPaused ? undefined : [-1920, 0]
-                }}
-                transition={{
-                  duration: 25,
-                  repeat: Infinity,
-                  ease: "linear"
-                }}
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={handleDragEnd}
+                animate={{ x: 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="cursor-grab active:cursor-grabbing"
               >
-                {reversedTestimonials.map((testimonial, index) => (
-                  <TestimonialCard key={`bottom-${index}`} testimonial={testimonial} />
-                ))}
+                <TestimonialCard testimonial={displayTestimonials[currentIndex]} isMobile={true} />
               </motion.div>
+            </div>
+            
+            {/* Navigation Controls */}
+            <div className="flex items-center justify-center gap-4 mt-6">
+              <button
+                onClick={handlePrevious}
+                className="w-11 h-11 sm:w-10 sm:h-10 rounded-full glass backdrop-blur-xl flex items-center justify-center hover:bg-chart-1/20 transition-colors"
+                aria-label="Previous testimonial"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              
+              {/* Dots indicator */}
+              <div className="flex gap-2">
+                {displayTestimonials.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentIndex(index)}
+                    className={`h-2 rounded-full transition-all ${
+                      index === currentIndex ? 'w-8 bg-chart-1' : 'w-2 bg-muted-foreground/30'
+                    }`}
+                    aria-label={`Go to testimonial ${index + 1}`}
+                  />
+                ))}
+              </div>
+              
+              <button
+                onClick={handleNext}
+                className="w-11 h-11 sm:w-10 sm:h-10 rounded-full glass backdrop-blur-xl flex items-center justify-center hover:bg-chart-1/20 transition-colors"
+                aria-label="Next testimonial"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          // Desktop: Grid layout with all testimonials
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+              {displayTestimonials.map((testimonial, index) => (
+                <motion.div
+                  key={testimonial.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <TestimonialCard testimonial={testimonial} isMobile={false} />
+                </motion.div>
+              ))}
             </div>
           </div>
         )}
@@ -245,11 +298,13 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
   );
 }
 
-function TestimonialCard({ testimonial }: { testimonial: DisplayTestimonial }) {
+function TestimonialCard({ testimonial, isMobile }: { testimonial: DisplayTestimonial; isMobile: boolean }) {
   const rating = Math.min(5, Math.max(1, Math.round(testimonial.rating)));
   return (
     <motion.div
-      className="relative flex-shrink-0 w-80 p-6 glass rounded-2xl backdrop-blur-xl overflow-hidden"
+      className={`relative flex-shrink-0 ${
+        isMobile ? 'w-full' : 'w-full sm:w-[400px] md:w-[450px] lg:w-[500px]'
+      } p-6 glass rounded-xl backdrop-blur-xl overflow-hidden`}
     >
       {/* Quote Icon */}
       <div className="absolute top-4 right-4 opacity-20">
@@ -269,7 +324,7 @@ function TestimonialCard({ testimonial }: { testimonial: DisplayTestimonial }) {
         </div>
         
         {/* Testimonial Text */}
-        <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-6">
           "{testimonial.content}"
         </p>
         
