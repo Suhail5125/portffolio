@@ -220,10 +220,51 @@ async function resetAdminHandler(req: Request, res: Response): Promise<void> {
 }
 
 /**
+ * Test login credentials endpoint
+ */
+async function testLoginHandler(req: Request, res: Response): Promise<void> {
+  try {
+    const { drizzle } = await import('drizzle-orm/node-postgres');
+    const { users } = await import('@shared');
+    const { eq } = await import('drizzle-orm');
+    const bcrypt = await import('bcryptjs');
+    
+    const db = drizzle(healthCheckPool);
+    
+    // Get admin user
+    const adminUsers = await db.select().from(users).where(eq(users.username, 'admin'));
+    
+    if (adminUsers.length === 0) {
+      res.json({ success: false, message: 'No admin user found' });
+      return;
+    }
+    
+    const admin = adminUsers[0];
+    
+    // Test password
+    const passwordMatch = await bcrypt.compare('codebysrs@123', admin.password);
+    
+    res.json({
+      success: true,
+      userExists: true,
+      passwordMatches: passwordMatch,
+      username: admin.username,
+      hint: passwordMatch ? 'Password is correct!' : 'Password does not match'
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+}
+
+/**
  * Registers health check routes
  */
 export function registerHealthRoutes(app: Express): void {
   app.get("/api/health", healthCheckHandler);
   app.get("/api/setup-database", setupDatabaseHandler);
   app.get("/api/reset-admin", resetAdminHandler);
+  app.get("/api/test-login", testLoginHandler);
 }
