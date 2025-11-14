@@ -132,14 +132,14 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
       
       <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
-          className="text-center mb-8"
+          className="text-center mb-8 w-full"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3"
+            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-center"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -148,7 +148,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
             <span className="gradient-text-cyan-purple">Featured Projects</span>
           </motion.h2>
           <motion.p 
-            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
+            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4 text-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -210,15 +210,15 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
         ) : (
           <>
             {/* Carousel View */}
-            <div className="relative w-full overflow-visible pb-20" style={{ paddingTop: '0px' }}>
+            <div className="relative w-full max-w-full overflow-visible pb-20" style={{ paddingTop: '0px' }}>
               <motion.div 
-                className="relative max-w-[1280px] mx-auto px-2"
+                className="relative max-w-[1280px] mx-auto px-2 sm:px-4"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
-                <div className="relative flex gap-4 overflow-x-auto sm:overflow-x-hidden" style={{ overflowY: 'visible' }}>
+                <div className="relative flex gap-4 justify-center sm:justify-start overflow-x-auto sm:overflow-x-hidden" style={{ overflowY: 'visible' }}>
                   <AnimatePresence mode="popLayout" initial={false}>
                     {getVisibleProjects().map((project, index) => (
                       <motion.div

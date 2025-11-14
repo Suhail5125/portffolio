@@ -12,7 +12,7 @@ export function ThemeToggle() {
       size="icon"
       onClick={toggleTheme}
       data-testid="button-theme-toggle"
-      className="relative overflow-hidden group"
+      className="relative overflow-hidden group min-h-[44px] min-w-[44px]"
     >
       <motion.div
         initial={false}

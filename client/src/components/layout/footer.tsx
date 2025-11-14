@@ -219,7 +219,7 @@ export function Footer({ aboutInfo }: FooterProps) {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col items-center md:items-start"
           >
-                          <div className="glass rounded-xl border border-border/50 p-6 w-[120%] -ml-[20%] hover-elevate transition-all relative overflow-hidden">
+            <div className="glass rounded-xl border border-border/50 p-4 sm:p-6 w-full max-w-sm hover-elevate transition-all relative overflow-hidden">
                 {/* Animated gradient orbs */}
                 <motion.div
                   className="absolute -top-10 -left-10 w-32 h-32 bg-chart-1/20 rounded-full blur-2xl"
@@ -293,15 +293,15 @@ export function Footer({ aboutInfo }: FooterProps) {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.8 }}
         >
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <motion.div
-              className="flex items-center gap-2"
+              className="flex flex-col sm:flex-row items-center justify-center gap-2"
               initial={{ y: 20 }}
               whileInView={{ y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.9 }}
             >
-              <p className="text-sm text-muted-foreground flex items-center gap-2">
+              <p className="text-sm text-muted-foreground flex flex-wrap items-center justify-center gap-2">
                 <span>© {currentYear} {aboutInfo?.name || "CodebySRS"}. Made with</span>
                 <motion.span
                   animate={{
@@ -321,7 +321,7 @@ export function Footer({ aboutInfo }: FooterProps) {
             </motion.div>
             
             <motion.div
-              className="flex items-center gap-4 text-xs text-muted-foreground/70"
+              className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground/70"
               initial={{ y: 20 }}
               whileInView={{ y: 0 }}
               viewport={{ once: true }}

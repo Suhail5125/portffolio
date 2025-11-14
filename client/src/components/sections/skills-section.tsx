@@ -110,7 +110,7 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3"
+            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-center"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -119,7 +119,7 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
             <span className="gradient-text-cyan-purple">Skills & Expertise</span>
           </motion.h2>
           <motion.p 
-            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
+            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4 text-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -243,8 +243,16 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
 
                     {/* Category Button */}
                     <motion.button
-                      className="relative group"
-                      onClick={() => setSelectedCategory(category)}
+                      className="relative group flex-shrink-0"
+                      onClick={(e) => {
+                        setSelectedCategory(category);
+                        // Scroll button into view smoothly
+                        e.currentTarget.scrollIntoView({ 
+                          behavior: 'smooth', 
+                          block: 'nearest', 
+                          inline: 'center' 
+                        });
+                      }}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
 
@@ -322,11 +330,19 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
                 <motion.button
                   key={category}
                   className="flex-shrink-0 snap-center"
-                  onClick={() => setSelectedCategory(category)}
+                  onClick={(e) => {
+                    setSelectedCategory(category);
+                    // Scroll button into view smoothly
+                    e.currentTarget.scrollIntoView({ 
+                      behavior: 'smooth', 
+                      block: 'nearest', 
+                      inline: 'center' 
+                    });
+                  }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <motion.div
-                    className={`w-24 h-24 rounded-3xl border-4 transition-all duration-500 glass backdrop-blur-xl relative overflow-hidden ${
+                    className={`w-24 h-24 sm:w-28 sm:h-28 rounded-3xl border-4 transition-all duration-500 glass backdrop-blur-xl relative overflow-hidden ${
                       isSelected 
                         ? 'border-chart-1 bg-chart-1/20 shadow-2xl' 
                         : 'border-chart-1/50 bg-background/15'

@@ -139,7 +139,7 @@ export function TestimonialsSection({ testimonials = [] }: TestimonialsSectionPr
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3"
+            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-center"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -148,7 +148,7 @@ export function TestimonialsSection({ testimonials = [] }: TestimonialsSectionPr
             <span className="gradient-text-cyan-purple">Client Testimonials</span>
           </motion.h2>
           <motion.p 
-            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
+            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4 text-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

@@ -158,7 +158,7 @@ export function HeroSection({ aboutInfo, isLoading }: HeroSectionProps) {
             </div>
           </motion.div>
 
-          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tight mb-8">
+          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tight mb-8 text-center">
             <motion.span
               className="block gradient-text-cyan-magenta"
               initial={{ opacity: 0, y: 20 }}
@@ -186,7 +186,7 @@ export function HeroSection({ aboutInfo, isLoading }: HeroSectionProps) {
           </h1>
 
           <motion.p
-            className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed"
+            className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1 }}

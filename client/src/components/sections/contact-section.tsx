@@ -111,7 +111,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3"
+            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-center"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -120,7 +120,7 @@ export function ContactSection({ onSubmit, isSubmitting }: ContactSectionProps) 
             <span className="gradient-text-cyan-purple">Let's Work Together</span>
           </motion.h2>
           <motion.p 
-            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
+            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4 text-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

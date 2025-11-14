@@ -105,7 +105,7 @@ export function ServicesSection() {
           transition={{ duration: 0.8 }}
         >
           <motion.h2 
-            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3"
+            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-center"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -114,7 +114,7 @@ export function ServicesSection() {
             <span className="gradient-text-cyan-purple">Our Services</span>
           </motion.h2>
           <motion.p 
-            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
+            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4 text-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -221,7 +221,7 @@ export function ServicesSection() {
                     </div>
                     
                     <div className="flex-1">
-                      <h3 className="font-display text-base sm:text-lg md:text-xl font-bold group-hover:text-chart-1 transition-colors leading-tight">
+                      <h3 className="font-display text-lg sm:text-xl font-bold group-hover:text-chart-1 transition-colors leading-tight text-center sm:text-left">
                         {service.title}
                       </h3>
                       <motion.div
@@ -234,7 +234,7 @@ export function ServicesSection() {
                   </div>
 
                   {/* Description */}
-                  <p className="text-muted-foreground text-sm leading-relaxed">
+                  <p className="text-muted-foreground text-sm sm:text-base leading-relaxed text-center sm:text-left">
                     {service.description}
                   </p>
                 </div>

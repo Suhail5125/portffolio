@@ -31,11 +31,11 @@ export function FloatingNavbar() {
   };
 
   return (
-    <div className="fixed top-6 left-6 z-50">
+    <div className="fixed top-4 sm:top-6 left-4 sm:left-6 z-50">
       {/* Menu Icon */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="glass rounded-lg border border-chart-1/30 p-3 mb-2"
+        className="glass rounded-lg border border-chart-1/30 p-3 mb-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
         initial={{ opacity: 0, x: -100 }}
         animate={{ 
           opacity: isVisible ? 1 : 0, 
@@ -75,7 +75,7 @@ export function FloatingNavbar() {
                 <motion.button
                   key={item.name}
                   onClick={() => scrollToSection(item.href)}
-                  className="flex items-center gap-3 p-2 rounded-md hover:bg-chart-1/10 transition-colors group w-full text-left"
+                  className="flex items-center gap-3 p-2 rounded-md hover:bg-chart-1/10 transition-colors group w-full text-left min-h-[44px]"
                   whileHover={{ scale: 1.02, x: 4 }}
                   whileTap={{ scale: 0.98 }}
                 >

@@ -61,7 +61,7 @@ export function Navigation() {
                     }}
                   />
                 </div>
-                <span className="font-display text-xl font-bold gradient-text-cyan-magenta hidden sm:block">
+                <span className="font-display text-lg sm:text-xl font-bold gradient-text-cyan-magenta">
                   CodebySRS
                 </span>
               </motion.div>
