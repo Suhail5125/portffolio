@@ -1,9 +1,10 @@
 import type { Express } from "express";
 import passport from "passport";
+import { authRateLimiter } from "../middleware/security";
 
 export function registerAuthRoutes(app: Express) {
-  // Login endpoint
-  app.post("/api/auth/login", passport.authenticate("local"), (req, res) => {
+  // Login endpoint with rate limiting
+  app.post("/api/auth/login", authRateLimiter, passport.authenticate("local"), (req, res) => {
     res.json({ message: "Login successful", user: req.user });
   });
 

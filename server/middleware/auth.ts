@@ -6,6 +6,7 @@ import session from "express-session";
 import MemoryStore from "memorystore";
 import { storage } from "../storage";
 import { config } from "../config";
+import { logger } from "../logger";
 
 const SessionStore = MemoryStore(session);
 
@@ -15,16 +16,20 @@ passport.use(
     try {
       const user = await storage.getUserByUsername(username);
       if (!user) {
+        logger.warn('Failed login attempt - user not found', { username });
         return done(null, false, { message: "Incorrect username" });
       }
 
       const isValid = await bcrypt.compare(password, user.password);
       if (!isValid) {
+        logger.warn('Failed login attempt - invalid password', { username, userId: user.id });
         return done(null, false, { message: "Incorrect password" });
       }
 
+      logger.info('Successful login', { username, userId: user.id });
       return done(null, user);
     } catch (error) {
+      logger.error('Login error', { username, error });
       return done(error);
     }
   })

@@ -4,12 +4,16 @@ import { createServer, type Server } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import { setupAuth } from "./middleware/auth";
+import { setupSecurity } from "./middleware/security";
 import { registerAllRoutes } from "./routes/index";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup security middleware (CORS, headers, rate limiting)
+  setupSecurity(app);
+
   // Setup authentication middleware
   setupAuth(app);
 

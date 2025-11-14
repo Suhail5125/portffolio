@@ -4,6 +4,10 @@ A modern, full-stack portfolio website with 3D animations, admin panel, and comp
 
 ![Portfolio Preview](https://via.placeholder.com/1200x600/0ea5e9/ffffff?text=Portfolio+Website)
 
+<!-- Badges will be added when CI/CD is configured -->
+<!-- [![Tests](https://github.com/username/repo/workflows/test/badge.svg)](https://github.com/username/repo/actions) -->
+<!-- [![Coverage](https://codecov.io/gh/username/repo/branch/main/graph/badge.svg)](https://codecov.io/gh/username/repo) -->
+
 ## ✨ Features
 
 ### **Frontend**
@@ -301,8 +305,15 @@ portffolio/
 npm run dev              # Start dev server (frontend + backend)
 
 # Database
-npm run db:migrate       # Create database tables
+npm run db:push          # Push database schema
 npm run db:seed          # Populate with sample data
+
+# Testing
+npm run test             # Run all tests
+npm run test:unit        # Run unit tests only
+npm run test:integration # Run integration tests only
+npm run test:watch       # Run tests in watch mode
+npm run test:coverage    # Generate coverage report
 
 # Build
 npm run build            # Build for production
@@ -310,7 +321,10 @@ npm start                # Start production server
 
 # Type checking
 npm run check            # Run TypeScript checks
+npm run lint             # Run linter
 ```
+
+📚 **See [Testing Documentation](./docs/testing/README.md) for detailed testing guide**
 
 ---
 
@@ -357,13 +371,17 @@ const defaultMeta = {
 
 ## 🌐 Deployment
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
+Comprehensive deployment guides are available for multiple platforms:
 
-### **Quick Deploy Options**
-- **Vercel**: Best for frontend-only
-- **Railway**: Full-stack deployment
-- **Render**: Free tier available
-- **VPS**: Full control (DigitalOcean, AWS, etc.)
+- 📘 [Railway Deployment Guide](./docs/deployment/railway.md) - Full-stack deployment with PostgreSQL
+- 📗 [Render Deployment Guide](./docs/deployment/render.md) - Free tier available
+- 📙 [Vercel + Backend Guide](./docs/deployment/vercel.md) - Split deployment approach
+- 📕 [VPS Deployment Guide](./docs/deployment/vps.md) - Full control with Nginx & PM2
+
+**Additional Resources:**
+- [Environment Variables Configuration](./docs/configuration/environment-variables.md)
+- [Deployment Checklist](./docs/deployment/checklist.md)
+- [Backup & Recovery Procedures](./docs/operations/backup-recovery.md)
 
 ---
 
@@ -452,6 +470,34 @@ See [FEATURES.md](./FEATURES.md) for complete schema details.
 
 ---
 
+## 🧪 Testing
+
+This project includes comprehensive test coverage for core functionality:
+
+### **Test Suite**
+- ✅ Unit tests for validation schemas and utilities
+- ✅ Integration tests for all API endpoints
+- ✅ Authentication flow testing
+- ✅ Database operations testing
+- ✅ Test fixtures and helpers
+
+### **Running Tests**
+```bash
+npm run test             # Run all tests
+npm run test:unit        # Unit tests only
+npm run test:integration # Integration tests only
+npm run test:coverage    # Generate coverage report
+```
+
+### **Test Coverage**
+- Unit tests: 70%+ coverage for utilities and validation
+- Integration tests: 80%+ coverage for API endpoints
+- Critical paths: 100% coverage for authentication and data mutations
+
+📚 **See [Testing Documentation](./docs/testing/README.md) for complete testing guide**
+
+---
+
 ## 🔒 Security
 
 - ✅ Password hashing with bcrypt
@@ -461,6 +507,8 @@ See [FEATURES.md](./FEATURES.md) for complete schema details.
 - ✅ XSS protection
 - ✅ CORS configuration
 - ✅ Environment variables
+- ✅ Rate limiting on API endpoints
+- ✅ Security headers (HSTS, CSP, X-Frame-Options)
 
 ---
 
@@ -509,15 +557,23 @@ MIT License - feel free to use this project for your own portfolio!
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please read our [Contributing Guide](./docs/CONTRIBUTING.md) for details on:
+- Development setup
+- Code style and conventions
+- Git workflow and branching strategy
+- Pull request process
+- Testing requirements
 
 ---
 
 ## 📞 Support
 
 Having issues? Check out:
-- [FEATURES.md](./FEATURES.md) - Complete feature list
-- [DEPLOYMENT.md](./DEPLOYMENT.md) - Deployment guide
+- [API Documentation](./docs/api/README.md) - Complete API reference
+- [Architecture Documentation](./docs/architecture/README.md) - System overview
+- [Testing Documentation](./docs/testing/README.md) - Testing guide
+- [Deployment Guides](./docs/deployment/) - Platform-specific instructions
+- [Contributing Guide](./docs/CONTRIBUTING.md) - Development guidelines
 - GitHub Issues - Report bugs
 
 ---

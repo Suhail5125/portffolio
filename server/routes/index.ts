@@ -5,9 +5,13 @@ import { registerSkillRoutes } from "./skills";
 import { registerTestimonialRoutes } from "./testimonials";
 import { registerContactRoutes } from "./contact";
 import { registerAboutRoutes } from "./about";
+import { registerHealthRoutes } from "./health";
 
 export function registerAllRoutes(app: Express) {
-  // Register all route modules
+  // Register health check route first (no auth required)
+  registerHealthRoutes(app);
+  
+  // Register all other route modules
   registerAuthRoutes(app);
   registerProjectRoutes(app);
   registerSkillRoutes(app);

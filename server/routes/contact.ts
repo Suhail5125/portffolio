@@ -3,10 +3,11 @@ import { storage } from "../storage";
 import { isAuthenticated } from "../middleware/auth";
 import { insertContactMessageSchema } from "@shared";
 import { fromError } from "zod-validation-error";
+import { contactRateLimiter } from "../middleware/security";
 
 export function registerContactRoutes(app: Express) {
-  // Public routes - Submit contact message
-  app.post("/api/contact", async (req, res) => {
+  // Public routes - Submit contact message with rate limiting
+  app.post("/api/contact", contactRateLimiter, async (req, res) => {
     try {
       const validated = insertContactMessageSchema.parse(req.body);
       const message = await storage.createContactMessage(validated);
