@@ -152,7 +152,7 @@ async function setupDatabaseHandler(req: Request, res: Response): Promise<void> 
     }
     
     // Create admin user
-    const hashedPassword = await bcrypt.hash('admin123', 10);
+    const hashedPassword = await bcrypt.hash('codebysrs@123', 10);
     
     await db.insert(users).values({
       username: 'admin',
@@ -164,10 +164,10 @@ async function setupDatabaseHandler(req: Request, res: Response): Promise<void> 
       message: 'Database setup complete! Admin user created.',
       credentials: {
         username: 'admin',
-        password: 'admin123',
+        password: 'codebysrs@123',
         warning: 'CHANGE THIS PASSWORD IMMEDIATELY AFTER LOGIN!'
       },
-      adminUrl: '/admin'
+      adminUrl: '/admin/login'
     });
   } catch (error: any) {
     res.status(500).json({
@@ -179,9 +179,51 @@ async function setupDatabaseHandler(req: Request, res: Response): Promise<void> 
 }
 
 /**
+ * Reset admin user endpoint (for password change)
+ */
+async function resetAdminHandler(req: Request, res: Response): Promise<void> {
+  try {
+    const { drizzle } = await import('drizzle-orm/node-postgres');
+    const { users } = await import('@shared');
+    const { eq } = await import('drizzle-orm');
+    const bcrypt = await import('bcryptjs');
+    
+    const db = drizzle(healthCheckPool);
+    
+    // Delete existing admin user
+    await db.delete(users).where(eq(users.username, 'admin'));
+    
+    // Create new admin user with new password
+    const hashedPassword = await bcrypt.hash('codebysrs@123', 10);
+    
+    await db.insert(users).values({
+      username: 'admin',
+      password: hashedPassword,
+    });
+    
+    res.json({
+      success: true,
+      message: 'Admin user reset successfully!',
+      credentials: {
+        username: 'admin',
+        password: 'codebysrs@123',
+        warning: 'CHANGE THIS PASSWORD IMMEDIATELY AFTER LOGIN!'
+      },
+      adminUrl: '/admin/login'
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+}
+
+/**
  * Registers health check routes
  */
 export function registerHealthRoutes(app: Express): void {
   app.get("/api/health", healthCheckHandler);
   app.get("/api/setup-database", setupDatabaseHandler);
+  app.get("/api/reset-admin", resetAdminHandler);
 }
