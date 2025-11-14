@@ -129,8 +129,59 @@ async function healthCheckHandler(req: Request, res: Response): Promise<void> {
 }
 
 /**
+ * One-time database setup endpoint
+ */
+async function setupDatabaseHandler(req: Request, res: Response): Promise<void> {
+  try {
+    const { drizzle } = await import('drizzle-orm/node-postgres');
+    const { users } = await import('@shared');
+    const bcrypt = await import('bcryptjs');
+    
+    const db = drizzle(healthCheckPool);
+    
+    // Check if setup already done
+    const existingUsers = await db.select().from(users).limit(1);
+    
+    if (existingUsers.length > 0) {
+      res.json({
+        success: false,
+        message: 'Setup already completed. Admin user exists.',
+        adminUrl: '/admin'
+      });
+      return;
+    }
+    
+    // Create admin user
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    
+    await db.insert(users).values({
+      username: 'admin',
+      password: hashedPassword,
+    });
+    
+    res.json({
+      success: true,
+      message: 'Database setup complete! Admin user created.',
+      credentials: {
+        username: 'admin',
+        password: 'admin123',
+        warning: 'CHANGE THIS PASSWORD IMMEDIATELY AFTER LOGIN!'
+      },
+      adminUrl: '/admin'
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      hint: 'Make sure DATABASE_URL is set correctly and tables exist'
+    });
+  }
+}
+
+/**
  * Registers health check routes
  */
 export function registerHealthRoutes(app: Express): void {
   app.get("/api/health", healthCheckHandler);
+  app.get("/api/setup-database", setupDatabaseHandler);
 }
