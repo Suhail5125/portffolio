@@ -85,7 +85,7 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
       data-testid={`card-project-${project.id}`}
     >
       <Card
-        className="group relative overflow-hidden border-0 h-[460px] sm:h-[460px] flex flex-col cursor-pointer w-full"
+        className="group relative overflow-hidden border-0 h-[420px] sm:h-[460px] flex flex-col cursor-pointer w-full"
         onClick={onSelect}
         role={onSelect ? "button" : undefined}
         tabIndex={onSelect ? 0 : undefined}
@@ -234,7 +234,7 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
         {/* Content Container */}
         <div className="relative z-20 flex flex-col h-full">
           {/* Project Image with 3D Effect */}
-          <div className="relative h-48 overflow-hidden">
+          <div className="relative h-40 sm:h-48 overflow-hidden">
             <motion.div
               className="absolute inset-0"
               style={{ transformStyle: "preserve-3d" }}
@@ -338,8 +338,8 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
           </div>
 
           {/* Project Info */}
-          <motion.div 
-            className="px-5 pt-5 pb-4 flex flex-col flex-1"
+          <motion.div
+            className="px-4 sm:px-5 pt-4 sm:pt-5 pb-3 sm:pb-4 flex flex-col flex-1"
             animate={isHovered ? {
               backgroundColor: ["rgba(0,0,0,0)", "rgba(0,20,40,0.3)", "rgba(0,0,0,0)"],
             } : {}}
@@ -350,7 +350,7 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
           >
             {/* Title with Glitch Effect */}
             <motion.h3
-              className="font-display text-xl font-bold mb-3 relative h-[28px] overflow-hidden"
+              className="font-display text-lg sm:text-xl font-bold mb-2 sm:mb-3 relative min-h-[24px] overflow-hidden"
               data-testid={`text-title-${project.id}`}
               style={{
                 background: "linear-gradient(90deg, hsl(var(--chart-1)), hsl(var(--chart-2)))",
@@ -373,11 +373,11 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
                 repeatDelay: 2,
               }}
             >
-              <span className="line-clamp-1">{project.title}</span>
+              <span className="line-clamp-2">{project.title}</span>
             </motion.h3>
-            
+
             <motion.p
-              className="text-gray-400 text-sm mb-4 line-clamp-3 h-[60px]"
+              className="text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3 flex-1"
               data-testid={`text-description-${project.id}`}
               style={{ textShadow: "0 0 10px rgba(255,255,255,0.1)" }}
               animate={isHovered ? {

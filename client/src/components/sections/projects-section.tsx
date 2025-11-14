@@ -218,7 +218,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
-                <div className="relative flex gap-4 justify-center sm:justify-start overflow-x-auto sm:overflow-x-hidden snap-x snap-mandatory scrollbar-hide" style={{ overflowY: 'visible', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <div className="relative flex gap-3 sm:gap-4 justify-center overflow-x-auto sm:overflow-x-hidden snap-x snap-mandatory scrollbar-hide" style={{ overflowY: 'visible', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   <AnimatePresence mode="popLayout" initial={false}>
                     {getVisibleProjects().map((project, index) => (
                       <motion.div
@@ -227,12 +227,12 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
                         initial={{ x: 404, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: -404, opacity: 0 }}
-                        transition={{ 
+                        transition={{
                           duration: 0.6,
                           ease: "easeInOut",
                           layout: { duration: 0.6 }
                         }}
-                        className="flex-shrink-0 w-[85vw] max-w-[340px] sm:w-[340px] md:w-[380px] snap-center"
+                        className="flex-shrink-0 w-[90vw] max-w-[320px] sm:w-[340px] md:w-[380px] snap-center"
                         style={{ marginTop: '0', paddingTop: '0' }}
                         onMouseEnter={() => setIsPaused(true)}
                         onMouseLeave={() => setIsPaused(false)}
@@ -248,7 +248,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
                 </div>
 
                 {/* Control Dots */}
-                <motion.div 
+                <motion.div
                   className="flex items-center justify-center gap-3 mt-8"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -263,17 +263,17 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
                         setIsPaused(true);
                         setTimeout(() => setIsPaused(false), 5000);
                       }}
-                      className="relative group"
-                      whileHover={{ scale: 1.3 }}
-                      whileTap={{ scale: 0.9 }}
+                      className="relative group min-w-[44px] min-h-[44px] flex items-center justify-center"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       <motion.div
-                        className="w-3 h-3 sm:w-2.5 sm:h-2.5 rounded-full cursor-pointer transition-all"
+                        className="w-3 h-3 sm:w-3 sm:h-3 rounded-full cursor-pointer transition-all"
                         style={{
-                          background: currentIndex === index 
+                          background: currentIndex === index
                             ? "linear-gradient(135deg, hsl(var(--chart-1)), hsl(var(--chart-2)))"
                             : "rgba(255,255,255,0.2)",
-                          boxShadow: currentIndex === index 
+                          boxShadow: currentIndex === index
                             ? "0 0 15px rgba(0,255,255,0.6), 0 0 30px rgba(255,0,255,0.4)"
                             : "none",
                         }}
@@ -285,6 +285,8 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
                           repeat: Infinity,
                         }}
                       />
+                      {/* Touch target area - invisible but ensures minimum size */}
+                      <div className="absolute inset-0 -m-2" />
                       {/* Hover ring effect */}
                       <motion.div
                         className="absolute inset-0 rounded-full border-2"
@@ -294,7 +296,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
                         }}
                         whileHover={{
                           opacity: 0.6,
-                          scale: 1.8,
+                          scale: 1.5,
                         }}
                         transition={{ duration: 0.3 }}
                       />
@@ -338,7 +340,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
         <DialogContent className="w-screen h-screen max-w-none p-0 sm:rounded-none overflow-hidden [&>button]:hidden">
           {selectedProject && (
             <div className="relative flex h-full flex-col bg-background">
-              <div className="relative h-[40vh] w-full bg-muted">
+              <div className="relative h-[30vh] sm:h-[40vh] w-full bg-muted">
                 {selectedProject.imageUrl ? (
                   <img
                     src={selectedProject.imageUrl}
@@ -347,7 +349,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center">
-                    <span className="text-6xl font-display gradient-text-cyan-purple">
+                    <span className="text-4xl sm:text-6xl font-display gradient-text-cyan-purple">
                       {selectedProject.title[0]}
                     </span>
                   </div>
@@ -355,25 +357,25 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
               </div>
 
-              <div className="flex-1 overflow-y-auto px-6 py-8 md:px-12">
-                <div className="mx-auto flex max-w-5xl flex-col gap-10">
-                  <DialogHeader className="space-y-4 text-left">
-                    <DialogTitle className="text-4xl font-display font-bold">
+              <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 sm:py-8 md:px-12">
+                <div className="mx-auto flex max-w-5xl flex-col gap-6 sm:gap-10">
+                  <DialogHeader className="space-y-3 sm:space-y-4 text-left">
+                    <DialogTitle className="text-2xl sm:text-3xl md:text-4xl font-display font-bold leading-tight">
                       {selectedProject.title}
                     </DialogTitle>
-                    <DialogDescription className="text-base text-muted-foreground">
+                    <DialogDescription className="text-sm sm:text-base text-muted-foreground">
                       {selectedProject.description}
                     </DialogDescription>
                   </DialogHeader>
 
                   {selectedProject.description && (
-                    <p className="text-base leading-relaxed text-muted-foreground whitespace-pre-line">
+                    <p className="text-sm sm:text-base leading-relaxed text-muted-foreground whitespace-pre-line">
                       {selectedProject.description}
                     </p>
                   )}
 
-                  <div className="space-y-4">
-                    <h4 className="font-semibold text-lg">Technologies Used</h4>
+                  <div className="space-y-3 sm:space-y-4">
+                    <h4 className="font-semibold text-base sm:text-lg">Technologies Used</h4>
                     <div className="flex flex-wrap gap-2">
                       {selectedTechnologies.map((tech, index) => (
                         <Badge key={index} variant="secondary" className="glass text-xs px-3 py-1">
@@ -386,9 +388,9 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
                     </div>
                   </div>
 
-                  <div className="grid gap-3 md:grid-cols-2">
+                  <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
                     {selectedProject.liveUrl && (
-                      <Button asChild size="lg">
+                      <Button asChild size="lg" className="w-full sm:w-auto">
                         <a
                           href={selectedProject.liveUrl}
                           target="_blank"
