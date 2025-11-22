@@ -50,11 +50,11 @@ const services = [
 
 export function ServicesSection() {
   return (
-    <section id="services" className="h-screen relative overflow-hidden flex items-center">
+    <section id="services" className="min-h-screen relative overflow-hidden flex items-center pt-0 pb-20 md:py-20">
       {/* Enhanced Animated Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-card/20 to-background" />
-        
+
         {/* Matrix-style Grid */}
         <div className="absolute inset-0 opacity-[0.02]">
           <div className="h-full w-full" style={{
@@ -65,7 +65,7 @@ export function ServicesSection() {
             backgroundSize: '80px 80px'
           }} />
         </div>
-        
+
         {/* Floating Code Symbols */}
         {Array.from({ length: 30 }).map((_, i) => {
           const symbols = ['<>', '{}', '[]', '/>', '()', '&&', '||', '=>', 'fn', 'var', 'let', 'const', 'if', 'else', 'for', 'while', 'try', 'catch', 'class', 'import', 'export', 'async', 'await', 'return', 'null', 'true', 'false', '===', '!==', '++', '--', '+=', '-=', '*=', '/=', '??', '?.', '...', 'new', 'this', 'super', 'extends', 'implements'];
@@ -95,16 +95,16 @@ export function ServicesSection() {
           );
         })}
       </div>
-      
+
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <motion.div 
-          className="text-center mb-12"
+        <motion.div
+          className="text-center mb-8 md:mb-12"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <motion.h2 
+          <motion.h2
             className="font-display text-4xl md:text-5xl font-bold mb-3"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -113,7 +113,7 @@ export function ServicesSection() {
           >
             <span className="gradient-text-cyan-purple">Our Services</span>
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -122,14 +122,14 @@ export function ServicesSection() {
           >
             Comprehensive solutions to bring your digital vision to life
           </motion.p>
-          <motion.div 
+          <motion.div
             className="flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            <motion.div 
+            <motion.div
               className="h-px w-16 bg-gradient-to-r from-transparent to-chart-1"
               initial={{ width: 0 }}
               whileInView={{ width: 64 }}
@@ -137,7 +137,7 @@ export function ServicesSection() {
               transition={{ duration: 0.8, delay: 0.8 }}
             />
             <div className="h-1.5 w-1.5 rounded-full bg-chart-1 mx-3" />
-            <motion.div 
+            <motion.div
               className="h-px w-16 bg-gradient-to-l from-transparent to-chart-1"
               initial={{ width: 0 }}
               whileInView={{ width: 64 }}
@@ -147,15 +147,15 @@ export function ServicesSection() {
           </motion.div>
         </motion.div>
 
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 md:mb-16"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.3 }}
         >
           {services.map((service, index) => (
-            <motion.div 
+            <motion.div
               key={service.title}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -166,13 +166,13 @@ export function ServicesSection() {
             >
               <Card className="p-4 glass border-chart-1/20 hover:border-chart-1/50 transition-all h-full relative overflow-hidden backdrop-blur-xl">
                 {/* Glow Effect */}
-                <motion.div 
+                <motion.div
                   className="absolute inset-0 bg-gradient-to-br from-chart-1/5 via-transparent to-chart-2/5"
                   initial={{ opacity: 0 }}
                   whileHover={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}
                 />
-                
+
                 {/* Animated Border */}
                 <motion.div
                   className="absolute inset-0 rounded-xl"
@@ -185,18 +185,18 @@ export function ServicesSection() {
                 >
                   <div className="w-full h-full bg-background/95 rounded-xl" />
                 </motion.div>
-                
+
                 <div className="relative z-20 h-full flex flex-col">
                   {/* Header: Icon + Title */}
                   <div className="flex items-center gap-4 mb-4">
                     <div className="relative">
-                      <motion.div 
+                      <motion.div
                         className={`flex p-3 rounded-xl glass border border-chart-1/30 ${service.color}`}
                         whileHover={{ scale: 1.1, rotate: 10 }}
-                        animate={{ 
+                        animate={{
                           boxShadow: ['0 0 12px hsl(var(--chart-1) / 0.2)', '0 0 24px hsl(var(--chart-1) / 0.4)', '0 0 12px hsl(var(--chart-1) / 0.2)'],
                         }}
-                        transition={{ 
+                        transition={{
                           boxShadow: { duration: 2, repeat: Infinity },
                           scale: { duration: 0.2 },
                           rotate: { duration: 0.2 }
@@ -204,7 +204,7 @@ export function ServicesSection() {
                       >
                         <service.icon className="h-6 w-6" />
                       </motion.div>
-                      
+
                       {/* Floating Orb */}
                       <motion.div
                         className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-chart-1/60"
@@ -219,7 +219,7 @@ export function ServicesSection() {
                         }}
                       />
                     </div>
-                    
+
                     <div className="flex-1">
                       <h3 className="font-display text-xl font-bold group-hover:text-chart-1 transition-colors leading-tight">
                         {service.title}

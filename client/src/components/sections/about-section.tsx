@@ -50,11 +50,11 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
 
 
   return (
-    <section id="about" className="min-h-screen py-16 relative snap-start overflow-hidden">
+    <section id="about" className="min-h-screen pt-0 pb-16 md:py-16 relative snap-start overflow-hidden">
       {/* Enhanced Animated Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-card/20 to-background" />
-        
+
         {/* Matrix-style Grid */}
         <div className="absolute inset-0 opacity-[0.02]">
           <div className="h-full w-full" style={{
@@ -65,7 +65,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
             backgroundSize: '80px 80px'
           }} />
         </div>
-        
+
         {/* Floating Code Symbols */}
         {Array.from({ length: 30 }).map((_, i) => {
           const symbols = ['<>', '{}', '[]', '/>', '()', '&&', '||', '=>', 'fn', 'var', 'let', 'const', 'if', 'else', 'for', 'while', 'try', 'catch', 'class', 'import', 'export', 'async', 'await', 'return', 'null', 'true', 'false', '===', '!==', '++', '--', '+=', '-=', '*=', '/=', '??', '?.', '...', 'new', 'this', 'super', 'extends', 'implements'];
@@ -97,14 +97,14 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
       </div>
 
       <div className="max-w-full mx-auto px-6 relative z-10">
-        <motion.div 
+        <motion.div
           className="text-center mb-8"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <motion.h2 
+          <motion.h2
             className="font-display text-4xl md:text-5xl font-bold mb-3"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -113,7 +113,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
           >
             <span className="gradient-text-cyan-purple">About Us</span>
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -122,14 +122,14 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
           >
             Discover the minds behind the innovation
           </motion.p>
-          <motion.div 
+          <motion.div
             className="flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            <motion.div 
+            <motion.div
               className="h-px w-16 bg-gradient-to-r from-transparent to-chart-1"
               initial={{ width: 0 }}
               whileInView={{ width: 64 }}
@@ -137,7 +137,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
               transition={{ duration: 0.8, delay: 0.8 }}
             />
             <div className="h-1.5 w-1.5 rounded-full bg-chart-1 mx-3" />
-            <motion.div 
+            <motion.div
               className="h-px w-16 bg-gradient-to-l from-transparent to-chart-1"
               initial={{ width: 0 }}
               whileInView={{ width: 64 }}
@@ -160,13 +160,13 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
               {/* Glowing Border Effect */}
               <motion.div
                 className="absolute -inset-0.5 bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3 rounded-lg blur opacity-30"
-                animate={{ 
+                animate={{
                   backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
                 }}
                 transition={{ duration: 3, repeat: Infinity }}
                 style={{ backgroundSize: '200% 200%' }}
               />
-              
+
               {/* Terminal Window */}
               <div className="relative bg-black/90 border border-chart-1/40 rounded-lg overflow-hidden backdrop-blur-sm h-full">
                 {/* Terminal Header */}
@@ -178,14 +178,14 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-chart-1 font-mono">profile.exe</span>
-                    <motion.div 
+                    <motion.div
                       className="w-2 h-2 bg-chart-1 rounded-full"
                       animate={{ scale: [1, 1.2, 1] }}
                       transition={{ duration: 1, repeat: Infinity }}
                     />
                   </div>
                 </div>
-                
+
                 {/* Terminal Content */}
                 <div className="p-6 flex flex-col h-full">
                   {/* Avatar Section */}
@@ -205,17 +205,17 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                         animate={{ rotate: [360, 0] }}
                         transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
                       />
-                      
+
                       {/* Scanning Effect */}
                       <motion.div
                         className="absolute inset-0 bg-gradient-to-b from-transparent via-chart-1/20 to-transparent rounded-full"
-                        animate={{ 
+                        animate={{
                           y: ['-100%', '100%'],
                           opacity: [0, 1, 0]
                         }}
                         transition={{ duration: 2, repeat: Infinity }}
                       />
-                      
+
                       <Avatar className="h-28 w-28 border-2 border-chart-1/50 relative z-10">
                         <AvatarImage src={aboutInfo.avatarUrl || undefined} alt={aboutInfo.name} />
                         <AvatarFallback className="text-2xl font-mono bg-gradient-to-br from-chart-1/30 to-chart-2/30 text-chart-1">
@@ -223,10 +223,10 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                         </AvatarFallback>
                       </Avatar>
                     </motion.div>
-                    
+
 
                   </div>
-                  
+
                   {/* Terminal Commands */}
                   <div className="space-y-3 font-mono text-sm flex-1">
                     <motion.div
@@ -235,9 +235,9 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                       transition={{ delay: 0.5 }}
                       className="flex items-center gap-2"
                     >
-                      <span className="text-chart-1">❯</span> 
+                      <span className="text-chart-1">❯</span>
                       <span className="text-green-400">whoarewe</span>
-                      <motion.span 
+                      <motion.span
                         className="w-2 h-4 bg-chart-1 inline-block"
                         animate={{ opacity: [1, 0] }}
                         transition={{ duration: 1, repeat: Infinity }}
@@ -252,14 +252,14 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                     >
                       {aboutInfo.name}
                     </motion.div>
-                    
+
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.9 }}
                       className="flex items-center gap-2 mt-4"
                     >
-                      <span className="text-chart-1">❯</span> 
+                      <span className="text-chart-1">❯</span>
                       <span className="text-green-400">cat role.txt</span>
                     </motion.div>
                     <motion.div
@@ -271,19 +271,19 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                     >
                       {aboutInfo.title}
                     </motion.div>
-                    
+
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ delay: 1.3 }}
                       className="flex items-center gap-2 mt-4"
                     >
-                      <span className="text-chart-1">❯</span> 
+                      <span className="text-chart-1">❯</span>
                       <span className="text-green-400">ls -la ./social</span>
                     </motion.div>
-                    
+
                     {/* Social Links */}
-                    <motion.div 
+                    <motion.div
                       className="grid grid-cols-2 gap-2 mt-4 pl-4"
                       initial={{ opacity: 0 }}
                       whileInView={{ opacity: 1 }}
@@ -314,9 +314,9 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                         )
                       )}
                     </motion.div>
-                    
+
                   </div>
-                  
+
                   {/* Bottom Section */}
                   <div className="mt-auto pt-4 border-t border-chart-1/20">
                     {aboutInfo.resumeUrl && (
@@ -348,7 +348,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
               </div>
             </div>
           </motion.div>
-          
+
           {/* Center Panel - Bio */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -361,13 +361,13 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
               {/* Animated Border */}
               <motion.div
                 className="absolute -inset-0.5 bg-gradient-to-r from-chart-2 via-chart-3 to-chart-4 rounded-lg blur opacity-20"
-                animate={{ 
+                animate={{
                   backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
                 }}
                 transition={{ duration: 4, repeat: Infinity }}
                 style={{ backgroundSize: '200% 200%' }}
               />
-              
+
               <div className="relative bg-gradient-to-br from-card/60 to-card/30 border border-chart-2/40 rounded-lg p-6 backdrop-blur-sm flex flex-col h-full">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
@@ -393,7 +393,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                     {new Date().toISOString().split('T')[0]}
                   </motion.div>
                 </div>
-                
+
                 {/* Bio Content */}
                 <motion.div
                   className="mb-4"
@@ -410,8 +410,8 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                     >
                       ```markdown
                     </motion.div>
-                    <motion.p 
-                      className="text-muted-foreground leading-relaxed whitespace-pre-line" 
+                    <motion.p
+                      className="text-muted-foreground leading-relaxed whitespace-pre-line"
                       data-testid="text-about-bio"
                       initial={{ opacity: 0, y: 10 }}
                       whileInView={{ opacity: 1, y: 0 }}
@@ -429,7 +429,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                     </motion.div>
                   </div>
                 </motion.div>
-              
+
                 {/* System Status & Activity Log - Same Line */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* System Status Panel */}
@@ -442,7 +442,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                       />
                       <h4 className="font-display text-sm font-bold text-chart-3">SYSTEM_STATUS.log</h4>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-2">
                       {[
                         { label: "CPU", value: 78, color: "chart-1" },
@@ -479,7 +479,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                       ))}
                     </div>
                   </div>
-                  
+
                   {/* Recent Activity Log */}
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 mb-2">
@@ -490,7 +490,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                       />
                       <h4 className="font-display text-sm font-bold text-chart-4">ACTIVITY.log</h4>
                     </div>
-                    
+
                     <div className="bg-black/20 border border-chart-4/20 rounded p-2 max-h-32 overflow-y-auto">
                       <div className="space-y-1 font-mono text-xs">
                         {[
@@ -509,9 +509,8 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                           >
                             <span className="text-chart-4">{log.time}</span>
                             <motion.div
-                              className={`w-1 h-1 rounded-full ${
-                                log.status === 'success' ? 'bg-green-400' : 'bg-blue-400'
-                              }`}
+                              className={`w-1 h-1 rounded-full ${log.status === 'success' ? 'bg-green-400' : 'bg-blue-400'
+                                }`}
                               animate={{ opacity: [1, 0.3, 1] }}
                               transition={{ duration: 2, repeat: Infinity, delay: index * 0.5 }}
                             />
@@ -525,7 +524,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
               </div>
             </div>
           </motion.div>
-          
+
           {/* Right Panel - Stats */}
           <motion.div
             initial={{ opacity: 0, x: 100 }}
@@ -561,15 +560,15 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                   </motion.div>
                 </div>
               </motion.div>
-              
+
               {/* Stats Cards */}
               {stats.map((stat, index) => (
                 <motion.div
                   key={stat.label}
                   initial={{ opacity: 0, rotateY: 90, scale: 0.8 }}
                   whileInView={{ opacity: 1, rotateY: 0, scale: 1 }}
-                  whileHover={{ 
-                    scale: 1.02, 
+                  whileHover={{
+                    scale: 1.02,
                     rotateY: 2,
                     boxShadow: `0 10px 30px hsl(var(--${stat.color}) / 0.3)`
                   }}
@@ -582,7 +581,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                     className={`absolute -inset-0.5 bg-gradient-to-r from-${stat.color} to-${stat.color}/50 rounded-lg blur opacity-0 group-hover:opacity-30`}
                     transition={{ duration: 0.3 }}
                   />
-                  
+
                   <div className={`relative bg-gradient-to-br from-${stat.color}/15 to-${stat.color}/5 border border-${stat.color}/40 rounded-lg p-4 backdrop-blur-sm overflow-hidden`}>
                     {/* Scanning Line */}
                     <motion.div
@@ -590,7 +589,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                       animate={{ x: ['-100%', '100%'] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     />
-                    
+
                     <div className="relative z-10">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
@@ -603,7 +602,7 @@ export function AboutSection({ aboutInfo, isLoading }: AboutSectionProps) {
                           <span className="font-mono text-xs text-muted-foreground uppercase">{stat.label}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <motion.div 
+                          <motion.div
                             className="font-display text-xl font-bold text-white"
                             whileHover={{ scale: 1.1 }}
                           >

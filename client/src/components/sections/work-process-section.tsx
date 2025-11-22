@@ -86,7 +86,15 @@ const getStepDeliverables = (stepNumber: string) => {
 
 export function WorkProcessSection() {
   const [selectedStep, setSelectedStep] = useState<string>('01');
-  
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
   // Auto-rotate steps
   useEffect(() => {
     const interval = setInterval(() => {
@@ -98,16 +106,16 @@ export function WorkProcessSection() {
     }, 4000);
     return () => clearInterval(interval);
   }, []);
-  
+
   const currentStep = processSteps.find(step => step.number === selectedStep) || processSteps[0];
   const currentIndex = processSteps.findIndex(step => step.number === selectedStep);
 
   return (
-    <section id="process" className="h-screen relative overflow-hidden flex items-center">
+    <section id="process" className="min-h-screen relative overflow-hidden flex items-center pt-0 pb-20 md:py-20">
       {/* Enhanced Animated Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-card/20 to-background" />
-        
+
         {/* Matrix-style Grid */}
         <div className="absolute inset-0 opacity-[0.02]">
           <div className="h-full w-full" style={{
@@ -118,7 +126,7 @@ export function WorkProcessSection() {
             backgroundSize: '80px 80px'
           }} />
         </div>
-        
+
         {/* Floating Code Symbols */}
         {Array.from({ length: 30 }).map((_, i) => {
           const symbols = ['<>', '{}', '[]', '/>', '()', '&&', '||', '=>', 'fn', 'var', 'let', 'const', 'if', 'else', 'for', 'while', 'try', 'catch', 'class', 'import', 'export', 'async', 'await', 'return', 'null', 'true', 'false', '===', '!==', '++', '--', '+=', '-=', '*=', '/=', '??', '?.', '...', 'new', 'this', 'super', 'extends', 'implements'];
@@ -148,17 +156,17 @@ export function WorkProcessSection() {
           );
         })}
       </div>
-      
+
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Header */}
-        <motion.div 
-          className="text-center mb-8"
+        <motion.div
+          className="text-center mb-8 md:mb-12"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <motion.h2 
+          <motion.h2
             className="font-display text-4xl md:text-5xl font-bold mb-3"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -167,7 +175,7 @@ export function WorkProcessSection() {
           >
             <span className="gradient-text-cyan-purple">Our Work Process</span>
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -176,14 +184,14 @@ export function WorkProcessSection() {
           >
             From concept to launch - our systematic approach to digital excellence
           </motion.p>
-          <motion.div 
+          <motion.div
             className="flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            <motion.div 
+            <motion.div
               className="h-px w-16 bg-gradient-to-r from-transparent to-chart-1"
               initial={{ width: 0 }}
               whileInView={{ width: 64 }}
@@ -191,7 +199,7 @@ export function WorkProcessSection() {
               transition={{ duration: 0.8, delay: 0.8 }}
             />
             <div className="h-1.5 w-1.5 rounded-full bg-chart-1 mx-3" />
-            <motion.div 
+            <motion.div
               className="h-px w-16 bg-gradient-to-l from-transparent to-chart-1"
               initial={{ width: 0 }}
               whileInView={{ width: 64 }}
@@ -202,9 +210,9 @@ export function WorkProcessSection() {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          
+
           {/* Left Side - Process Timeline */}
-          <div className="relative h-96 flex items-center justify-center -ml-8">
+          <div className="relative h-[32rem] md:h-96 flex items-center justify-center md:-ml-8">
             {/* Process Flow Path */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 350 400" preserveAspectRatio="xMidYMid meet">
               <defs>
@@ -217,14 +225,14 @@ export function WorkProcessSection() {
                   <stop offset="100%" stopColor="hsl(var(--chart-2))" stopOpacity="0.9" />
                 </linearGradient>
                 <filter id="processGlow">
-                  <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
-                  <feMerge> 
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/> 
+                  <feGaussianBlur stdDeviation="5" result="coloredBlur" />
+                  <feMerge>
+                    <feMergeNode in="coloredBlur" />
+                    <feMergeNode in="SourceGraphic" />
                   </feMerge>
                 </filter>
               </defs>
-              
+
               {/* Main Process Flow through all steps */}
               <motion.path
                 d="M32 8 Q120 40 260 72 Q320 100 72 140 Q30 180 288 220 Q320 250 72 290 Q30 320 288 340"
@@ -236,7 +244,7 @@ export function WorkProcessSection() {
                 animate={{ pathLength: 1, opacity: 1 }}
                 transition={{ duration: 4, ease: "easeInOut" }}
               />
-              
+
               {/* Flowing Data Particles */}
               {Array.from({ length: 12 }).map((_, i) => (
                 <motion.circle
@@ -261,25 +269,44 @@ export function WorkProcessSection() {
                 />
               ))}
             </svg>
-            
+
             {/* Process Step Buttons positioned on curve */}
             <div className="relative z-10 w-full h-full">
               {processSteps.map((step, index) => {
                 const Icon = step.icon;
                 const isSelected = selectedStep === step.number;
-                
-                // Positions along the process flow curve (moved up by 10%)
+
+                // Positions along the process flow curve
                 const positions = [
-                  { x: '16%', y: '-6%' },   // Discovery
-                  { x: '62%', y: '10%' },   // Planning
-                  { x: '22%', y: '28%' },   // Design
-                  { x: '64%', y: '48%' },   // Development
-                  { x: '24%', y: '66%' },   // Testing
-                  { x: '64%', y: '76%' }    // Launch
+                  {
+                    mobile: { x: '8%', y: '10%' },
+                    desktop: { x: '16%', y: '-6%' }
+                  },   // Discovery
+                  {
+                    mobile: { x: '65%', y: '22%' },
+                    desktop: { x: '62%', y: '10%' }
+                  },   // Planning
+                  {
+                    mobile: { x: '10%', y: '36%' },
+                    desktop: { x: '22%', y: '28%' }
+                  },   // Design
+                  {
+                    mobile: { x: '70%', y: '50%' },
+                    desktop: { x: '64%', y: '48%' }
+                  },   // Development
+                  {
+                    mobile: { x: '16%', y: '64%' },
+                    desktop: { x: '24%', y: '66%' }
+                  },   // Testing
+                  {
+                    mobile: { x: '76%', y: '70%' },
+                    desktop: { x: '64%', y: '76%' }
+                  }    // Launch
                 ];
-                
-                const pos = positions[index] || { x: '50%', y: '50%' };
-                
+
+                const currentPos = positions[index] || { mobile: { x: '50%', y: '50%' }, desktop: { x: '50%', y: '50%' } };
+                const pos = isDesktop ? currentPos.desktop : currentPos.mobile;
+
                 return (
                   <motion.div
                     key={step.number}
@@ -292,15 +319,15 @@ export function WorkProcessSection() {
                     initial={{ opacity: 0, scale: 0.2, y: 30 }}
                     whileInView={{ opacity: 1, scale: 1, y: 0 }}
                     viewport={{ once: true, margin: "-100px" }}
-                    transition={{ 
-                      duration: 0.8, 
+                    transition={{
+                      duration: 0.8,
                       delay: index * 0.2,
                       type: "spring",
                       stiffness: 100
                     }}
                   >
 
-                    
+
                     {/* Process Step Button */}
                     <motion.button
                       className="relative group"
@@ -310,11 +337,10 @@ export function WorkProcessSection() {
                     >
                       {/* Main Button */}
                       <motion.div
-                        className={`w-20 h-20 rounded-2xl border-3 transition-all duration-500 glass backdrop-blur-xl relative overflow-hidden ${
-                          isSelected 
-                            ? 'border-chart-1 bg-chart-1/20 shadow-2xl' 
-                            : 'border-chart-1/50 hover:border-chart-1/80 bg-background/15'
-                        }`}
+                        className={`w-16 h-16 md:w-24 md:h-24 rounded-2xl border-3 transition-all duration-500 glass backdrop-blur-xl relative overflow-hidden ${isSelected
+                          ? 'border-chart-1 bg-chart-1/20 shadow-2xl'
+                          : 'border-chart-1/50 hover:border-chart-1/80 bg-background/15'
+                          }`}
                         style={{
                           background: isSelected ? `linear-gradient(135deg, 
                             hsl(var(--chart-${(index % 4) + 1}) / 0.25) 0%, 
@@ -324,23 +350,21 @@ export function WorkProcessSection() {
                             hsl(var(--chart-${((index + 1) % 4) + 1}) / 0.1) 100%)`
                         }}
                         animate={{
-                          boxShadow: isSelected 
-                            ? '0 0 40px hsl(var(--chart-1) / 0.5), 0 0 80px hsl(var(--chart-1) / 0.3)' 
+                          boxShadow: isSelected
+                            ? '0 0 40px hsl(var(--chart-1) / 0.5), 0 0 80px hsl(var(--chart-1) / 0.3)'
                             : '0 0 0px hsl(var(--chart-1) / 0)'
                         }}
                       >
                         {/* Inner Content */}
                         <div className="w-full h-full flex flex-col items-center justify-center gap-1 p-2">
-                          <Icon className={`h-5 w-5 transition-colors ${
-                            isSelected ? 'text-chart-1' : 'text-muted-foreground group-hover:text-chart-1'
-                          }`} />
-                          <span className={`text-xs font-bold transition-colors text-center leading-tight ${
-                            isSelected ? 'text-chart-1' : 'text-muted-foreground group-hover:text-chart-1'
-                          }`}>
+                          <Icon className={`h-4 w-4 md:h-6 md:w-6 transition-colors ${isSelected ? 'text-chart-1' : 'text-muted-foreground group-hover:text-chart-1'
+                            }`} />
+                          <span className={`text-[10px] md:text-xs font-bold transition-colors text-center leading-tight ${isSelected ? 'text-chart-1' : 'text-muted-foreground group-hover:text-chart-1'
+                            }`}>
                             CHAPTER {step.number}
                           </span>
                         </div>
-                        
+
                         {/* Active Indicator */}
                         {isSelected && (
                           <>
@@ -376,14 +400,14 @@ export function WorkProcessSection() {
               })}
             </div>
           </div>
-          
+
           {/* Right Side - Static Card with Scrolling Content */}
           <div className="flex flex-col items-center justify-center">
             {/* Static Card Container */}
             <div className="relative w-full max-w-md">
               {/* Static Card Background with Glow */}
               <div className="absolute inset-0 bg-gradient-to-br from-chart-1/10 via-transparent to-chart-2/10 rounded-2xl blur-lg" />
-              
+
               {/* Static Main Card */}
               <div className="relative glass rounded-2xl border-2 border-chart-1/30 p-6 backdrop-blur-xl overflow-hidden h-[30rem]">
                 {/* Scrolling Content Container */}
@@ -394,7 +418,7 @@ export function WorkProcessSection() {
                     initial={{ x: 300, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -300, opacity: 0 }}
-                    transition={{ 
+                    transition={{
                       duration: 1.2,
                       ease: "easeInOut"
                     }}
@@ -407,12 +431,12 @@ export function WorkProcessSection() {
                         <span className="text-chart-1">CHAPTER {currentStep.number}:</span>{' '}
                         <span className="text-foreground">{currentStep.title}</span>
                       </h3>
-                      
+
                       {/* Chapter Description */}
                       <p className="text-sm text-muted-foreground leading-relaxed mb-6 text-justify">
                         {currentStep.description}
                       </p>
-                      
+
                       {/* Decorative Line */}
                       <div className="flex items-center justify-center mb-6">
                         <div className="h-px w-12 bg-gradient-to-r from-transparent to-chart-1/50" />
@@ -420,7 +444,7 @@ export function WorkProcessSection() {
                         <div className="h-px w-12 bg-gradient-to-l from-transparent to-chart-1/50" />
                       </div>
                     </div>
-                    
+
                     {/* Key Activities */}
                     <div className="mb-6">
                       <h5 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
@@ -465,7 +489,7 @@ export function WorkProcessSection() {
                     </div>
                   </motion.div>
                 </div>
-                
+
                 {/* Static Holographic Effect */}
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-br from-chart-1/10 via-transparent to-chart-2/10 pointer-events-none"

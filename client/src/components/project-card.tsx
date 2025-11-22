@@ -14,9 +14,9 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
   // Ensure technologies is always an array
-  const technologies = Array.isArray(project.technologies) 
-    ? project.technologies 
-    : typeof project.technologies === 'string' 
+  const technologies = Array.isArray(project.technologies)
+    ? project.technologies
+    : typeof project.technologies === 'string'
       ? JSON.parse(project.technologies)
       : [];
 
@@ -39,14 +39,14 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
-    
+
     const rect = cardRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    
+
     const mouseXPos = (e.clientX - centerX) / (rect.width / 2);
     const mouseYPos = (e.clientY - centerY) / (rect.height / 2);
-    
+
     mouseX.set(mouseXPos);
     mouseY.set(mouseYPos);
   };
@@ -63,13 +63,13 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
       initial={{ opacity: 0, scale: 0.8, rotateX: 20, rotateY: -20, z: -100 }}
       whileInView={{ opacity: 1, scale: 1, rotateX: 0, rotateY: 0, z: 0 }}
       viewport={{ once: true, margin: "-100px" }}
-      transition={{ 
-        duration: 0.8, 
+      transition={{
+        duration: 0.8,
         delay: index * 0.2,
         type: "spring",
         stiffness: 80
       }}
-      style={{ 
+      style={{
         transformStyle: "preserve-3d",
         perspective: "1000px",
         rotateX: isHovered ? rotateX : 0,
@@ -85,7 +85,7 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
       data-testid={`card-project-${project.id}`}
     >
       <Card
-        className="group relative overflow-hidden border-0 h-[460px] flex flex-col cursor-pointer"
+        className="group relative overflow-hidden border-0 h-[400px] md:h-[460px] flex flex-col cursor-pointer"
         onClick={onSelect}
         role={onSelect ? "button" : undefined}
         tabIndex={onSelect ? 0 : undefined}
@@ -113,7 +113,7 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
             maskComposite: "exclude",
           }}
           animate={{
-            backgroundPosition: isHovered 
+            backgroundPosition: isHovered
               ? ["0% 50%", "100% 50%", "0% 50%"]
               : ["0% 50%", "50% 50%", "0% 50%"],
           }}
@@ -145,7 +145,7 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
         />
 
         {/* Scan Lines */}
-        <motion.div 
+        <motion.div
           className="absolute inset-0 pointer-events-none"
           style={{
             backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,255,0.3) 2px, rgba(0,255,255,0.3) 4px)",
@@ -162,12 +162,12 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
         />
 
         {/* Glowing Corners */}
-        <motion.div 
+        <motion.div
           className="absolute top-0 left-0 blur-2xl rounded-full"
           style={{
             width: isHovered ? 100 : 80,
             height: isHovered ? 100 : 80,
-            background: isHovered 
+            background: isHovered
               ? "radial-gradient(circle, rgba(0,255,255,0.6), transparent)"
               : "radial-gradient(circle, rgba(0,255,255,0.2), transparent)",
           }}
@@ -181,12 +181,12 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
             ease: "easeInOut"
           }}
         />
-        <motion.div 
+        <motion.div
           className="absolute bottom-0 right-0 blur-2xl rounded-full"
           style={{
             width: isHovered ? 100 : 80,
             height: isHovered ? 100 : 80,
-            background: isHovered 
+            background: isHovered
               ? "radial-gradient(circle, rgba(255,0,255,0.6), transparent)"
               : "radial-gradient(circle, rgba(255,0,255,0.2), transparent)",
           }}
@@ -234,7 +234,7 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
         {/* Content Container */}
         <div className="relative z-20 flex flex-col h-full">
           {/* Project Image with 3D Effect */}
-          <div className="relative h-48 overflow-hidden">
+          <div className="relative h-40 md:h-48 overflow-hidden">
             <motion.div
               className="absolute inset-0"
               style={{ transformStyle: "preserve-3d" }}
@@ -255,7 +255,7 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
               ) : (
                 <div className="w-full h-full flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-gradient-to-br from-chart-1/10 via-chart-2/10 to-chart-3/10" />
-                  <motion.div 
+                  <motion.div
                     className="text-8xl font-display relative z-10"
                     style={{
                       background: "linear-gradient(135deg, hsl(var(--chart-1)), hsl(var(--chart-2)), hsl(var(--chart-3)))",
@@ -263,11 +263,11 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
                       WebkitTextFillColor: "transparent",
                       textShadow: "0 0 30px rgba(0,255,255,0.5)",
                     }}
-                    animate={{ 
+                    animate={{
                       scale: [1, 1.05, 1],
                       rotateY: [0, 10, 0, -10, 0]
                     }}
-                    transition={{ 
+                    transition={{
                       duration: 6,
                       repeat: Infinity,
                       ease: "easeInOut"
@@ -278,17 +278,17 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
                 </div>
               )}
             </motion.div>
-            
+
             {/* Cyber Grid Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            <div 
+            <div
               className="absolute inset-0 opacity-20"
               style={{
                 backgroundImage: "linear-gradient(0deg, transparent 24%, rgba(0,255,255,0.3) 25%, rgba(0,255,255,0.3) 26%, transparent 27%, transparent 74%, rgba(0,255,255,0.3) 75%, rgba(0,255,255,0.3) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(0,255,255,0.3) 25%, rgba(0,255,255,0.3) 26%, transparent 27%, transparent 74%, rgba(0,255,255,0.3) 75%, rgba(0,255,255,0.3) 76%, transparent 77%, transparent)",
                 backgroundSize: "50px 50px",
               }}
             />
-            
+
             {/* Floating Action Buttons */}
             <motion.div
               className="absolute top-3 right-3 flex gap-2"
@@ -307,8 +307,8 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
                   whileTap={{ scale: 0.9 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Button 
-                    size="icon" 
+                  <Button
+                    size="icon"
                     className="bg-black/50 backdrop-blur-xl border border-chart-1/50 hover:border-chart-1 hover:bg-chart-1/20 shadow-[0_0_15px_rgba(0,255,255,0.3)]"
                   >
                     <Github className="h-4 w-4 text-chart-1" />
@@ -326,8 +326,8 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
                   whileTap={{ scale: 0.9 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Button 
-                    size="icon" 
+                  <Button
+                    size="icon"
                     className="bg-black/50 backdrop-blur-xl border border-chart-2/50 hover:border-chart-2 hover:bg-chart-2/20 shadow-[0_0_15px_rgba(255,0,255,0.3)]"
                   >
                     <ExternalLink className="h-4 w-4 text-chart-2" />
@@ -338,7 +338,7 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
           </div>
 
           {/* Project Info */}
-          <motion.div 
+          <motion.div
             className="px-5 pt-5 pb-4 flex flex-col flex-1"
             animate={isHovered ? {
               backgroundColor: ["rgba(0,0,0,0)", "rgba(0,20,40,0.3)", "rgba(0,0,0,0)"],
@@ -375,7 +375,7 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
             >
               <span className="line-clamp-1">{project.title}</span>
             </motion.h3>
-            
+
             <motion.p
               className="text-gray-400 text-sm mb-4 line-clamp-3 h-[60px]"
               data-testid={`text-description-${project.id}`}
@@ -393,7 +393,7 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
 
             {/* Tech Stack - Always Visible with 3D Effect */}
             <div className="mb-3">
-              <motion.div 
+              <motion.div
                 className="text-xs mb-2 font-mono uppercase tracking-wider"
                 style={{ color: "hsl(var(--chart-1))" }}
                 animate={isHovered ? {
@@ -416,12 +416,12 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
                     key={i}
                     initial={{ opacity: 0, scale: 0, rotateX: -90 }}
                     whileInView={{ opacity: 1, scale: 1, rotateX: 0 }}
-                    transition={{ 
+                    transition={{
                       delay: i * 0.05,
                       type: "spring",
                       stiffness: 200
                     }}
-                    whileHover={{ 
+                    whileHover={{
                       scale: 1.1,
                       rotateZ: 5,
                       y: -2
@@ -458,12 +458,12 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
                   <motion.div
                     initial={{ opacity: 0, scale: 0, rotateX: -90 }}
                     whileInView={{ opacity: 1, scale: 1, rotateX: 0 }}
-                    transition={{ 
+                    transition={{
                       delay: 0.15,
                       type: "spring",
                       stiffness: 200
                     }}
-                    whileHover={{ 
+                    whileHover={{
                       scale: 1.1,
                       rotateZ: 5,
                       y: -2
@@ -496,11 +496,11 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
                 repeat: Infinity,
               }}
             >
-              <Button 
+              <Button
                 className="w-full relative overflow-hidden border-0 font-mono uppercase tracking-wider"
                 size="sm"
                 style={{
-                  background: isHovered 
+                  background: isHovered
                     ? "linear-gradient(135deg, rgba(0,255,255,0.3), rgba(255,0,255,0.3))"
                     : "linear-gradient(135deg, rgba(0,255,255,0.2), rgba(255,0,255,0.2))",
                   boxShadow: isHovered
@@ -522,7 +522,7 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
                     repeat: Infinity,
                   }}
                 />
-                <motion.span 
+                <motion.span
                   className="relative z-10 flex items-center justify-center gap-2"
                   animate={isHovered ? {
                     letterSpacing: ["0.05em", "0.1em", "0.05em"],
@@ -534,13 +534,13 @@ export function ProjectCard({ project, index, onSelect }: ProjectCardProps) {
                 >
                   <span>Access Project</span>
                   <motion.div
-                    animate={{ 
+                    animate={{
                       x: isHovered ? [0, 5, 0] : [0, 3, 0],
                       rotate: isHovered ? [0, 10, 0] : 0,
                     }}
-                    transition={{ 
+                    transition={{
                       duration: isHovered ? 0.8 : 1,
-                      repeat: Infinity 
+                      repeat: Infinity
                     }}
                   >
                     <ExternalLink className="h-4 w-4" />

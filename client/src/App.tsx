@@ -18,6 +18,7 @@ import AdminSkills from "@/pages/admin/skills";
 import AdminTestimonials from "@/pages/admin/testimonials";
 import AdminMessages from "@/pages/admin/messages";
 import AdminAbout from "@/pages/admin/about";
+import { CustomCursor } from "@/components/cursor";
 
 function withAuth(Component: ComponentType<any>): ComponentType<any> {
   const ProtectedComponent: ComponentType<any> = (props: any) => {
@@ -65,8 +66,8 @@ function Router() {
   const isAdminRoute = location.startsWith("/admin");
 
   return (
-    <ThemeProvider 
-      defaultTheme="dark" 
+    <ThemeProvider
+      defaultTheme="dark"
       storageKey={isAdminRoute ? "admin-theme" : "client-theme"}
     >
       <Switch>
@@ -94,6 +95,7 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
+          <CustomCursor />
           <Toaster />
           <Router />
         </TooltipProvider>

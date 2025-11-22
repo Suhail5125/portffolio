@@ -53,11 +53,11 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
   const [isPaused, setIsPaused] = React.useState(false);
 
   return (
-    <section id="testimonials" className="h-screen relative overflow-hidden flex items-center">
+    <section id="testimonials" className="min-h-screen relative overflow-hidden flex items-center pt-0 pb-20 md:py-20">
       {/* Enhanced Animated Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-card/20 to-background" />
-        
+
         {/* Matrix-style Grid */}
         <div className="absolute inset-0 opacity-[0.02]">
           <div className="h-full w-full" style={{
@@ -68,7 +68,7 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
             backgroundSize: '80px 80px'
           }} />
         </div>
-        
+
         {/* Floating Code Symbols */}
         {Array.from({ length: 30 }).map((_, i) => {
           const symbols = ['<>', '{}', '[]', '/>', '()', '&&', '||', '=>', 'fn', 'var', 'let', 'const', 'if', 'else', 'for', 'while', 'try', 'catch', 'class', 'import', 'export', 'async', 'await', 'return', 'null', 'true', 'false', '===', '!==', '++', '--', '+=', '-=', '*=', '/=', '??', '?.', '...', 'new', 'this', 'super', 'extends', 'implements'];
@@ -98,17 +98,17 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
           );
         })}
       </div>
-      
+
       <div className="relative z-10 w-full">
         {/* Header */}
-        <motion.div 
-          className="text-center mb-12"
+        <motion.div
+          className="text-center mb-8 md:mb-12"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <motion.h2 
+          <motion.h2
             className="font-display text-4xl md:text-5xl font-bold mb-3"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -117,7 +117,7 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
           >
             <span className="gradient-text-cyan-purple">Client Testimonials</span>
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -126,14 +126,14 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
           >
             What our clients say about working with us
           </motion.p>
-          <motion.div 
+          <motion.div
             className="flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            <motion.div 
+            <motion.div
               className="h-px w-16 bg-gradient-to-r from-transparent to-chart-1"
               initial={{ width: 0 }}
               whileInView={{ width: 64 }}
@@ -141,7 +141,7 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
               transition={{ duration: 0.8, delay: 0.8 }}
             />
             <div className="h-1.5 w-1.5 rounded-full bg-chart-1 mx-3" />
-            <motion.div 
+            <motion.div
               className="h-px w-16 bg-gradient-to-l from-transparent to-chart-1"
               initial={{ width: 0 }}
               whileInView={{ width: 64 }}
@@ -174,7 +174,7 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
               />
               <Quote className="h-20 w-20 text-chart-1 relative z-10" />
             </motion.div>
-            
+
             <motion.h3
               className="font-display text-2xl font-bold mb-3 gradient-text-cyan-magenta"
               initial={{ opacity: 0 }}
@@ -184,7 +184,7 @@ export function TestimonialsSection({ testimonials = [], isLoading = false }: Te
             >
               No Testimonials Yet
             </motion.h3>
-            
+
             <motion.p
               className="text-muted-foreground text-center max-w-md"
               initial={{ opacity: 0 }}
@@ -249,13 +249,13 @@ function TestimonialCard({ testimonial }: { testimonial: DisplayTestimonial }) {
   const rating = Math.min(5, Math.max(1, Math.round(testimonial.rating)));
   return (
     <motion.div
-      className="relative flex-shrink-0 w-80 p-6 glass rounded-2xl backdrop-blur-xl overflow-hidden"
+      className="relative flex-shrink-0 w-72 md:w-80 p-6 glass rounded-2xl backdrop-blur-xl overflow-hidden"
     >
       {/* Quote Icon */}
       <div className="absolute top-4 right-4 opacity-20">
         <Quote className="h-8 w-8 text-chart-1" />
       </div>
-      
+
       {/* Content */}
       <div className="relative z-10">
         {/* Rating */}
@@ -267,12 +267,12 @@ function TestimonialCard({ testimonial }: { testimonial: DisplayTestimonial }) {
             />
           ))}
         </div>
-        
+
         {/* Testimonial Text */}
         <p className="text-sm text-muted-foreground leading-relaxed mb-6">
           "{testimonial.content}"
         </p>
-        
+
         {/* Author */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-chart-1/20 to-chart-2/20 border border-chart-1/30 flex items-center justify-center overflow-hidden relative">
@@ -297,7 +297,7 @@ function TestimonialCard({ testimonial }: { testimonial: DisplayTestimonial }) {
           </div>
         </div>
       </div>
-      
+
       {/* Holographic Effect */}
       <motion.div
         className="absolute inset-0 bg-gradient-to-br from-chart-1/10 via-transparent to-chart-2/10"

@@ -61,7 +61,7 @@ export function Navigation() {
                     }}
                   />
                 </div>
-                <span className="font-display text-xl font-bold gradient-text-cyan-magenta hidden sm:block">
+                <span className="font-display text-xl font-bold gradient-text-cyan-magenta">
                   CodebySRS
                 </span>
               </motion.div>
@@ -183,19 +183,6 @@ export function Navigation() {
           >
             <div className="glass rounded-lg border border-border/50 p-4">
               <div className="flex flex-col gap-2">
-                <Button
-                  onClick={() => {
-                    scrollToSection("#contact");
-                    setIsOpen(false);
-                  }}
-                  className="w-full relative overflow-hidden group mb-2"
-                  data-testid="button-mobile-lets-work-together"
-                >
-                  <span className="relative z-10 flex items-center justify-center gap-2">
-                    <Send className="h-4 w-4" />
-                    Let's Work Together
-                  </span>
-                </Button>
                 {navItems.map((item, index) => (
                   <motion.div
                     key={item.name}

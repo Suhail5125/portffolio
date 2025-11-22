@@ -30,7 +30,15 @@ const categoryColors: Record<string, string> = {
 
 export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('Frontend');
-  
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
   const groupedSkills = skills.reduce((acc, skill) => {
     if (!acc[skill.category]) {
       acc[skill.category] = [];
@@ -38,7 +46,7 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
     acc[skill.category].push(skill);
     return acc;
   }, {} as Record<string, Skill[]>);
-  
+
   const categories = Object.keys(groupedSkills).length > 0 ? Object.keys(groupedSkills) : ['Frontend', 'Backend', '3D/Graphics', 'Tools'];
   const currentSkills = groupedSkills[selectedCategory] || [];
 
@@ -55,11 +63,11 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
   }, [categories]);
 
   return (
-    <section id="skills" className="h-screen relative overflow-hidden">
+    <section id="skills" className="min-h-screen relative overflow-hidden pt-0 pb-20 md:py-20 flex flex-col">
       {/* Enhanced Animated Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-card/20 to-background" />
-        
+
         {/* Matrix-style Grid */}
         <div className="absolute inset-0 opacity-[0.02]">
           <div className="h-full w-full" style={{
@@ -70,7 +78,7 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
             backgroundSize: '80px 80px'
           }} />
         </div>
-        
+
         {/* Floating Code Symbols */}
         {Array.from({ length: 30 }).map((_, i) => {
           const symbols = ['<>', '{}', '[]', '/>', '()', '&&', '||', '=>', 'fn', 'var', 'let', 'const', 'if', 'else', 'for', 'while', 'try', 'catch', 'class', 'import', 'export', 'async', 'await', 'return', 'null', 'true', 'false', '===', '!==', '++', '--', '+=', '-=', '*=', '/=', '??', '?.', '...', 'new', 'this', 'super', 'extends', 'implements'];
@@ -100,41 +108,41 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
           );
         })}
       </div>
-      
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-8">
-        <motion.div 
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <motion.div
           className="text-center mb-8"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <motion.h2 
-            className="font-display text-4xl md:text-5xl font-bold mb-3"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+          <motion.h2
+            className="font-display text-4xl md:text-5xl font-bold mb-3 text-center px-4"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.4 }}
           >
             <span className="gradient-text-cyan-purple">Skills & Expertise</span>
           </motion.h2>
-          <motion.p 
-            className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+          <motion.p
+            className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4 text-center px-4"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.4 }}
           >
             Cutting-edge technologies powering digital innovation
           </motion.p>
-          <motion.div 
+          <motion.div
             className="flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            <motion.div 
+            <motion.div
               className="h-px w-16 bg-gradient-to-r from-transparent to-chart-1"
               initial={{ width: 0 }}
               whileInView={{ width: 64 }}
@@ -142,7 +150,7 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
               transition={{ duration: 0.8, delay: 0.8 }}
             />
             <div className="h-1.5 w-1.5 rounded-full bg-chart-1 mx-3" />
-            <motion.div 
+            <motion.div
               className="h-px w-16 bg-gradient-to-l from-transparent to-chart-1"
               initial={{ width: 0 }}
               whileInView={{ width: 64 }}
@@ -151,11 +159,11 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
             />
           </motion.div>
         </motion.div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          
+
           {/* Left Side - Perfect Curved Flow */}
-          <div className="relative h-96 flex items-center justify-center -ml-8">
+          <div className="relative h-80 md:h-96 aspect-[7/8] mx-auto md:mx-0 md:-ml-0">
             {/* Perfect S-Curve Path */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 350 400" preserveAspectRatio="xMidYMid meet">
               <defs>
@@ -166,14 +174,14 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
                   <stop offset="100%" stopColor="hsl(var(--chart-4))" stopOpacity="0.9" />
                 </linearGradient>
                 <filter id="glow">
-                  <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
-                  <feMerge> 
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/> 
+                  <feGaussianBlur stdDeviation="5" result="coloredBlur" />
+                  <feMerge>
+                    <feMergeNode in="coloredBlur" />
+                    <feMergeNode in="SourceGraphic" />
                   </feMerge>
                 </filter>
               </defs>
-              
+
               {/* Main S-Curve through all categories */}
               <motion.path
                 d="M32 48 Q120 80 260 112 Q320 140 72 248 Q30 290 288 360"
@@ -185,7 +193,7 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
                 animate={{ pathLength: 1, opacity: 1 }}
                 transition={{ duration: 3.5, ease: "easeInOut" }}
               />
-              
+
               {/* Enhanced Flowing Particles */}
               {Array.from({ length: 15 }).map((_, i) => (
                 <motion.circle
@@ -210,23 +218,36 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
                 />
               ))}
             </svg>
-            
+
             {/* Category Buttons positioned on curve */}
             <div className="relative z-10 w-full h-full">
               {categories.map((category, index) => {
                 const Icon = categoryIcons[category] || Code2;
                 const isSelected = selectedCategory === category;
-                
+
                 // Exact positions on the S-curve
                 const positions = [
-                  { x: '12%', y: '0%' },   // Frontend - start of curve
-                  { x: '60%', y: '20%' },  // Backend - peak of curve
-                  { x: '20%', y: '54%' },  // 3D/Graphics - valley of curve
-                  { x: '64%', y: '76%' }   // Tools - end of curve
+                  {
+                    mobile: { x: '-10%', y: '4%' },
+                    desktop: { x: '-16%', y: '0%' }
+                  },   // Frontend
+                  {
+                    mobile: { x: '68%', y: '20%' },
+                    desktop: { x: '64%', y: '20%' }
+                  },  // Tools
+                  {
+                    mobile: { x: '0%', y: '54%' },
+                    desktop: { x: '-6%', y: '52%' }
+                  },  // Backend
+                  {
+                    mobile: { x: '74%', y: '76%' },
+                    desktop: { x: '78%', y: '76%' }
+                  }   // 3D/Graphics
                 ];
-                
-                const pos = positions[index] || { x: '50%', y: '50%' };
-                
+
+                const currentPos = positions[index] || { mobile: { x: '50%', y: '50%' }, desktop: { x: '50%', y: '50%' } };
+                const pos = isDesktop ? currentPos.desktop : currentPos.mobile;
+
                 return (
                   <motion.div
                     key={category}
@@ -251,29 +272,26 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
                     >
                       {/* Main Button */}
                       <motion.div
-                        className={`w-28 h-28 rounded-3xl border-4 transition-all duration-500 glass backdrop-blur-xl relative overflow-hidden ${
-                          isSelected 
-                            ? 'border-chart-1 bg-chart-1/20 shadow-2xl' 
-                            : 'border-chart-1/50 hover:border-chart-1/80 bg-background/15'
-                        }`}
+                        className={`w-20 h-20 md:w-28 md:h-28 rounded-3xl border-4 transition-all duration-500 glass backdrop-blur-xl relative overflow-hidden ${isSelected
+                          ? 'border-chart-1 bg-chart-1/20 shadow-2xl'
+                          : 'border-chart-1/50 hover:border-chart-1/80 bg-background/15'
+                          }`}
                         animate={{
-                          boxShadow: isSelected 
-                            ? '0 0 40px hsl(var(--chart-1) / 0.5), 0 0 80px hsl(var(--chart-1) / 0.3)' 
+                          boxShadow: isSelected
+                            ? '0 0 40px hsl(var(--chart-1) / 0.5), 0 0 80px hsl(var(--chart-1) / 0.3)'
                             : '0 0 0px hsl(var(--chart-1) / 0)'
                         }}
                       >
                         {/* Inner Content */}
                         <div className="w-full h-full flex flex-col items-center justify-center gap-2 p-3">
-                          <Icon className={`h-8 w-8 transition-all duration-300 ${
-                            isSelected ? 'text-chart-1' : 'text-muted-foreground group-hover:text-chart-1'
-                          }`} />
-                          <span className={`text-sm font-bold transition-all duration-300 text-center leading-tight ${
-                            isSelected ? 'text-chart-1' : 'text-muted-foreground group-hover:text-chart-1'
-                          }`}>
+                          <Icon className={`h-6 w-6 md:h-8 md:w-8 transition-all duration-300 ${isSelected ? 'text-chart-1' : 'text-muted-foreground group-hover:text-chart-1'
+                            }`} />
+                          <span className={`text-xs md:text-sm font-bold transition-all duration-300 text-center leading-tight ${isSelected ? 'text-chart-1' : 'text-muted-foreground group-hover:text-chart-1'
+                            }`}>
                             {category.includes('/') ? category.split('/')[0] : category}
                           </span>
                         </div>
-                        
+
                         {/* Active Indicator */}
                         {isSelected && (
                           <>
@@ -308,14 +326,14 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
                 );
               })}
             </div>
-            
+
 
           </div>
-          
+
           {/* Right Side - Content */}
           <div className="flex flex-col items-center justify-center">
 
-            
+
             {/* Compact Category Card */}
             <motion.div
               key={selectedCategory}
@@ -326,7 +344,7 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
             >
               {/* Card Background with Glow */}
               <div className="absolute inset-0 bg-gradient-to-br from-chart-1/10 via-transparent to-chart-2/10 rounded-2xl blur-lg" />
-              
+
               {/* Main Card */}
               <div className="relative glass rounded-2xl border-2 border-chart-1/30 p-6 backdrop-blur-xl overflow-hidden">
                 {/* Card Header */}
@@ -344,7 +362,7 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
                   })()}
                   <h3 className="font-display text-2xl font-bold text-center">{selectedCategory}</h3>
                 </div>
-                
+
                 {/* Skills List - Single Column */}
                 {currentSkills.length > 0 ? (
                   <div className="relative z-10 space-y-3">
@@ -389,14 +407,14 @@ export function SkillsSection({ skills, isLoading }: SkillsSectionProps) {
           </div>
         </div>
       </div>
-      
+
       {/* Full Width Tech Slider */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, delay: 0.4 }}
-        className="absolute bottom-8 w-full"
+        className="relative mt-12 md:mt-16 w-full"
       >
         <TechSlider />
       </motion.div>

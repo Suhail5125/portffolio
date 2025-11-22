@@ -11,14 +11,14 @@ interface FooterProps {
 
 export function Footer({ aboutInfo }: FooterProps) {
   const currentYear = new Date().getFullYear();
-  
+
   console.log('Footer aboutInfo:', aboutInfo); // Debug log
 
   return (
     <footer id="footer" className="relative py-12 border-t border-border overflow-hidden snap-start">
       {/* Animated Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-card/30 to-background pointer-events-none" />
-      
+
       {/* Grid pattern overlay */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
         <div className="absolute inset-0" style={{
@@ -26,7 +26,7 @@ export function Footer({ aboutInfo }: FooterProps) {
           backgroundSize: '40px 40px',
         }} />
       </div>
-      
+
       {/* Animated gradient orbs */}
       <motion.div
         className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-chart-1/10 rounded-full blur-3xl"
@@ -150,7 +150,7 @@ export function Footer({ aboutInfo }: FooterProps) {
                 </motion.a>
               )}
               {aboutInfo?.location && (
-                <motion.div 
+                <motion.div
                   className="flex items-center gap-3 text-muted-foreground text-sm group"
                   initial={{ opacity: 0, x: -10 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -192,13 +192,13 @@ export function Footer({ aboutInfo }: FooterProps) {
                   initial={{ opacity: 0, scale: 0 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ 
-                    duration: 0.4, 
+                  transition={{
+                    duration: 0.4,
                     delay: 0.3 + index * 0.1,
                     type: "spring",
-                    stiffness: 200 
+                    stiffness: 200
                   }}
-                  whileHover={{ 
+                  whileHover={{
                     scale: 1.1,
                     rotate: [0, -10, 10, 0],
                     transition: { duration: 0.3 }
@@ -219,74 +219,74 @@ export function Footer({ aboutInfo }: FooterProps) {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col items-center md:items-start"
           >
-                          <div className="glass rounded-xl border border-border/50 p-6 w-[120%] -ml-[20%] hover-elevate transition-all relative overflow-hidden">
-                {/* Animated gradient orbs */}
+            <div className="glass rounded-xl border border-border/50 p-6 w-full hover-elevate transition-all relative overflow-hidden">
+              {/* Animated gradient orbs */}
+              <motion.div
+                className="absolute -top-10 -left-10 w-32 h-32 bg-chart-1/20 rounded-full blur-2xl"
+                animate={{
+                  scale: [1, 1.3, 1],
+                  opacity: [0.3, 0.5, 0.3],
+                }}
+                transition={{
+                  duration: 6,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+              <motion.div
+                className="absolute -bottom-10 -right-10 w-32 h-32 bg-chart-2/20 rounded-full blur-2xl"
+                animate={{
+                  scale: [1.3, 1, 1.3],
+                  opacity: [0.5, 0.3, 0.5],
+                }}
+                transition={{
+                  duration: 6,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1,
+                }}
+              />
+
+              <div className="flex items-center gap-2 mb-2 relative z-10">
                 <motion.div
-                  className="absolute -top-10 -left-10 w-32 h-32 bg-chart-1/20 rounded-full blur-2xl"
+                  className={`w-2 h-2 ${aboutInfo?.availableForWork ? 'bg-green-500' : 'bg-red-500'} rounded-full`}
                   animate={{
-                    scale: [1, 1.3, 1],
-                    opacity: [0.3, 0.5, 0.3],
+                    scale: [1, 1.2, 1],
+                    opacity: [1, 0.8, 1],
                   }}
                   transition={{
-                    duration: 6,
+                    duration: 2,
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
                 />
-                <motion.div
-                  className="absolute -bottom-10 -right-10 w-32 h-32 bg-chart-2/20 rounded-full blur-2xl"
-                  animate={{
-                    scale: [1.3, 1, 1.3],
-                    opacity: [0.5, 0.3, 0.5],
-                  }}
-                  transition={{
-                    duration: 6,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 1,
-                  }}
-                />
-                
-                <div className="flex items-center gap-2 mb-2 relative z-10">
-                  <motion.div
-                    className={`w-2 h-2 ${aboutInfo?.availableForWork ? 'bg-green-500' : 'bg-red-500'} rounded-full`}
-                    animate={{
-                      scale: [1, 1.2, 1],
-                      opacity: [1, 0.8, 1],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  />
-                  <span className="font-semibold text-sm">{aboutInfo?.availableForWork ? 'Available for Work' : 'Currently Unavailable'}</span>
-                </div>
-                <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                  {aboutInfo?.availableForWork ? "We're currently accepting new client projects and would love to hear about your business needs." : "Currently not available for new projects."}
-                </p>
-                {aboutInfo && (
-                  <div className="space-y-2 text-xs text-muted-foreground">
-                    {aboutInfo.responseTime && (
-                      <div className="flex items-center gap-2">
-                        <Zap className="h-3 w-3 text-chart-1" />
-                        <span>Response Time: {aboutInfo.responseTime}</span>
-                      </div>
-                    )}
-                    {aboutInfo.workingHours && (
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-3 w-3 text-chart-2" />
-                        <span>Working Hours: {aboutInfo.workingHours}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
+                <span className="font-semibold text-sm">{aboutInfo?.availableForWork ? 'Available for Work' : 'Currently Unavailable'}</span>
               </div>
+              <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                {aboutInfo?.availableForWork ? "We're currently accepting new client projects and would love to hear about your business needs." : "Currently not available for new projects."}
+              </p>
+              {aboutInfo && (
+                <div className="space-y-2 text-xs text-muted-foreground">
+                  {aboutInfo.responseTime && (
+                    <div className="flex items-center gap-2">
+                      <Zap className="h-3 w-3 text-chart-1" />
+                      <span>Response Time: {aboutInfo.responseTime}</span>
+                    </div>
+                  )}
+                  {aboutInfo.workingHours && (
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-3 w-3 text-chart-2" />
+                      <span>Working Hours: {aboutInfo.workingHours}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </motion.div>
         </div>
 
         {/* Copyright */}
-        <motion.div 
+        <motion.div
           className="pt-6 border-t border-border/80"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -301,7 +301,7 @@ export function Footer({ aboutInfo }: FooterProps) {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.9 }}
             >
-              <p className="text-sm text-muted-foreground flex items-center gap-2">
+              <p className="text-xs md:text-sm text-muted-foreground flex flex-wrap items-center justify-center md:justify-start gap-2 text-center md:text-left">
                 <span>© {currentYear} {aboutInfo?.name || "CodebySRS"}. Made with</span>
                 <motion.span
                   animate={{
@@ -319,20 +319,20 @@ export function Footer({ aboutInfo }: FooterProps) {
                 <span>and modern web technologies</span>
               </p>
             </motion.div>
-            
+
             <motion.div
-              className="flex items-center gap-4 text-xs text-muted-foreground/70"
+              className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-4 text-xs text-muted-foreground/70"
               initial={{ y: 20 }}
               whileInView={{ y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 1 }}
             >
               <span>All rights reserved</span>
-              <span>•</span>
+              <span className="hidden md:inline">•</span>
               <Link href="/privacy-policy" className="hover:text-muted-foreground transition-colors cursor-pointer">
                 Privacy Policy
               </Link>
-              <span>•</span>
+              <span className="hidden md:inline">•</span>
               <Link href="/terms-of-service" className="hover:text-muted-foreground transition-colors cursor-pointer">
                 Terms of Service
               </Link>

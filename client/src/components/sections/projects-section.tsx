@@ -28,22 +28,40 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  
+
+  const [visibleCount, setVisibleCount] = useState(1);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setVisibleCount(1);
+      } else if (window.innerWidth < 1024) {
+        setVisibleCount(2);
+      } else {
+        setVisibleCount(3);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Auto-scroll effect
   useEffect(() => {
     if (displayProjects.length === 0 || isPaused) return;
-    
+
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % displayProjects.length);
     }, 3000);
-    
+
     return () => clearInterval(interval);
   }, [displayProjects.length, isPaused]);
-  
-  // Get 3 visible cards
+
+  // Get visible cards based on screen size
   const getVisibleProjects = () => {
     const visible = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < visibleCount; i++) {
       const index = (currentIndex + i) % displayProjects.length;
       visible.push(displayProjects[index]);
     }
@@ -84,11 +102,11 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
   const selectedTechnologies = selectedProject ? getTechnologies(selectedProject) : [];
 
   return (
-    <section id="projects" className="min-h-screen py-20 relative flex items-center" style={{ overflow: 'visible' }}>
+    <section id="projects" className="min-h-screen pt-0 pb-20 md:py-20 relative flex flex-col items-center justify-center overflow-x-hidden w-full">
       {/* Enhanced Animated Background */}
       <div className="absolute inset-0 overflow-hidden z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-card/20 to-background" />
-        
+
         {/* Matrix-style Grid */}
         <div className="absolute inset-0 opacity-[0.02]">
           <div className="h-full w-full" style={{
@@ -99,7 +117,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
             backgroundSize: '80px 80px'
           }} />
         </div>
-        
+
         {/* Floating Code Symbols */}
         {Array.from({ length: 30 }).map((_, i) => {
           const symbols = ['<>', '{}', '[]', '/>', '()', '&&', '||', '=>', 'fn', 'var', 'let', 'const', 'if', 'else', 'for', 'while', 'try', 'catch', 'class', 'import', 'export', 'async', 'await', 'return', 'null', 'true', 'false', '===', '!==', '++', '--', '+=', '-=', '*=', '/=', '??', '?.', '...', 'new', 'this', 'super', 'extends', 'implements'];
@@ -129,17 +147,17 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
           );
         })}
       </div>
-      
-      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
+
+      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <motion.div
           className="text-center mb-8"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <motion.h2 
-            className="font-display text-4xl md:text-5xl font-bold mb-3"
+          <motion.h2
+            className="font-display text-4xl md:text-5xl font-bold mb-3 text-center px-4"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -147,8 +165,8 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
           >
             <span className="gradient-text-cyan-purple">Featured Projects</span>
           </motion.h2>
-          <motion.p 
-            className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
+          <motion.p
+            className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4 text-center px-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -156,14 +174,14 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
           >
             Innovation meets design in our latest creations
           </motion.p>
-          <motion.div 
+          <motion.div
             className="flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            <motion.div 
+            <motion.div
               className="h-px w-16 bg-gradient-to-r from-transparent to-chart-1"
               initial={{ width: 0 }}
               whileInView={{ width: 64 }}
@@ -171,7 +189,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
               transition={{ duration: 0.8, delay: 0.8 }}
             />
             <div className="h-1.5 w-1.5 rounded-full bg-chart-1 mx-3" />
-            <motion.div 
+            <motion.div
               className="h-px w-16 bg-gradient-to-l from-transparent to-chart-1"
               initial={{ width: 0 }}
               whileInView={{ width: 64 }}
@@ -209,29 +227,29 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
           </div>
         ) : (
           <div className="relative w-full overflow-visible pb-20" style={{ paddingTop: '0px' }}>
-            <motion.div 
+            <motion.div
               className="relative max-w-[1280px] mx-auto px-2"
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              <div className="relative flex gap-4 overflow-x-hidden" style={{ overflowY: 'visible' }}>
+              <div className="relative flex md:gap-4 overflow-x-hidden justify-center" style={{ overflowY: 'visible' }}>
                 <AnimatePresence mode="popLayout" initial={false}>
                   {getVisibleProjects().map((project, index) => (
                     <motion.div
                       key={`${project.id}-${(currentIndex + index) % displayProjects.length}`}
                       layout
-                      initial={{ x: 404, opacity: 0 }}
+                      initial={{ x: "100%", opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
-                      exit={{ x: -404, opacity: 0 }}
-                      transition={{ 
+                      exit={{ x: "-100%", opacity: 0 }}
+                      transition={{
                         duration: 0.6,
                         ease: "easeInOut",
                         layout: { duration: 0.6 }
                       }}
-                      className="flex-shrink-0"
-                      style={{ width: "380px", marginTop: '0', paddingTop: '0' }}
+                      className="flex-shrink-0 w-[85vw] max-w-[380px] md:w-[380px] mx-auto"
+                      style={{ marginTop: '0', paddingTop: '0' }}
                       onMouseEnter={() => setIsPaused(true)}
                       onMouseLeave={() => setIsPaused(false)}
                     >
@@ -246,7 +264,7 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
               </div>
 
               {/* Control Dots */}
-              <motion.div 
+              <motion.div
                 className="flex items-center justify-center gap-3 mt-8"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -268,10 +286,10 @@ export function ProjectsSection({ projects, isLoading }: ProjectsSectionProps) {
                     <motion.div
                       className="w-2.5 h-2.5 rounded-full cursor-pointer transition-all"
                       style={{
-                        background: currentIndex === index 
+                        background: currentIndex === index
                           ? "linear-gradient(135deg, hsl(var(--chart-1)), hsl(var(--chart-2)))"
                           : "rgba(255,255,255,0.2)",
-                        boxShadow: currentIndex === index 
+                        boxShadow: currentIndex === index
                           ? "0 0 15px rgba(0,255,255,0.6), 0 0 30px rgba(255,0,255,0.4)"
                           : "none",
                       }}

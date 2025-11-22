@@ -1,0 +1,111 @@
+/* Custom Futuristic Cursor Styles */
+body {
+  cursor: none;
+}
+
+.custom-cursor {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+}
+
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  background: hsl(var(--glow-cyan));
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+  box-shadow: 
+    0 0 10px hsl(var(--glow-cyan) / 0.8),
+    0 0 20px hsl(var(--glow-cyan) / 0.5),
+    0 0 30px hsl(var(--glow-cyan) / 0.3);
+}
+
+.cursor-ring {
+  width: 32px;
+  height: 32px;
+  border: 2px solid hsl(var(--glow-cyan) / 0.5);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
+  box-shadow: 
+    0 0 15px hsl(var(--glow-cyan) / 0.3),
+    inset 0 0 15px hsl(var(--glow-cyan) / 0.2);
+}
+
+/* Cursor hover state */
+.cursor-hover .cursor-dot {
+  width: 12px;
+  height: 12px;
+  background: hsl(var(--glow-magenta));
+  box-shadow: 
+    0 0 15px hsl(var(--glow-magenta) / 0.9),
+    0 0 30px hsl(var(--glow-magenta) / 0.6),
+    0 0 45px hsl(var(--glow-magenta) / 0.4);
+}
+
+.cursor-hover .cursor-ring {
+  width: 48px;
+  height: 48px;
+  border-color: hsl(var(--glow-magenta) / 0.6);
+  box-shadow: 
+    0 0 20px hsl(var(--glow-magenta) / 0.4),
+    inset 0 0 20px hsl(var(--glow-magenta) / 0.3);
+}
+
+/* Cursor click state */
+.cursor-click .cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: hsl(var(--glow-purple));
+  box-shadow: 
+    0 0 20px hsl(var(--glow-purple) / 1),
+    0 0 40px hsl(var(--glow-purple) / 0.7),
+    0 0 60px hsl(var(--glow-purple) / 0.5);
+}
+
+.cursor-click .cursor-ring {
+  width: 40px;
+  height: 40px;
+  border-color: hsl(var(--glow-purple) / 0.7);
+  border-width: 3px;
+  box-shadow: 
+    0 0 25px hsl(var(--glow-purple) / 0.5),
+    inset 0 0 25px hsl(var(--glow-purple) / 0.4);
+}
+
+/* Hide cursor on interactive elements to show custom cursor */
+a, button, input, textarea, select, [role="button"], [onclick] {
+  cursor: none;
+}
+
+/* Cursor trail effect */
+.cursor-trail {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  width: 4px;
+  height: 4px;
+  background: hsl(var(--glow-cyan) / 0.3);
+  border-radius: 50%;
+  animation: cursorTrailFade 0.5s ease-out forwards;
+}
+
+@keyframes cursorTrailFade {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
