@@ -239,6 +239,10 @@ export default function AdminAbout() {
     // Validate URL formats if they're not empty
     const validateUrl = (url: string) => {
       if (!url) return true;
+      // Allow data URLs (base64 encoded images from file uploads)
+      if (url.startsWith('data:')) return true;
+      // Allow /uploads/ URLs (uploaded files)
+      if (url.startsWith('/uploads/')) return true;
       try {
         new URL(url.startsWith('http') ? url : `https://${url}`);
         return true;
@@ -248,13 +252,30 @@ export default function AdminAbout() {
     };
 
     const urlFields = {
-      "Avatar URL": cleanFormData.avatarUrl,
-      "Resume URL": cleanFormData.resumeUrl,
       "GitHub URL": cleanFormData.githubUrl,
       "LinkedIn URL": cleanFormData.linkedinUrl,
       "Twitter URL": cleanFormData.twitterUrl,
       "Instagram URL": cleanFormData.instagramUrl
     };
+
+    // Avatar and Resume URLs can be data URLs or file paths, so validate them separately
+    if (cleanFormData.avatarUrl && !validateUrl(cleanFormData.avatarUrl)) {
+      toast({
+        title: "Validation Error",
+        description: "Avatar URL must be a valid URL or image",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (cleanFormData.resumeUrl && !validateUrl(cleanFormData.resumeUrl)) {
+      toast({
+        title: "Validation Error",
+        description: "Resume URL must be a valid URL or file",
+        variant: "destructive",
+      });
+      return;
+    }
 
     for (const [fieldName, url] of Object.entries(urlFields)) {
       if (url && !validateUrl(url)) {

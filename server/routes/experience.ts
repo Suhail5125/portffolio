@@ -26,11 +26,15 @@ export function registerExperienceRoutes(app: Express) {
 
   app.post("/api/experience", isAuthenticated, async (req, res) => {
     try {
+      console.log('Creating experience with data:', JSON.stringify(req.body, null, 2));
       const validated = insertExperienceSchema.parse(req.body);
+      console.log('Validated data:', JSON.stringify(validated, null, 2));
       const entry = await storage.createExperience(validated);
       res.status(201).json(entry);
     } catch (error: any) {
+      console.error('Experience creation error:', error);
       const validationError = fromError(error);
+      console.error('Formatted error:', validationError.toString());
       res.status(400).json({ error: validationError.toString() });
     }
   });

@@ -26,11 +26,15 @@ export function registerAboutRoutes(app: Express) {
   // Protected routes - Update about info (admin only)
   app.put("/api/about", isAuthenticated, async (req, res) => {
     try {
+      console.log('Updating about info with data:', JSON.stringify(req.body, null, 2));
       const validated = insertAboutInfoSchema.parse(req.body);
+      console.log('Validated about data successfully');
       const info = await storage.updateAboutInfo(validated);
       res.json(info);
     } catch (error: any) {
+      console.error('About update error:', error);
       const validationError = fromError(error);
+      console.error('Formatted error:', validationError.toString());
       res.status(400).json({ error: validationError.toString() });
     }
   });
