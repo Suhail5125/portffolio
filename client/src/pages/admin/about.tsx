@@ -91,15 +91,94 @@ export default function AdminAbout() {
     },
   });
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const result = event.target?.result as string;
-        setFormData({ ...formData, avatarUrl: result });
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    // Validate file size (warn if > 2MB)
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    if (file.size > maxSize) {
+      const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+      toast({
+        title: "Large File Warning",
+        description: `Image is ${sizeInMB}MB. This may slow down the page. Consider using a smaller image or external URL.`,
+      });
+    }
+
+    try {
+      // For images, we can compress them using canvas
+      if (file.type.startsWith('image/')) {
+        const img = new Image();
+        const reader = new FileReader();
+        
+        reader.onload = (event) => {
+          img.src = event.target?.result as string;
+        };
+        
+        img.onload = () => {
+          // Create canvas to resize image
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          // Max dimensions for avatar
+          const maxWidth = 400;
+          const maxHeight = 400;
+          
+          let width = img.width;
+          let height = img.height;
+          
+          // Calculate new dimensions while maintaining aspect ratio
+          if (width > height) {
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = (width * maxHeight) / height;
+              height = maxHeight;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          // Convert to base64 with compression
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85); // 85% quality
+          setFormData({ ...formData, avatarUrl: compressedDataUrl });
+          
+          toast({
+            title: "Image uploaded!",
+            description: "Remember to click Save Changes to store it.",
+          });
+        };
+        
+        img.onerror = () => {
+          toast({
+            title: "Failed to process image",
+            description: "Please try a different image.",
+            variant: "destructive",
+          });
+        };
+        
+        reader.readAsDataURL(file);
+      } else {
+        // Non-image files, just convert to data URL
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const result = event.target?.result as string;
+          setFormData({ ...formData, avatarUrl: result });
+        };
+        reader.readAsDataURL(file);
+      }
+    } catch (error) {
+      toast({
+        title: "Upload failed",
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "destructive",
+      });
     }
   };
 
@@ -107,16 +186,69 @@ export default function AdminAbout() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Show error message - file uploads not supported on Firebase
-    toast({
-      title: "File Upload Not Supported",
-      description: "On Firebase hosting, please paste a public URL to your resume instead (e.g., from Google Drive, Dropbox, or a CDN)",
-      variant: "destructive",
-    });
+    // Validate file type (PDF only)
+    if (file.type !== 'application/pdf') {
+      toast({
+        title: "Invalid File Type",
+        description: "Please upload a PDF file only",
+        variant: "destructive",
+      });
+      if (resumeInputRef.current) {
+        resumeInputRef.current.value = '';
+      }
+      return;
+    }
+
+    // Check file size (max 10MB for base64 storage in database)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      toast({
+        title: "File Too Large",
+        description: "Please upload a PDF smaller than 10MB. Consider using a URL from Google Drive or Dropbox for larger files.",
+        variant: "destructive",
+      });
+      if (resumeInputRef.current) {
+        resumeInputRef.current.value = '';
+      }
+      return;
+    }
+
+    setIsUploadingResume(true);
     
-    // Clear the file input
-    if (resumeInputRef.current) {
-      resumeInputRef.current.value = '';
+    try {
+      // Convert to base64 and store in database
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        setFormData({ ...formData, resumeUrl: result });
+        setIsUploadingResume(false);
+        toast({
+          title: "Resume uploaded successfully!",
+          description: "Remember to click Save Changes to store it.",
+        });
+      };
+      reader.onerror = () => {
+        setIsUploadingResume(false);
+        toast({
+          title: "Upload Failed",
+          description: "Failed to read the file. Please try again.",
+          variant: "destructive",
+        });
+        if (resumeInputRef.current) {
+          resumeInputRef.current.value = '';
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      setIsUploadingResume(false);
+      toast({
+        title: "Upload Failed",
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "destructive",
+      });
+      if (resumeInputRef.current) {
+        resumeInputRef.current.value = '';
+      }
     }
   };
 
@@ -656,14 +788,16 @@ export default function AdminAbout() {
                         <div className="flex items-center gap-2 p-3 rounded-lg border border-border/50 bg-muted/30">
                           <FileText className="h-5 w-5 text-chart-1 shrink-0" />
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">Resume uploaded</p>
+                            <p className="text-sm font-medium truncate">
+                              {formData.resumeUrl.startsWith('data:') ? 'Resume uploaded (stored in database)' : 'Resume uploaded'}
+                            </p>
                             <a 
                               href={formData.resumeUrl} 
                               target="_blank" 
                               rel="noopener noreferrer"
                               className="text-xs text-muted-foreground hover:text-foreground truncate block"
                             >
-                              {formData.resumeUrl}
+                              {formData.resumeUrl.startsWith('data:') ? 'Click to view PDF' : formData.resumeUrl}
                             </a>
                           </div>
                           <Button
@@ -711,12 +845,12 @@ export default function AdminAbout() {
                         <input
                           ref={resumeInputRef}
                           type="file"
-                          accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                          accept=".pdf,application/pdf"
                           onChange={handleResumeUpload}
                           className="hidden"
                         />
                         <p className="text-xs text-muted-foreground">
-                          Upload PDF, DOC, or DOCX (max 10MB) or paste URL
+                          Upload PDF (max 10MB) or paste URL from Google Drive/Dropbox
                         </p>
                       </div>
                     )}

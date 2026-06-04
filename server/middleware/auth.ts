@@ -4,11 +4,14 @@ import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcryptjs";
 import session from "express-session";
 import MemoryStore from "memorystore";
+import connectPgSimple from "connect-pg-simple";
+import pg from "pg";
 import { storage } from "../storage";
 import { config } from "../config";
 import { logger } from "../logger";
 
 const SessionStore = MemoryStore(session);
+const PgSession = connectPgSimple(session);
 
 // Configure passport
 passport.use(
@@ -64,8 +67,31 @@ export function setupAuth(app: Express) {
   logger.info('Auth setup', { 
     isFirebase, 
     isProduction: config.server.isProduction,
-    functionTarget: process.env.FUNCTION_TARGET 
+    functionTarget: process.env.FUNCTION_TARGET,
+    storageType: config.database.storageType
   });
+  
+  // Choose session store based on environment
+  // Use PostgreSQL session store in production for persistence across function instances
+  let sessionStore;
+  
+  if (config.server.isProduction && config.database.storageType === 'db' && config.database.url) {
+    logger.info('Using PostgreSQL session store for production');
+    const pgPool = new pg.Pool({
+      connectionString: config.database.url,
+    });
+    
+    sessionStore = new PgSession({
+      pool: pgPool,
+      tableName: 'session', // Will auto-create table if it doesn't exist
+      createTableIfMissing: true,
+    });
+  } else {
+    logger.info('Using Memory session store');
+    sessionStore = new SessionStore({
+      checkPeriod: config.session.checkPeriod,
+    });
+  }
   
   // Session configuration using centralized config
   // Config validation ensures SESSION_SECRET is present and secure
@@ -75,9 +101,7 @@ export function setupAuth(app: Express) {
       secret: config.session.secret,
       resave: false,
       saveUninitialized: false,
-      store: new SessionStore({
-        checkPeriod: config.session.checkPeriod,
-      }),
+      store: sessionStore,
       cookie: {
         maxAge: config.session.maxAge,
         httpOnly: true,
