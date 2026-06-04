@@ -44,15 +44,40 @@ export function securityHeaders(app: Express) {
 
 // CORS configuration
 export function setupCors(app: Express) {
+  // For Firebase deployment, we need to allow the Firebase hosting domains
+  const allowedOrigins = [
+    'https://codebysrs.web.app',
+    'https://codebysrs.firebaseapp.com',
+    'http://localhost:5173',
+    'http://localhost:5000',
+    config.security.corsOrigin
+  ].filter(origin => origin && origin !== '*');
+
   const corsOptions = {
-    origin: config.security.corsOrigin,
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+      
+      // Allow all origins in development
+      if (!config.server.isProduction) {
+        return callback(null, true);
+      }
+      
+      // Check if origin is in allowed list
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        logger.warn('CORS origin rejected', { origin, allowedOrigins });
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     optionsSuccessStatus: 200
   };
   
   app.use(cors(corsOptions));
   
-  logger.info('CORS configured', { origin: config.security.corsOrigin });
+  logger.info('CORS configured', { allowedOrigins, production: config.server.isProduction });
 }
 
 // General rate limiter for all API endpoints
