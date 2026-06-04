@@ -39,18 +39,11 @@ export function registerAboutRoutes(app: Express) {
     }
   });
 
-  // Resume upload endpoint
-  app.post("/api/upload/resume", isAuthenticated, uploadResume.single('resume'), (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: "No file uploaded" });
-      }
-      
-      const resumeUrl = `/uploads/${req.file.filename}`;
-      res.json({ resumeUrl });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+  // Resume upload endpoint - Disabled on Firebase (use data URLs instead)
+  app.post("/api/upload/resume", isAuthenticated, (req, res) => {
+    res.status(501).json({ 
+      error: "File uploads are not supported on Firebase. Please use the URL field or paste base64 data URL instead." 
+    });
   });
 
   // Delete resume endpoint
@@ -62,19 +55,7 @@ export function registerAboutRoutes(app: Express) {
         return res.status(400).json({ error: "Resume URL is required" });
       }
 
-      // Extract filename from URL
-      const filename = resumeUrl.split('/').pop();
-      if (!filename) {
-        return res.status(400).json({ error: "Invalid resume URL" });
-      }
-
-      // Delete the file from uploads directory
-      const filePath = path.join(__dirname, '..', '..', 'uploads', filename);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
-
-      // Update about info to remove resume URL
+      // Just clear the URL from database (no file deletion needed for data URLs)
       const aboutInfo = await storage.getAboutInfo();
       if (aboutInfo) {
         await storage.updateAboutInfo({ ...aboutInfo, resumeUrl: "" });

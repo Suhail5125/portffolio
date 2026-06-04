@@ -58,6 +58,9 @@ export function isAuthenticated(req: Request, res: Response, next: NextFunction)
 
 // Setup authentication middleware
 export function setupAuth(app: Express) {
+  // Detect if running on Firebase Cloud Functions
+  const isFirebase = process.env.FUNCTION_TARGET !== undefined;
+  
   // Session configuration using centralized config
   // Config validation ensures SESSION_SECRET is present and secure
   app.use(
@@ -72,10 +75,11 @@ export function setupAuth(app: Express) {
       cookie: {
         maxAge: config.session.maxAge,
         httpOnly: true,
-        secure: config.server.isProduction,
-        sameSite: "lax", // Changed from "strict" to "lax" for better compatibility
+        secure: isFirebase || config.server.isProduction, // Always secure on Firebase
+        sameSite: isFirebase ? "none" : "lax", // "none" required for Firebase cross-domain
+        domain: isFirebase ? undefined : undefined, // Let browser set domain automatically
       },
-      proxy: config.server.isProduction, // Trust proxy in production (Railway uses proxies)
+      proxy: true, // Always trust proxy on Firebase
     })
   );
 

@@ -107,55 +107,16 @@ export default function AdminAbout() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
-    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    if (!allowedTypes.includes(file.type)) {
-      toast({
-        title: "Invalid file type",
-        description: "Please upload a PDF, DOC, or DOCX file",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Validate file size (10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      toast({
-        title: "File too large",
-        description: "Resume file must be less than 10MB",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsUploadingResume(true);
-    const formData = new FormData();
-    formData.append('resume', file);
-
-    try {
-      const response = await fetch('/api/upload/resume', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to upload resume');
-      }
-
-      const data = await response.json();
-      setFormData(prev => ({ ...prev, resumeUrl: data.resumeUrl }));
-      toast({
-        title: "Resume uploaded successfully!",
-      });
-    } catch (error) {
-      toast({
-        title: "Failed to upload resume",
-        description: error instanceof Error ? error.message : "Unknown error",
-        variant: "destructive",
-      });
-    } finally {
-      setIsUploadingResume(false);
+    // Show error message - file uploads not supported on Firebase
+    toast({
+      title: "File Upload Not Supported",
+      description: "On Firebase hosting, please paste a public URL to your resume instead (e.g., from Google Drive, Dropbox, or a CDN)",
+      variant: "destructive",
+    });
+    
+    // Clear the file input
+    if (resumeInputRef.current) {
+      resumeInputRef.current.value = '';
     }
   };
 

@@ -3,14 +3,19 @@ import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
 import { config } from "../config";
+import os from "os";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Determine if running on Firebase (read-only filesystem except /tmp)
+const isFirebase = process.env.FUNCTION_TARGET !== undefined;
+const baseUploadDir = isFirebase ? os.tmpdir() : path.join(__dirname, '..', '..', config.upload.uploadDir);
+
 // Configure multer for image uploads
 const imageStorage = multer.diskStorage({
   destination: (_req, _file, cb) => {
-    const uploadPath = path.join(__dirname, '..', '..', config.upload.uploadDir);
+    const uploadPath = path.join(baseUploadDir, 'uploads');
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
@@ -42,7 +47,7 @@ export const upload = multer({
 // Configure multer for resume/PDF uploads
 const resumeStorage = multer.diskStorage({
   destination: (_req, _file, cb) => {
-    const uploadPath = path.join(__dirname, '..', '..', config.upload.uploadDir);
+    const uploadPath = path.join(baseUploadDir, 'uploads');
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
